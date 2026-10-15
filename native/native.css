@@ -1,0 +1,6 @@
+/* Native shell only: respect the notch and home indicator, stop rubber-band scrolling */
+header{padding-top:max(10px,env(safe-area-inset-top));padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+.scrub{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.sheet{padding-bottom:max(22px,env(safe-area-inset-bottom))}
+html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.reading,.vtext,.dtext,.plist,.sheet p{-webkit-user-select:text;user-select:text}

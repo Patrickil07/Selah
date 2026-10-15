@@ -1,0 +1,10 @@
+{
+  "appId": "com.patrickil07.selah",
+  "appName": "Selah",
+  "webDir": "www",
+  "backgroundColor": "#0c1220",
+  "plugins": {
+    "SplashScreen": { "launchAutoHide": false, "backgroundColor": "#0c1220", "showSpinner": false },
+    "LocalNotifications": { "iconColor": "#e0b65c" }
+  }
+}

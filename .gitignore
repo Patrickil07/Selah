@@ -1,0 +1,14 @@
+node_modules/
+www/
+.DS_Store
+# native build output
+ios/App/build/
+ios/DerivedData/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/build/
+*.keystore
+*.jks
+icons/
