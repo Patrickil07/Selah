@@ -297,7 +297,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
 .liblist em{font-style:normal;font-size:.85rem;color:var(--muted)}
 .libempty{color:var(--muted);font-size:.9rem}
 #libChip::before{content:"🔖";margin-right:4px}
-@media (max-width:600px){.libtabs button{font-size:.74rem;padding:7px 3px;white-space:nowrap}#libChip{font-size:0;padding:6px 7px;line-height:1}#libChip::before{font-size:.95rem;margin:0}}
+@media (max-width:600px){.libtabs button{font-size:.74rem;padding:7px 3px;white-space:nowrap}#libChip,#findChip{font-size:0;padding:6px 7px;line-height:1}#libChip::before,#findChip::before{font-size:.95rem;margin:0}}
 /* Time: timeline and linked map */
 #time{overflow:auto}
 .tl{display:grid;grid-template-rows:auto auto minmax(300px,1fr) auto;gap:10px;padding:12px 16px;min-height:100%;box-sizing:border-box;max-width:1500px;margin:0 auto}
@@ -347,6 +347,18 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
 .tl-chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;font-size:.8rem;cursor:pointer;color:var(--ink)}
 .tl-chips button:hover{border-color:var(--lapis)}
 .tl-note{font-size:.75rem;color:var(--muted);margin:0}
+.sheet.search{max-width:620px}
+.semform{display:flex;gap:8px;margin:6px 0 10px}
+.semform input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.semscope{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.semscope button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:.8rem;cursor:pointer;color:var(--ink)}
+.semscope button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.semstatus{color:var(--muted);font-size:.85rem;margin:4px 0 8px;min-height:1.2em}
+.semex{display:flex;flex-wrap:wrap;gap:6px}
+.semnote{color:var(--muted);font-size:.78rem;margin:12px 0 0}
+#findChip::before{content:"🔍";margin-right:4px}
+.zoombar #findFab{display:none}
+@media (max-width:600px){#findChip{display:none}.zoombar #findFab{display:block;font-size:.95rem}}
 /* Stories: guided journeys and explainers */
 #stories{overflow:auto;--ph:600px}
 .st-home,.st-x{max-width:980px;margin:0 auto;padding:18px 16px 40px;box-sizing:border-box}
@@ -440,7 +452,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
 @media (max-width:480px){.brand{display:none}}
 /* Phone and tablet fit */
 #galaxy{overflow:hidden}
-@media (max-width:900px){.modes .m3d{display:none}#sound,#planChip,#libChip{font-size:0;padding:6px 7px;line-height:1}#sound::before{content:"🔇";font-size:.95rem}#sound[aria-pressed="true"]::before{content:"🔊"}#planChip::after{content:"📖";font-size:.95rem}#libChip::before{font-size:.95rem;margin:0}}
+@media (max-width:900px){.modes .m3d{display:none}#sound,#planChip,#libChip,#findChip{font-size:0;padding:6px 7px;line-height:1}#sound::before{content:"🔇";font-size:.95rem}#sound[aria-pressed="true"]::before{content:"🔊"}#planChip::after{content:"📖";font-size:.95rem}#libChip::before,#findChip::before{font-size:.95rem;margin:0}}
 @media (max-width:600px){
   header{gap:6px 5px;padding:8px 10px}
   header .spacer{display:none}
@@ -486,6 +498,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
     </div>
     <span class="spacer"></span>
     <button class="chip" id="planChip" title="Daily or weekly reading plan">Reading plan</button>
+    <button class="chip" id="findChip" title="Search by meaning (/)">Search</button>
     <button class="chip" id="libChip" title="Highlights, bookmarks and notes">Saved</button>
     <button class="chip" id="resume" hidden></button>
     <button class="btn" id="sound" aria-pressed="false" aria-label="Sound">Sound off</button>
@@ -494,7 +507,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
   <main>
     <section class="panel" id="zoom">
       <div class="stage" id="stage" tabindex="-1"><div class="loading" id="loading"><span class="eyebrow">Loading</span>Loading the full King James text and 100,000 cross-references…</div></div>
-      <div class="zoombar"><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
+      <div class="zoombar"><button class="btn" id="findFab" aria-label="Search by meaning" title="Search by meaning">🔍</button><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
     </section>
     <section class="panel" id="time" hidden aria-label="Timeline and map"></section>
     <section class="panel" id="galaxy" hidden><div class="gload" id="gload">Loading 3D…</div></section>
@@ -1487,6 +1500,65 @@ function openLibrary(){closeSheet();const bg=document.createElement('div');bg.cl
     if(t.dataset.a==='close')return closeSheet();if(t.dataset.tab){libTab=t.dataset.tab;paint();return;}
     if(t.dataset.to){const k=+t.dataset.to;closeSheet();setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);}});}
 $('#libChip').onclick=openLibrary;
+
+// ---------- Search by meaning, entirely on the device ----------
+// Static embeddings from potion-base-8M (MinishLab, MIT): a query is the mean of its word-piece vectors,
+// compared with pre-computed verse vectors (KJV, WEB and BSB averaged). See scripts/data/prep_semantic.py.
+let sem=null,semLoading=null;
+function semLoad(){if(sem)return Promise.resolve(sem);if(semLoading)return semLoading;
+  const bin=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u);return r.arrayBuffer();});
+  return semLoading=Promise.all([bin('sem/tokens.bin'),bin('sem/proj.bin'),bin('sem/verses.bin'),fetch('sem/vocab.txt').then(r=>{if(!r.ok)throw new Error('vocab');return r.text();})]).then(([tok,proj,ver,voc])=>{
+    const words=voc.split('\n'),n=words.length,vocab=new Map(words.map((w,i)=>[w,i])),D=(tok.byteLength-n*4)/n,pr=new Float32Array(proj),K=(pr.length-D)/D;
+    // Well-known verses get a small lift: total cross-reference votes, on a log scale
+    const pop=new Float32Array(N);for(let k=0;k<xr.length;k+=3){pop[xr[k]]+=xr[k+2];pop[xr[k+1]]+=xr[k+2];}for(let i=0;i<N;i++)pop[i]=.02*Math.log1p(pop[i]);
+    return sem={vocab,scale:new Float32Array(tok,0,n),tab:new Int8Array(tok,n*4),D,mu:pr.subarray(0,D),W:pr.subarray(D),K,V:new Int8Array(ver),pop};}).catch(e=>{semLoading=null;throw e;});}
+const isPunct=ch=>/[\p{P}\p{S}]/u.test(ch);
+function basicTokens(text){const out=[];let cur='';for(const ch of text.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu,'')){
+  if(/\s/.test(ch)){if(cur)out.push(cur);cur='';}else if(isPunct(ch)&&(ch.charCodeAt(0)<128||/\p{P}/u.test(ch))){if(cur)out.push(cur);cur='';out.push(ch);}else cur+=ch;}if(cur)out.push(cur);return out;}
+function wordPiece(w,vocab){if(w.length>100)return [];const ids=[];let s=0;while(s<w.length){let e=w.length,hit=-1;while(s<e){const sub=(s?'##':'')+w.slice(s,e);if(vocab.has(sub)){hit=vocab.get(sub);break;}e--;}if(hit<0)return [];ids.push(hit);s=e;}return ids;}
+const STOP=new Set('a an and are as at be but by for from has have he her his i if in into is it its me my of on or our she so that the their them then there they this to us was we were what when where which who why will with you your yourself unto thee thou thy thine ye shall hath doth'.split(' '));
+function semSearch(q,scope){const S=sem,ids=basicTokens(q).flatMap(w=>wordPiece(w,S.vocab));if(!ids.length)return [];
+  const m=new Float32Array(S.D);ids.forEach(t=>{const sc=S.scale[t],o=t*S.D;for(let d=0;d<S.D;d++)m[d]+=S.tab[o+d]*sc;});
+  let nm=0;for(let d=0;d<S.D;d++)nm+=m[d]*m[d];nm=Math.sqrt(nm)||1;
+  const x=new Float32Array(S.K);for(let d=0;d<S.D;d++){const c=m[d]/nm-S.mu[d];if(!c)continue;const o=d*S.K;for(let k=0;k<S.K;k++)x[k]+=c*S.W[o+k];}
+  let nx=0;for(let k=0;k<S.K;k++)nx+=x[k]*x[k];nx=127*(Math.sqrt(nx)||1);
+  // Plain words still count: a phrase or rare word that appears in the verse lifts it
+  const words=basicTokens(q).filter(w=>w.length>2&&!STOP.has(w)&&!isPunct(w)),phrase=q.trim().toLowerCase().replace(/\s+/g,' ');
+  const res=words.map(w=>new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));const [a,b]=scope;const top=[];let floor=-1e9;
+  for(let i=a;i<b;i++){let s=0;const o=i*S.K;for(let k=0;k<S.K;k++)s+=S.V[o+k]*x[k];s=s/nx+S.pop[i];
+    if(words.length){const t=flat[i].toLowerCase();if(phrase.includes(' ')&&t.includes(phrase))s+=.25;for(const r of res)if(r.test(t))s+=.03;}
+    if(s>floor||top.length<40){top.push([s,i]);if(top.length>80){top.sort((p,q)=>q[0]-p[0]);top.length=40;floor=top[39][0];}}}
+  return top.sort((p,q)=>q[0]-p[0]).slice(0,30);}
+const SEM_EX=['When I feel anxious','God keeps his promises','Forgiving someone who hurt me','Wisdom about money','Courage in hard times','The Lord is my shepherd'];
+let semScope='all',semQ='';
+function openSearch(prefill){closeSheet();const bg=document.createElement('div');bg.className='sheetbg';bg.setAttribute('role','dialog');bg.setAttribute('aria-modal','true');bg.setAttribute('aria-label','Search by meaning');
+  const s=document.createElement('div');s.className='sheet search';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;sheetEl._esc=closeSheet;trapFocus(bg);
+  const cur=state&&state.level>=1?state.b:null;
+  s.innerHTML=`<button class="x" data-a="close" aria-label="Close">×</button><span class="eyebrow">Search by meaning</span><h2>What are you looking for?</h2>
+    <form class="semform" role="search"><label class="sr-only" for="semQ">Describe what you are looking for</label><input id="semQ" type="search" autocomplete="off" placeholder="Try: when I feel anxious" value="${esc(prefill??semQ)}"><button class="btn primary">Search</button></form>
+    <div class="semscope" role="group" aria-label="Where to search">${[['all','Whole Bible'],['ot','Old Testament'],['nt','New Testament'],...(cur!=null?[['book',NAMES[cur]]]:[])].map(([k,l])=>`<button type="button" data-scope="${k}" aria-pressed="${semScope===k}">${esc(l)}</button>`).join('')}</div>
+    <p class="semstatus" id="semStatus" role="status"></p><ul class="liblist" id="semList"></ul>
+    <p class="semnote">Works offline on this device. It finds verses by meaning, not just matching words, so results can surprise you. Read each one in its context.</p>`;
+  const inp=s.querySelector('#semQ'),list=s.querySelector('#semList'),st=s.querySelector('#semStatus');
+  const examples=()=>{list.innerHTML='';st.textContent='';list.insertAdjacentHTML('beforeend',`<li class="semex">${SEM_EX.map(e=>`<button type="button" class="chip" data-ex="${esc(e)}">${esc(e)}</button>`).join('')}</li>`);};
+  async function run(){const q=inp.value.trim();semQ=q;if(!q){examples();return;}
+    if(!sem){st.textContent='Getting search ready (about 12 MB, only the first time)…';try{await semLoad();}catch(e){st.textContent='Search could not load. Check your connection and try again.';return;}}
+    if(sheetEl!==bg)return;
+    const scope=semScope==='ot'?[0,bookStart[39]]:semScope==='nt'?[bookStart[39],N]:semScope==='book'&&cur!=null?[bookStart[cur],bookStart[cur]+bookLen[cur]]:[0,N];
+    const t0=performance.now(),res=semSearch(q,scope);
+    if(!res.length){list.innerHTML='';st.textContent='No results. Try describing it in other words.';return;}
+    st.textContent=`${res.length} verses that match “${q}” best.`;
+    list.innerHTML=res.map(([sc,i])=>`<li><button data-to="${i}"><b>${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}</b><span>${esc(flat[i])}</span></button></li>`).join('');
+    console.debug('semantic search',Math.round(performance.now()-t0)+'ms');}
+  s.querySelector('form').onsubmit=e=>{e.preventDefault();run();};
+  bg.addEventListener('click',e=>{if(e.target===bg)return closeSheet();const t=e.target.closest('button');if(!t)return;
+    if(t.dataset.a==='close')return closeSheet();
+    if(t.dataset.ex){inp.value=t.dataset.ex;run();return;}
+    if(t.dataset.scope){semScope=t.dataset.scope;s.querySelectorAll('[data-scope]').forEach(b=>b.setAttribute('aria-pressed',b===t));if(inp.value.trim())run();return;}
+    if(t.dataset.to){const k=+t.dataset.to;closeSheet();setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);}});
+  inp.focus();if(inp.value.trim())run();else examples();semLoad().catch(()=>{});}
+$('#findChip').onclick=()=>openSearch();$('#findFab').onclick=()=>openSearch();
+addEventListener('keydown',e=>{if(e.key==='/'&&!sheetEl&&!e.target.closest('input,textarea,select,[contenteditable]')){e.preventDefault();openSearch();}});
 
 // ---------- Reading plan: daily or weekly portions that pop up when the app opens ----------
 const DAY=864e5,MIN_WPM=180,WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];

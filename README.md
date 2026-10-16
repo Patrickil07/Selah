@@ -42,3 +42,4 @@ Every push builds an Android debug APK and an unsigned iOS simulator build on Gi
 - **Narration:** the Kokoro-82M open model, Apache 2.0. Audio is pre-rendered for sample chapters only.
 - **Timeline:** Theographic Bible Metadata by Robert Rouse, CC BY-SA 4.0. Dates follow Ussher's chronology. `web/timeline.json` is a derived work under the same licence.
 - **Map:** Natural Earth land outlines (public domain), via world-atlas.
+- **Search by meaning:** the potion-base-8M static embedding model by MinishLab, MIT (see `web/sem/LICENSE.txt`), taken from the npm package counterparts-model-potion. `scripts/data/prep_semantic.py` builds the verse index.
