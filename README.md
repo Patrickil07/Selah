@@ -36,7 +36,9 @@ Every push builds an Android debug APK and an unsigned iOS simulator build on Gi
 
 ## Data sources
 
-- **Bible text:** King James Version (public domain).
+- **Bible text:** King James Version, plus the World English Bible, Berean Standard Bible and American Standard Version (all public domain).
 - **Cross-references:** OpenBible.info, CC BY.
 - **Hebrew and Greek:** STEPBible-Data TAHOT, TAGNT, TBESH and TBESG from Tyndale House, Cambridge, CC BY 4.0.
 - **Narration:** the Kokoro-82M open model, Apache 2.0. Audio is pre-rendered for sample chapters only.
+- **Timeline:** Theographic Bible Metadata by Robert Rouse, CC BY-SA 4.0. Dates follow Ussher's chronology. `web/timeline.json` is a derived work under the same licence.
+- **Map:** Natural Earth land outlines (public domain), via world-atlas.

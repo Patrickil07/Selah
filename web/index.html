@@ -298,6 +298,57 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
 .libempty{color:var(--muted);font-size:.9rem}
 #libChip::before{content:"🔖";margin-right:4px}
 @media (max-width:600px){.libtabs button{font-size:.74rem;padding:7px 3px;white-space:nowrap}#libChip{font-size:0;padding:6px 7px;line-height:1}#libChip::before{font-size:.95rem;margin:0}}
+/* Time: timeline and linked map */
+#time{overflow:auto}
+.tl{display:grid;grid-template-rows:auto auto minmax(300px,1fr) auto;gap:10px;padding:12px 16px;min-height:100%;box-sizing:border-box;max-width:1500px;margin:0 auto}
+.tl-bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.tl-title{font-family:var(--display);font-weight:400;font-size:1.6rem;margin:0}
+.tl-find{flex:1 1 220px;max-width:420px}
+.tl-find input{width:100%;box-sizing:border-box;font:inherit;font-size:.9rem;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.tl-zoom{display:flex;gap:4px}
+.tl-scroll{--evy:126px;--prow:146px;overflow:auto;max-height:44vh;border:1px solid var(--line);border-radius:14px;background:var(--surface);overscroll-behavior-x:contain;cursor:grab}
+.tl-canvas{position:relative;min-height:220px}
+.tl-era{position:absolute;top:0;height:22px;border-right:1px solid var(--surface);background:var(--lapis-soft);overflow:hidden;font-size:.68rem;color:var(--muted);display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.tl-era{border:0;padding:0;cursor:zoom-in}.tl-era.alt{background:var(--gold-soft)}.tl-era:hover{filter:brightness(.95)}
+.tl-tick{position:absolute;top:22px;bottom:0;border-left:1px dashed var(--line);pointer-events:none}
+.tl-tick span{position:absolute;top:2px;left:4px;font:.62rem var(--mono);color:var(--muted);white-space:nowrap}
+.tl-ev{position:absolute;transform:translateX(-5px);border:0;background:none;padding:0;cursor:pointer;color:var(--ink)}
+.tl-ev i{position:absolute;left:0;bottom:0;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--surface)}
+.tl-ev:not(.lab){top:calc(var(--evy) - 5px);width:10px;height:10px}
+.tl-ev.lab{top:calc(var(--evy) - 5px - (var(--r) + 1) * 18px);height:calc((var(--r) + 1) * 18px + 10px);width:10px}
+.tl-ev.lab::before{content:"";position:absolute;left:4.5px;top:14px;bottom:9px;border-left:1px solid var(--line)}
+.tl-ev span{position:absolute;left:-2px;top:0;white-space:nowrap;font-size:.72rem;line-height:14px;padding:0 4px;border-radius:4px;background:var(--surface)}
+.tl-ev:hover span,.tl-ev.on span{background:var(--gold-soft)}
+.tl-ev.on i{background:var(--lapis);transform:scale(1.5)}
+.tl-p{position:absolute;height:18px;border-radius:9px;border:1px solid var(--lapis);background:var(--lapis-soft);padding:0 6px;cursor:pointer;overflow:visible;color:var(--ink);text-align:left}
+.tl-p.out span{position:absolute;left:calc(100% + 4px);top:0}
+.tl-p.active{border-style:dashed}
+.tl-p span{display:inline-block;font-size:.7rem;white-space:nowrap;line-height:16px}
+.tl-p.on{background:var(--gold);border-color:var(--gold);color:var(--surface)}
+.tl-lower{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:10px;min-height:0}
+.tl-map{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);min-height:300px;background:var(--lapis-soft)}
+.tl-map svg{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.tl-map .sea{fill:var(--lapis-soft)}
+.tl-map .land{fill:var(--surface);stroke:var(--line);stroke-width:.4}
+.tl-map .river{fill:none;stroke:var(--lapis);stroke-width:1.2;opacity:.45;vector-effect:non-scaling-stroke}
+.tl-map .lake{fill:var(--lapis-soft);stroke:var(--lapis);stroke-width:.6;opacity:.8;vector-effect:non-scaling-stroke}
+.tl-map circle{fill:var(--muted);opacity:.28;stroke:var(--surface);cursor:pointer;transition:opacity .3s,fill .3s}
+.tl-map circle.now{fill:var(--gold);opacity:.85}
+.tl-map circle.sel{fill:var(--g-rev);opacity:1}
+.tl-map .route{fill:none;stroke:var(--g-rev);stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke;opacity:.8}
+.tl-map text{fill:var(--ink);stroke:var(--surface);stroke-width:.25em;paint-order:stroke;font-family:var(--body);pointer-events:none}
+.tl-map text.on{font-weight:700}
+.tl-mapbtns{position:absolute;right:8px;bottom:8px;display:flex;gap:6px}
+.tl-detail{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;overflow:auto;max-height:100%}
+.tl-detail h3{font-family:var(--display);font-weight:400;font-size:1.5rem;margin:2px 0 8px}
+.tl-muted{color:var(--muted);font-size:.88rem;margin:0 0 10px}
+.tl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;align-items:center}
+.tl-chips b{font:600 .7rem var(--mono);color:var(--gold);letter-spacing:.06em;text-transform:uppercase;width:100%}
+.tl-chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;font-size:.8rem;cursor:pointer;color:var(--ink)}
+.tl-chips button:hover{border-color:var(--lapis)}
+.tl-note{font-size:.75rem;color:var(--muted);margin:0}
+@media (max-width:760px){.tl{grid-template-rows:auto auto auto auto}.tl-lower{grid-template-columns:1fr}.tl-map{height:300px;min-height:0}.tl-scroll{max-height:55vh}}
+@media (max-width:480px){.brand{display:none}}
 /* Phone and tablet fit */
 #galaxy{overflow:hidden}
 @media (max-width:600px){
@@ -337,6 +388,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
     <span class="brand">Selah</span>
     <div class="modes" role="group" aria-label="Mode">
       <button data-mode="zoom" aria-pressed="true">Zoom</button>
+      <button data-mode="time" aria-pressed="false">Time</button>
       <button data-mode="galaxy" aria-pressed="false"><span class="m3d">3D </span>Galaxy</button>
       <button data-mode="descent" aria-pressed="false">Descent</button>
     </div>
@@ -352,6 +404,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
       <div class="stage" id="stage" tabindex="-1"><div class="loading" id="loading"><span class="eyebrow">Loading</span>Loading the full King James text and 100,000 cross-references…</div></div>
       <div class="zoombar"><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
     </section>
+    <section class="panel" id="time" hidden aria-label="Timeline and map"></section>
     <section class="panel" id="galaxy" hidden><div class="gload" id="gload">Loading 3D…</div></section>
     <section class="panel" id="descent" hidden tabindex="0" aria-label="Descent: scroll through the Bible"></section>
   </main>
@@ -798,8 +851,8 @@ addEventListener('resize',()=>{drawScrub();gal&&gal.resize();});
 // ---------- Modes ----------
 let mode='zoom';
 function setMode(m){mode=m;if(m!=='zoom')stopReader();document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
-  ['zoom','galaxy','descent'].forEach(id=>$('#'+id).hidden=id!==m);$('#crumbs').hidden=m!=='zoom';$('#scrubWrap').hidden=m==='descent';
-  tick(440);if(m==='galaxy')openGalaxy();else gal&&gal.stop();if(m==='descent')openDescent();if(m==='zoom')requestAnimationFrame(drawScrub);}
+  ['zoom','time','galaxy','descent'].forEach(id=>$('#'+id).hidden=id!==m);$('#crumbs').hidden=m!=='zoom';$('#scrubWrap').hidden=m==='descent'||m==='time';
+  tick(440);if(m==='galaxy')openGalaxy();else gal&&gal.stop();if(m==='descent')openDescent();if(m==='time')openTime();if(m==='zoom')requestAnimationFrame(drawScrub);}
 document.querySelectorAll('.modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 
 // ---------- 3D Galaxy (Three.js, loaded on demand) ----------
@@ -883,6 +936,148 @@ function initGalaxy(host){
     const lb=hover??focus;if(lb!=null){const v=nodes[lb].mesh.getWorldPosition(p1).project(cam);const r=el.getBoundingClientRect();label.hidden=false;label.textContent=NAMES[lb];label.style.left=((v.x+1)/2*r.width)+'px';label.style.top=((1-v.y)/2*r.height)+'px';}else label.hidden=true;}
   return{resize(){const w=host.clientWidth,h=host.clientHeight;if(!w)return;renderer.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();const fit=w<h?Math.min(90,Math.max(30,33/Math.max(.45,w/h))):30;if(Math.abs(fit-baseDist)>.5){baseDist=fit;camDistT=fit;}},start(){if(!raf)frame();},stop(){cancelAnimationFrame(raf);raf=null;}};
 }
+
+// ---------- Time: a timeline of events and people, linked to a map of the places ----------
+// Data: Theographic Bible Metadata (CC BY-SA 4.0) for events, people and places; Natural Earth (public domain) for the land.
+const ERAS=[[-4004,-2348,'Beginnings'],[-2348,-1706,'Flood and patriarchs'],[-1706,-1491,'Israel in Egypt'],[-1491,-1451,'Exodus and wilderness'],
+  [-1451,-1095,'Conquest and judges'],[-1095,-975,'United kingdom'],[-975,-588,'Divided kingdom'],[-588,-536,'Exile'],[-536,-400,'Return'],
+  [-400,-5,'Between the Testaments'],[-5,30,'Life of Jesus'],[30,100,'Early church']];
+const Y0=-4060,Y1=110;
+const fmtYear=y=>y<0?`${Math.round(-y)} BC`:`AD ${Math.max(1,Math.round(y))}`;
+// Approximate rivers and lakes for orientation (Natural Earth 1:50m has no inland water)
+const WATER={lines:[[[31.2,30.1],[31.0,29.0],[30.9,27.6],[31.9,26.2],[32.7,25.7],[32.9,24.1],[32.9,22.0]],
+  [[38.3,37.1],[38.0,36.2],[39.1,35.9],[40.1,34.9],[41.4,34.4],[43.6,32.6],[45.3,31.6],[46.4,31.0],[47.7,30.5]],
+  [[40.2,37.9],[42.4,37.1],[43.1,36.3],[43.7,34.6],[44.4,33.3],[45.6,32.4],[46.8,31.4],[47.6,30.9]],
+  [[35.62,33.25],[35.6,32.88],[35.57,32.7],[35.55,32.3],[35.56,31.95],[35.55,31.78]]],
+  lakes:[[35.59,32.82,.08,.11],[35.5,31.5,.07,.34]]};
+let timeData=null,timeBuilt=false;
+async function openTime(){const host=$('#time');if(timeBuilt){host._refresh&&host._refresh();return;}
+  host.innerHTML='<div class="loading">Loading the timeline and map…</div>';
+  try{const [t,m]=await Promise.all([fetch('timeline.json').then(r=>r.json()),fetch('map.json').then(r=>r.json())]);timeData={...t,map:m};}
+  catch(e){host.innerHTML='<div class="loading">The timeline could not be loaded. Check your connection and open this tab again.</div>';return;}
+  timeBuilt=true;buildTime(host);}
+function buildTime(host){
+  const {events:EV,people:PE,places:PL,map}=timeData;
+  host.innerHTML=`<div class="tl">
+    <div class="tl-bar"><h2 class="tl-title">Timeline</h2>
+      <label class="tl-find"><span class="sr-only">Find an event, person or place</span><input id="tlFind" list="tlList" placeholder="Find an event, person or place" autocomplete="off"><datalist id="tlList">${EV.map(e=>`<option value="${esc(e[0])}">`).join('')}${PE.map(p=>`<option value="${esc(p[0])}">`).join('')}${PL.map(p=>`<option value="${esc(p[0])}">`).join('')}</datalist></label>
+      <div class="tl-zoom" role="group" aria-label="Timeline zoom"><button class="btn" id="tlOut" aria-label="Zoom out of time">−</button><button class="btn" id="tlFit">Whole span</button><button class="btn" id="tlIn" aria-label="Zoom into time">+</button></div></div>
+    <div class="tl-scroll" id="tlScroll" tabindex="0" aria-label="Timeline. Scroll sideways to move through time."><div class="tl-canvas" id="tlCanvas"></div></div>
+    <div class="tl-lower"><div class="tl-map"><svg id="tlMap" role="img" aria-label="Map of the lands of the Bible"></svg>
+        <div class="tl-mapbtns"><button class="btn" data-view="all">Whole region</button><button class="btn" data-view="land">Holy Land</button></div></div>
+      <div class="tl-detail" id="tlDetail" aria-live="polite"></div></div>
+    <p class="tl-note">Dates follow James Ussher's traditional chronology, as used by the open Theographic Bible dataset. Many scholars date the early periods differently. Places are plotted from OpenBible.info locations; some are uncertain.</p></div>`;
+  const sc=host.querySelector('#tlScroll'),cv=host.querySelector('#tlCanvas'),svg=host.querySelector('#tlMap'),det=host.querySelector('#tlDetail');
+  let ppy=0,sel=null; // pixels per year; selection {type:'event'|'person'|'place',i}
+  const fitPPY=()=>Math.max(.12,(sc.clientWidth-24)/(Y1-Y0));
+  const X=y=>(y-Y0)*ppy+12;
+  // ----- Map projection: equirectangular, squeezed by cos(latitude) -----
+  const [W,S,E,N]=map.box,K=Math.cos(33*Math.PI/180),px=lon=>(lon-W)*K*10,py=lat=>(N-lat)*10;
+  const MW=(E-W)*K*10,MH=(N-S)*10;
+  const ring=r=>{let d='';for(let k=0;k<r.length;k+=2)d+=(k?'L':'M')+px(r[k]/map.scale).toFixed(1)+' '+py(r[k+1]/map.scale).toFixed(1);return d+'Z';};
+  const KEY=new Set(['Jerusalem','Babylon','Rome','Nineveh','Damascus','Ur','Athens','Corinth','Antioch','Bethlehem','Nazareth','Memphis','Susa','Tyre','Ephesus','Haran','Samaria','Capernaum','Jericho','Hebron','Shechem','Beersheba','Joppa','Caesarea','Patmos','Malta','Tarsus']);
+  svg.setAttribute('viewBox',`0 0 ${MW.toFixed(0)} ${MH.toFixed(0)}`);
+  svg.innerHTML=`<rect class="sea" x="0" y="0" width="${MW}" height="${MH}"/><path class="land" d="${map.rings.map(ring).join('')}"/>
+    ${WATER.lines.map(l=>`<path class="river" d="${l.map(([lo,la],k)=>(k?'L':'M')+px(lo).toFixed(1)+' '+py(la).toFixed(1)).join('')}"/>`).join('')}
+    ${WATER.lakes.map(([lo,la,rx,ry])=>`<ellipse class="lake" cx="${px(lo)}" cy="${py(la)}" rx="${rx*K*10}" ry="${ry*10}"/>`).join('')}
+    <path class="route" id="tlRoute" d=""/>
+    <g id="tlPlaces">${PL.map((p,i)=>`<circle data-pl="${i}" data-r="${(0.9+Math.min(2.6,Math.sqrt(p[3])/7)).toFixed(2)}" cx="${px(p[2]).toFixed(1)}" cy="${py(p[1]).toFixed(1)}" r="${(0.9+Math.min(2.6,Math.sqrt(p[3])/7)).toFixed(2)}"><title>${esc(p[0])}</title></circle>`).join('')}</g>
+    <g id="tlLabels"></g>`;
+  const dots=[...svg.querySelectorAll('#tlPlaces circle')],labels=svg.querySelector('#tlLabels'),route=svg.querySelector('#tlRoute');
+  let vb=[0,0,MW,MH];
+  function setView(x,y,w,h,instant){const target=[x,y,w,h];const from=vb.slice();const t0=performance.now(),D=reduce||instant?0:600;
+    (function anim(){const t=D?Math.min(1,(performance.now()-t0)/D):1,e=1-Math.pow(1-t,3);vb=from.map((v,k)=>v+(target[k]-v)*e);svg.setAttribute('viewBox',vb.map(v=>v.toFixed(1)).join(' '));drawLabels();if(t<1)requestAnimationFrame(anim);})();}
+  function fitPlaces(idx){if(!idx.length)return setView(0,0,MW,MH);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;idx.forEach(i=>{const x=px(PL[i][2]),y=py(PL[i][1]);x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);});
+    let w=Math.max(90,(x1-x0)*1.5),h=Math.max(66,(y1-y0)*1.5);const ar=MW/MH;if(w/h>ar)h=w/ar;else w=h*ar;setView((x0+x1)/2-w/2,(y0+y1)/2-h/2,w,h);}
+  // Labels for key places and the current selection, sized to the current zoom
+  let lit=new Set();
+  function drawLabels(){const r=svg.getBoundingClientRect();if(!r.width)return;const k=Math.min(r.width/vb[2],r.height/vb[3]),fs=11.5/k;
+    const cand=[...new Set([...lit,...PL.map((p,i)=>KEY.has(p[0])?i:-1).filter(i=>i>=0)])].filter(i=>{const x=px(PL[i][2]),y=py(PL[i][1]);return x>=vb[0]&&x<=vb[0]+vb[2]&&y>=vb[1]&&y<=vb[1]+vb[3];})
+      .sort((a,b)=>(lit.has(b)-lit.has(a))||(PL[b][3]-PL[a][3]));
+    const boxes=[],out=[];for(const i of cand){const x=px(PL[i][2])+fs*.45,y=py(PL[i][1])-fs*.3,w=PL[i][0].length*fs*.56,bx=[x,y-fs,x+w,y+fs*.25];
+      if(boxes.some(o=>bx[0]<o[2]&&bx[2]>o[0]&&bx[1]<o[3]&&bx[3]>o[1]))continue;boxes.push(bx);out.push(`<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" style="font-size:${fs.toFixed(3)}px" class="${lit.has(i)?'on':''}">${esc(PL[i][0])}</text>`);}
+    labels.innerHTML=out.join('');
+    const z=Math.pow(Math.min(1,vb[2]/MW),.8);dots.forEach(d=>{d.style.strokeWidth=(vb[2]/400).toFixed(2);d.setAttribute('r',(d.dataset.r*z).toFixed(2));});}
+  // ----- Timeline layout -----
+  const lw=n=>n.length*6.1+12;
+  function packPeople(){const rows=[],where=[];PE.map((p,i)=>i).sort((a,b)=>PE[a][1]-PE[b][1]).forEach(i=>{const [n,f,t]=PE[i];const x0=X(f),x1=Math.max(X(t),x0+6),inside=x1-x0>lw(n);
+      const end=inside?x1:x1+lw(n);let r=rows.findIndex(e=>e<x0-6);if(r<0){r=rows.length;rows.push(0);}rows[r]=end;where[i]=r;});return {n:rows.length,where};}
+  function layout(){cv.style.width=(X(Y1)+12)+'px';
+    const tick=ppy>8?10:ppy>2?50:ppy>0.8?100:ppy>0.35?250:500;let h='';
+    ERAS.forEach(([a,b,name],k)=>{h+=`<button class="tl-era ${k%2?'alt':''}" data-era="${k}" style="left:${X(a)}px;width:${Math.max(1,X(b)-X(a))}px" title="${esc(name)}, ${fmtYear(a)} to ${fmtYear(b)}" aria-label="Zoom to ${esc(name)}, ${fmtYear(a)} to ${fmtYear(b)}"><span>${(X(b)-X(a))>name.length*6.5?esc(name):''}</span></button>`;});
+    for(let y=Math.ceil(Y0/tick)*tick;y<=Y1;y+=tick)h+=`<div class="tl-tick" style="left:${X(y)}px"><span>${y===0?'AD 1':fmtYear(y)}</span></div>`;
+    // events: greedy label rows so titles don't overlap
+    const rowEnd=[-1e9,-1e9,-1e9,-1e9];
+    EV.forEach((e,i)=>{const x=X(e[1]);let r=rowEnd.findIndex(end=>end<x-4);const lab=r>=0;if(lab)rowEnd[r]=x+Math.min(220,e[0].length*6.4+14);
+      h+=`<button class="tl-ev ${lab?'lab':''}" data-ev="${i}" style="left:${x}px;--r:${lab?r:0}" aria-label="${esc(e[0])}, ${fmtYear(e[1])}"><i></i>${lab?`<span>${esc(e[0])}</span>`:''}</button>`;});
+    const peopleRows=packPeople();
+    PE.forEach((p,i)=>{const x=X(p[1]),w=Math.max(6,X(p[2])-X(p[1])),inside=w>lw(p[0]);
+      h+=`<button class="tl-p ${p[5]} ${inside?'':'out'}" data-pe="${i}" style="left:${x}px;width:${w}px;top:calc(var(--prow) + ${peopleRows.where[i]*22}px)" aria-label="${esc(p[0])}, ${fmtYear(p[1])} to ${fmtYear(p[2])}"><span>${esc(p[0])}</span></button>`;});
+    cv.innerHTML=h;cv.style.height=`calc(var(--prow) + ${peopleRows.n*22+8}px)`;mark();}
+  function zoomTo(nppy,anchorYear){const a=anchorYear??(Y0+(sc.scrollLeft+sc.clientWidth/2-12)/ppy);ppy=Math.max(fitPPY(),Math.min(40,nppy));layout();sc.scrollLeft=X(a)-sc.clientWidth/2;linkMap();}
+  // ----- Linking: what is selected, and which places belong to the visible slice of time -----
+  function visibleRange(){return [Y0+(sc.scrollLeft-12)/ppy,Y0+(sc.scrollLeft+sc.clientWidth-12)/ppy];}
+  function linkMap(){const [a,b]=visibleRange(),inView=new Set();EV.forEach(e=>{if(e[1]>=a&&e[1]<=b)e[5].forEach(p=>inView.add(p));});
+    dots.forEach((d,i)=>{d.classList.toggle('now',inView.has(i));});sticky();}
+  // keep a long bar's name in view when its start is scrolled off to the left
+  function sticky(){const L=sc.scrollLeft;cv.querySelectorAll('.tl-p:not(.out)').forEach(b=>{const x=parseFloat(b.style.left),w=parseFloat(b.style.width),sp=b.firstChild;const off=Math.max(0,Math.min(L-x,w-sp.offsetWidth-14));sp.style.transform=off>0?`translateX(${off}px)`:'';});}
+  function mark(){cv.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));if(!sel)return;
+    if(sel.type==='event')cv.querySelector(`[data-ev="${sel.i}"]`)?.classList.add('on');
+    if(sel.type==='person'){cv.querySelector(`[data-pe="${sel.i}"]`)?.classList.add('on');EV.forEach((e,k)=>{if(e[4].includes(sel.i))cv.querySelector(`[data-ev="${k}"]`)?.classList.add('on');});}
+    if(sel.type==='place')EV.forEach((e,k)=>{if(e[5].includes(sel.i))cv.querySelector(`[data-ev="${k}"]`)?.classList.add('on');});}
+  const readBtn=(v,label)=>v>=0?`<button class="btn" data-read="${v}">${label||'Read'} ${NAMES[VB[v]]} ${VC[v]+1}:${VV[v]+1}</button>`:'';
+  function select(type,i,opts={}){sel={type,i};mark();dots.forEach(d=>d.classList.remove('sel'));lit=new Set();let places=[],h='';
+    if(type==='event'){const e=EV[i];places=e[5];
+      h=`<span class="eyebrow">Event · ${fmtYear(e[1])}${e[6]?` · ${e[6]}`:''}</span><h3>${esc(e[0])}</h3>
+        <div class="navrow">${readBtn(e[2])}${i>0?`<button class="btn" data-ev="${i-1}" aria-label="Previous event">←</button>`:''}${i<EV.length-1?`<button class="btn" data-ev="${i+1}" aria-label="Next event">→</button>`:''}</div>
+        ${e[4].length?`<p class="tl-chips"><b>People</b>${e[4].map(p=>`<button data-pe="${p}">${esc(PE[p][0])}</button>`).join('')}</p>`:''}
+        ${e[5].length?`<p class="tl-chips"><b>Places</b>${e[5].map(p=>`<button data-pl="${p}">${esc(PL[p][0])}</button>`).join('')}</p>`:'<p class="tl-muted">No mapped place for this event.</p>'}`;
+      route.setAttribute('d','');}
+    if(type==='person'){const p=PE[i],evs=EV.map((e,k)=>[e,k]).filter(([e])=>e[4].includes(i));
+      const path=[];evs.forEach(([e])=>e[5].slice(0,1).forEach(pl=>{if(path[path.length-1]!==pl)path.push(pl);}));places=[...new Set(evs.flatMap(([e])=>e[5]))];
+      route.setAttribute('d',path.length>1?path.map((pl,k)=>(k?'L':'M')+px(PL[pl][2]).toFixed(1)+' '+py(PL[pl][1]).toFixed(1)).join(''):'');
+      h=`<span class="eyebrow">Person · ${p[5]==='life'?'lived':'active'} ${fmtYear(p[1])} to ${fmtYear(p[2])}</span><h3>${esc(p[0])}</h3><p class="tl-muted">Named in ${fmt(p[3])} verses.${path.length>1?' The line on the map follows their events in order.':''}</p>
+        <div class="navrow">${readBtn(p[4],'First mention:')}</div>
+        ${evs.length?`<p class="tl-chips"><b>Events</b>${evs.slice(0,30).map(([e,k])=>`<button data-ev="${k}">${esc(e[0])}</button>`).join('')}</p>`:''}`;}
+    if(type==='place'){const p=PL[i],evs=EV.map((e,k)=>[e,k]).filter(([e])=>e[5].includes(i));places=[i];route.setAttribute('d','');
+      h=`<span class="eyebrow">Place · ${esc(p[4])}</span><h3>${esc(p[0])}</h3><p class="tl-muted">Named in ${fmt(p[3])} verse${p[3]===1?'':'s'}.</p><div class="navrow">${readBtn(p[5],'First mention:')}</div>
+        ${evs.length?`<p class="tl-chips"><b>Events here</b>${evs.map(([e,k])=>`<button data-ev="${k}">${esc(e[0])} · ${fmtYear(e[1])}</button>`).join('')}</p>`:'<p class="tl-muted">No dated events here in the dataset.</p>'}`;}
+    places.forEach(p=>{dots[p]?.classList.add('sel');lit.add(p);});det.innerHTML=h;fitPlaces(places);
+    if(!opts.keepScroll){const y=type==='event'?EV[i][1]:type==='person'?(PE[i][1]+PE[i][2])/2:null;if(y!=null){const target=X(y)-sc.clientWidth/2;sc.scrollTo({left:target,behavior:reduce?'auto':'smooth'});}}
+    tick(type==='event'?520:type==='person'?440:600);}
+  function intro(){det.innerHTML=`<span class="eyebrow">How to use</span><h3>From creation to the early church</h3><p class="tl-muted">${fmt(EV.length)} events and ${PE.length} people on one line of time, joined to ${fmt(PL.length)} places on the map. Scroll or drag sideways through time and the map lights up the places of the events in view. Tap an event, a person's bar or a place to see how they connect.</p>`;}
+  // ----- Events -----
+  host.addEventListener('click',e=>{const t=e.target.closest('[data-ev],[data-pe],[data-pl],[data-read],[data-view],[data-era]');if(!t)return;
+    if(t.dataset.read!=null){const k=+t.dataset.read;setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);return;}
+    if(t.dataset.era!=null){const [a,b]=ERAS[+t.dataset.era];const n=Math.min(40,(sc.clientWidth-60)/(b-a));ppy=Math.max(fitPPY(),n);layout();sc.scrollLeft=X(a)-30;linkMap();announce(`${ERAS[+t.dataset.era][2]}, ${fmtYear(a)} to ${fmtYear(b)}.`);return;}
+    if(t.dataset.view){t.dataset.view==='all'?setView(0,0,MW,MH):fitPlaces(PL.map((p,i)=>p[1]>30.8&&p[1]<33.5&&p[2]>34.2&&p[2]<36.2?i:-1).filter(i=>i>=0&&PL[i][3]>40));return;}
+    if(t.dataset.ev!=null)return select('event',+t.dataset.ev);if(t.dataset.pe!=null)return select('person',+t.dataset.pe);if(t.dataset.pl!=null)return select('place',+t.dataset.pl,{keepScroll:true});});
+  cv.addEventListener('keydown',e=>{const t=e.target.closest('[data-ev]');if(!t||(e.key!=='ArrowRight'&&e.key!=='ArrowLeft'))return;e.preventDefault();
+    const k=+t.dataset.ev+(e.key==='ArrowRight'?1:-1);const n=cv.querySelector(`[data-ev="${k}"]`);if(n){n.focus();select('event',k);}});
+  let lastQ='';host.querySelector('#tlFind').addEventListener('change',e=>{const q=e.target.value.trim().toLowerCase();if(!q||q===lastQ)return;lastQ=q;let k=EV.findIndex(x=>x[0].toLowerCase()===q);if(k>=0)return select('event',k);
+    k=PE.findIndex(x=>x[0].toLowerCase()===q);if(k>=0)return select('person',k);k=PL.findIndex(x=>x[0].toLowerCase()===q);if(k>=0)return select('place',k);
+    k=EV.findIndex(x=>x[0].toLowerCase().includes(q));if(k>=0)return select('event',k);k=PE.findIndex(x=>x[0].toLowerCase().includes(q));if(k>=0)return select('person',k);toast('Nothing in the timeline matches that.');});
+  host.querySelector('#tlIn').onclick=()=>zoomTo(ppy*2);host.querySelector('#tlOut').onclick=()=>zoomTo(ppy/2);host.querySelector('#tlFit').onclick=()=>{zoomTo(fitPPY());sc.scrollLeft=0;};
+  sc.addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();const r=sc.getBoundingClientRect(),a=Y0+(sc.scrollLeft+e.clientX-r.left-12)/ppy;zoomTo(ppy*(e.deltaY<0?1.25:0.8),a);sc.scrollLeft=X(a)-(e.clientX-r.left);}
+    else if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){e.preventDefault();sc.scrollLeft+=e.deltaY;}},{passive:false});
+  // drag to pan, pinch to zoom
+  const tp=new Map();let pinch0=0,ppy0=0,dragX=null,dragL=0,dragged=false;
+  sc.addEventListener('pointerdown',e=>{tp.set(e.pointerId,e.clientX);if(tp.size===2){const [a,b]=[...tp.values()];pinch0=Math.abs(a-b);ppy0=ppy;}else{dragX=e.clientX;dragL=sc.scrollLeft;dragged=false;}});
+  sc.addEventListener('pointermove',e=>{if(!tp.has(e.pointerId))return;tp.set(e.pointerId,e.clientX);
+    if(tp.size===2&&pinch0>10){const [a,b]=[...tp.values()];zoomTo(ppy0*Math.abs(a-b)/pinch0);}
+    else if(dragX!=null&&e.pointerType==='mouse'){const d=e.clientX-dragX;if(Math.abs(d)>4)dragged=true;sc.scrollLeft=dragL-d;}});
+  const tpEnd=e=>{tp.delete(e.pointerId);if(!tp.size)dragX=null;};sc.addEventListener('pointerup',tpEnd);sc.addEventListener('pointercancel',tpEnd);
+  sc.addEventListener('click',e=>{if(dragged){e.stopPropagation();e.preventDefault();dragged=false;}},true);
+  let lf=0;sc.addEventListener('scroll',()=>{if(!lf)lf=requestAnimationFrame(()=>{lf=0;linkMap();});},{passive:true});
+  // map: drag to pan, wheel to zoom
+  let md=null;svg.addEventListener('pointerdown',e=>{if(e.target.closest('[data-pl]'))return;md={x:e.clientX,y:e.clientY,vb:vb.slice()};svg.setPointerCapture(e.pointerId);});
+  svg.addEventListener('pointermove',e=>{if(!md)return;const r=svg.getBoundingClientRect(),s=md.vb[2]/r.width;vb=[md.vb[0]-(e.clientX-md.x)*s,md.vb[1]-(e.clientY-md.y)*s,md.vb[2],md.vb[3]];svg.setAttribute('viewBox',vb.join(' '));drawLabels();});
+  svg.addEventListener('pointerup',()=>md=null);
+  svg.addEventListener('wheel',e=>{e.preventDefault();const r=svg.getBoundingClientRect(),f=e.deltaY<0?0.8:1.25,w=Math.max(8,Math.min(MW,vb[2]*f)),h=w*vb[3]/vb[2];
+    const cx=vb[0]+(e.clientX-r.left)/r.width*vb[2],cy=vb[1]+(e.clientY-r.top)/r.height*vb[3];vb=[cx-(cx-vb[0])*w/vb[2],cy-(cy-vb[1])*h/vb[3],w,h];svg.setAttribute('viewBox',vb.join(' '));drawLabels();},{passive:false});
+  host._refresh=()=>{const f=fitPPY();if(ppy<f)zoomTo(f);};
+  ppy=fitPPY();layout();intro();drawLabels();linkMap();
+  addEventListener('resize',()=>{if(mode==='time'){const f=fitPPY();if(ppy<f){ppy=f;layout();}}});}
 
 // ---------- Descent (scrollytelling) ----------
 addEventListener('resize',()=>{const h=$('#descent');h&&h._resize&&h._resize();});
