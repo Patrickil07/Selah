@@ -4,7 +4,7 @@
 /* Layout: full-height app. Header (modes + breadcrumb), one main panel per mode, canon scrubber pinned at the bottom of Zoom mode. */
 :root{
   --bg:#eef1f5; --surface:#ffffff; --ink:#152033; --muted:#566377; --line:#d4dbe5;
-  --lapis:#1f4fa8; --gold:#a8771a; --lapis-soft:#dfe7f6; --gold-soft:#f4e9d2;
+  --lapis:#1f4fa8; --gold:#8a6212; --lapis-soft:#dfe7f6; --gold-soft:#f4e9d2;
   --g-law:#1f4fa8; --g-hist:#3a7d6b; --g-poet:#8a5aa8; --g-maj:#b4522f; --g-min:#d0874a;
   --g-gosp:#a8771a; --g-acts:#6d8a2c; --g-paul:#2f7fb4; --g-gen:#5b6fb8; --g-rev:#9b3557;
   --display:"Gloock", Georgia, serif; --body:"Figtree", system-ui, sans-serif;
@@ -255,17 +255,61 @@ main{position:relative;min-height:0}
 .planbar .btn{margin-left:auto}
 .cele{font-size:2.6rem;line-height:1;margin-bottom:6px;animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
 @media (max-width:600px){.sheetbg{place-items:end center;padding:0}.sheet{border-radius:20px 20px 0 0;max-height:90%}}
+/* Accessibility helpers */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:8px;top:-60px;z-index:80;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600}
+.skip:focus{top:8px}
+h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
+#scrub:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.gjump{display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--muted)}
+.gjump select,.trsel{font:inherit;font-size:.82rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 8px;max-width:100%}
+/* Translations */
+.trrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.compare{display:grid;gap:8px}
+.compare div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.compare b{font:600 .72rem var(--mono);color:var(--gold);letter-spacing:.08em;display:block;margin-bottom:2px}
+.compare p{margin:0;font-family:var(--read);font-size:1.02rem;line-height:1.55}
+.compare .cur{border-color:var(--lapis)}
+/* Highlights, bookmarks and notes */
+:root{--hl-gold:rgb(240 196 80/.35);--hl-green:rgb(110 190 120/.32);--hl-blue:rgb(110 160 240/.32);--hl-pink:rgb(236 120 170/.30)}
+.vs.hl-gold,.vtext.hl-gold{background:var(--hl-gold)}.vs.hl-green,.vtext.hl-green{background:var(--hl-green)}
+.vs.hl-blue,.vtext.hl-blue{background:var(--hl-blue)}.vs.hl-pink,.vtext.hl-pink{background:var(--hl-pink)}
+.vs[class*="hl-"]{border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.vs .mk{font-size:.72em;margin-left:2px;color:var(--gold);vertical-align:super}
+.marks{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.marks .ml{font-size:.78rem;color:var(--muted)}
+.hl-sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--sw);cursor:pointer;padding:0}
+.hl-sw[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--surface) inset}
+.hl-sw.none{background:var(--surface);position:relative}
+.hl-sw.none::after{content:"";position:absolute;left:5px;right:5px;top:50%;height:2px;background:var(--muted);transform:rotate(-45deg)}
+.notebox{display:grid;gap:6px;margin-top:10px}
+.notebox label{font-size:.78rem;color:var(--muted)}
+.notebox textarea{font:inherit;font-size:.95rem;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);color:var(--ink);resize:vertical;min-height:70px}
+.notebox .row{display:flex;gap:8px}
+.libtabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:3px;margin:8px 0 12px}
+.libtabs button{flex:1;border:0;background:transparent;padding:7px;border-radius:8px;cursor:pointer;font-weight:600;color:var(--muted);font-size:.85rem}
+.libtabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0/.12)}
+.liblist{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.liblist button{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;cursor:pointer;display:grid;gap:3px}
+.liblist button:hover{border-color:var(--lapis)}
+.liblist b{font:600 .78rem var(--mono);color:var(--gold)}
+.liblist span{font-family:var(--read);font-size:.95rem;line-height:1.45}
+.liblist em{font-style:normal;font-size:.85rem;color:var(--muted)}
+.libempty{color:var(--muted);font-size:.9rem}
+#libChip::before{content:"🔖";margin-right:4px}
+@media (max-width:600px){.libtabs button{font-size:.74rem;padding:7px 3px;white-space:nowrap}#libChip{font-size:0;padding:6px 7px;line-height:1}#libChip::before{font-size:.95rem;margin:0}}
 /* Phone and tablet fit */
 #galaxy{overflow:hidden}
 @media (max-width:600px){
-  header{gap:6px 8px;padding:8px 12px}
+  header{gap:6px 5px;padding:8px 10px}
   header .spacer{display:none}
   #planChip{margin-left:auto}
   .brand{font-size:1.2rem}
-  .modes button{padding:5px 7px;font-size:.8rem}
+  .modes button{padding:5px 6px;font-size:.78rem}
+  .modes{padding:2px;gap:2px}
   .gbook{font-size:.6rem}
   .modes .m3d{display:none}
-  #sound,#planChip{font-size:0;padding:6px 9px;line-height:1}
+  #sound,#planChip{font-size:0;padding:6px 7px;line-height:1}
   #sound::before{content:"🔇";font-size:.95rem}
   #sound[aria-pressed="true"]::before{content:"🔊"}
   #planChip::after{content:"📖";font-size:.95rem}
@@ -282,10 +326,12 @@ main{position:relative;min-height:0}
   .dgauge{right:14px}.dgauge span{display:none}
   .dintro{padding-inline:16px 38px;top:14px}
 }
-@media (max-width:380px){header{padding:8px 10px;gap:6px}.brand{font-size:1.05rem}.modes button{padding:5px 5px;font-size:.74rem}#sound,#planChip{padding:6px 7px}.pane.strip{--sw:18px}.pane.strip .sl{display:none}}
+@media (max-width:380px){header{padding:8px 10px;gap:6px}.brand{display:none}.modes button{padding:5px 5px;font-size:.74rem}#sound,#planChip,#libChip{padding:6px 5px}.modes button{padding:5px 4px}.pane.strip{--sw:18px}.pane.strip .sl{display:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+<a class="skip" href="#stage">Skip to the Bible text</a>
+<h1 class="sr-only">Selah, a Bible you can zoom</h1>
 <div class="app">
   <header>
     <span class="brand">Selah</span>
@@ -295,25 +341,27 @@ main{position:relative;min-height:0}
       <button data-mode="descent" aria-pressed="false">Descent</button>
     </div>
     <span class="spacer"></span>
-    <button class="chip" id="planChip" title="Daily or weekly reading plan" aria-label="Reading plan">Reading plan</button>
+    <button class="chip" id="planChip" title="Daily or weekly reading plan">Reading plan</button>
+    <button class="chip" id="libChip" title="Highlights, bookmarks and notes">Saved</button>
     <button class="chip" id="resume" hidden></button>
     <button class="btn" id="sound" aria-pressed="false" aria-label="Sound">Sound off</button>
     <nav class="crumbs" id="crumbs" aria-label="Location"></nav>
   </header>
   <main>
     <section class="panel" id="zoom">
-      <div class="stage" id="stage"><div class="loading" id="loading"><span class="eyebrow">Loading</span>Loading the full King James text and 100,000 cross-references…</div></div>
+      <div class="stage" id="stage" tabindex="-1"><div class="loading" id="loading"><span class="eyebrow">Loading</span>Loading the full King James text and 100,000 cross-references…</div></div>
       <div class="zoombar"><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
     </section>
     <section class="panel" id="galaxy" hidden><div class="gload" id="gload">Loading 3D…</div></section>
-    <section class="panel" id="descent" hidden></section>
+    <section class="panel" id="descent" hidden tabindex="0" aria-label="Descent: scroll through the Bible"></section>
   </main>
   <div class="scrub" id="scrubWrap">
     <div class="lbl"><span>Genesis</span><span id="scrubHint">Drag across the whole Bible</span><span>Revelation</span></div>
-    <canvas id="scrub" aria-label="Scrub through the whole Bible"></canvas>
+    <canvas id="scrub" tabindex="0" role="slider" aria-label="Position in the whole Bible" aria-valuemin="0" aria-valuemax="31101" aria-valuenow="0" aria-valuetext="Genesis 1:1"></canvas>
     <div class="tip" id="tip" hidden></div>
   </div>
 </div>
+<div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 (async function(){
@@ -346,6 +394,22 @@ const flat=[],VB=[],VC=[],VV=[],bookStart=[],chapStart=[],bookLen=[];
 T.forEach((chs,b)=>{bookStart[b]=flat.length;chapStart[b]=[];chs.forEach((vs,c)=>{chapStart[b][c]=flat.length;vs.forEach((t,v)=>{flat.push(t);VB.push(b);VC.push(c);VV.push(v);});});bookLen[b]=flat.length-bookStart[b];});
 const N=flat.length;
 const ref=i=>`${SHORT[VB[i]]} ${VC[i]+1}:${VV[i]+1}`;
+// ---------- Translations (public domain): the KJV ships with the page, the others load on demand ----------
+const TRANSLATIONS=[['kjv','King James Version','KJV'],['web','World English Bible','WEB'],['bsb','Berean Standard Bible','BSB'],['asv','American Standard Version','ASV']];
+const trCache={kjv:T.map(b=>b.map(c=>c.slice()))};
+let tr='kjv';
+const trInfo=id=>TRANSLATIONS.find(t=>t[0]===(id||tr));
+function loadTr(id){return trCache[id]?Promise.resolve(trCache[id]):fetch(`tr/${id}.json`).then(r=>{if(!r.ok)throw new Error('missing');return r.json();}).then(d=>trCache[id]=d.text);}
+const trText=(txt,b,c,v,id)=>txt[b][c][v]||`[This verse is not in the ${trInfo(id)[2]} text.]`;
+async function setTranslation(id){const txt=await loadTr(id);tr=id;let k=0;
+  txt.forEach((chs,b)=>chs.forEach((vs,c)=>vs.forEach((_,v)=>{const t=trText(txt,b,c,v,id);T[b][c][v]=t;flat[k++]=t;})));
+  mem.tr=id;save();}
+const trSelect=()=>`<select class="trsel" aria-label="Translation">${TRANSLATIONS.map(([id,name,ab])=>`<option value="${id}" ${id===tr?'selected':''}>${ab} · ${name}</option>`).join('')}</select>`;
+document.addEventListener('change',async e=>{if(!e.target.classList||!e.target.classList.contains('trsel'))return;const id=e.target.value;stopReader();
+  try{await setTranslation(id);}catch(_){toast('That translation could not be loaded. Check your connection.');return;}
+  go({...state},null,'none');announce(`Now reading the ${trInfo()[1]}.`);});
+if(mem.tr&&mem.tr!=='kjv'){try{await setTranslation(mem.tr);}catch(_){}}
+
 // Cross-reference index (from-verse -> list), sorted by votes
 const XN=xr.length/3,off=new Uint32Array(N+1);
 for(let k=0;k<XN;k++)off[xr[k*3]+1]++;
@@ -372,6 +436,17 @@ function whoosh(vel){if(!soundOn||!actx||vel<0.2)return;const s=actx.createBuffe
 $('#sound').onclick=()=>{initAudio();soundOn=!soundOn;const b=$('#sound');b.textContent=soundOn?'Sound on':'Sound off';b.setAttribute('aria-pressed',soundOn);
   if(actx){actx.resume&&actx.resume();droneGain.gain.setTargetAtTime(soundOn?0.035:0,actx.currentTime,0.15);}
   if(soundOn){posTone(curIndex(),state.level);tick(523);}};
+
+
+// ---------- Screen reader announcements and focus ----------
+const live=$('#live');
+function announce(t){live.textContent='';setTimeout(()=>live.textContent=t,30);}
+function describe(){const s=state;if(s.level===0)return 'The whole Bible. 66 books.';if(s.level===1)return `${NAMES[s.b]}. ${T[s.b].length} chapters.`;
+  if(s.level===2)return `${NAMES[s.b]} chapter ${s.c+1}. ${T[s.b][s.c].length} verses. Left and right arrow keys change chapter.`;
+  if(s.level===3)return `${NAMES[s.b]} ${s.c+1}:${s.v+1}. ${T[s.b][s.c][s.v]}`;return s.strong?`Original word ${s.tr||''}, meaning ${s.gl||''}.`:`The word ${s.word}.`;}
+function trapFocus(bg){const prev=document.activeElement;bg.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=[...bg.querySelectorAll('button,select,input,textarea,a[href]')].filter(x=>!x.hidden&&x.offsetParent!==null);if(!f.length)return;
+  const a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}});
+  bg._restore=()=>{try{prev&&prev.focus&&prev.focus({preventScroll:true});}catch(_){}};}
 
 // ---------- Zoom state ----------
 let state={level:0,b:0,c:0,v:0,word:null};
@@ -407,6 +482,8 @@ function go(next,originEl,dir){
   crumbs();tick(LEVEL_TONE[state.level]);posTone(curIndex(),state.level);
   if(state.level>=2){mem.read[`${state.b}.${state.c}`]=1;mem.last={b:state.b,c:state.c,v:state.level>=3?state.v:0};save();}
   drawScrub();
+  const hd=el.querySelector('h2,.bigword');if(hd&&dir!=='none'){hd.setAttribute('tabindex','-1');requestAnimationFrame(()=>hd.focus({preventScroll:true}));}
+  if(dir!=='none'||!reader.on)announce(describe());
 }
 // ---------- Read aloud (device voices via the Web Speech API) ----------
 const synth=window.speechSynthesis;
@@ -419,7 +496,7 @@ const NATURAL=/natural|neural|online|premium|enhanced|wavenet|studio/i;
 // Studio AI narration: neural voices rendered ahead of time for a few chapters (open Kokoro model)
 const AI_VOICES=[['ai:af_heart','Heart','Female, American'],['ai:af_bella','Bella','Female, American'],['ai:am_michael','Michael','Male, American'],['ai:bm_george','George','Male, British']];
 const AI_CHAPTERS={'0_0':'Genesis 1','18_22':'Psalm 23','42_2':'John 3'};
-const hasAI=(b,c)=>!!AI_CHAPTERS[b+'_'+c];
+const hasAI=(b,c)=>tr==='kjv'&&!!AI_CHAPTERS[b+'_'+c];
 const bestDevice=()=>voices.find(v=>NATURAL.test(v.name)&&genderOf(v)!=='Male')||voices.find(v=>NATURAL.test(v.name))||voices[0];
 function loadVoices(){if(!synth)return;voices=synth.getVoices().filter(v=>/^en/i.test(v.lang));
   if(!reader.voice||(!reader.voice.startsWith('ai:')&&!voices.some(v=>v.voiceURI===reader.voice)))reader.voice='ai:af_heart';
@@ -451,7 +528,7 @@ function syncListen(){document.querySelectorAll('.listen .play').forEach(b=>{b.t
 let slide=1;
 function goChapter(b,c,s,origin){if(b==null)return;const cv=curView();if(state.level===2&&cv&&cv._accordion&&cv._accordion(b,c))return;slide=s;go({level:2,b,c},origin||null,0);slide=1;}
 function adjChapter(b,c,d){if(d<0)return c>0?[b,c-1]:b>0?[b-1,T[b-1].length-1]:null;return c<T[b].length-1?[b,c+1]:b<65?[b+1,0]:null;}
-function zoomOut(){if(state.level===0)return;const s={...state};s.level--;if(s.level<4){s.word=null;s.strong=null;}go(s,null,-1);}
+function zoomOut(){if(state.level===0)return;const s={...state};s.level--;if(s.level<4){s.word=null;s.strong=null;}s.flash=s.level===2?state.v:null;go(s,null,-1);}
 $('#zout').onclick=zoomOut;
 addEventListener('keydown',e=>{if(mode!=='zoom')return;if(e.key==='Escape'||e.key==='-'){zoomOut();return;}
   if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;const d=e.key==='ArrowLeft'?-1:1;
@@ -542,12 +619,12 @@ function render(){
     const strip=([sb,sc],d)=>{const n=T[sb][sc].length,mx=Math.max(...T[sb].map(x=>x.length));
       return `<button class="pane strip ${mem.read[sb+'.'+sc]?'r':''}" data-p="${sb},${sc}" data-s="${d}" style="--c:var(${gvar(sb)})" title="${NAMES[sb]} ${sc+1} · ${n} verses" aria-label="Open ${NAMES[sb]} ${sc+1}"><span class="sn">${sc+1}</span><span class="sb"><i style="height:${Math.max(8,n/mx*100)}%"></i></span><span class="sl">${sb!==b?NAMES[sb]+' ':''}${sc+1}</span></button>`;};
     const v=view(`<div class="acc" id="acc">${sideList(-1).map(x=>strip(x,-1)).join('')}<section class="pane open" id="openPane">
-      <div class="vhead"><span class="eyebrow">Z2 · Chapter</span><h2>${NAMES[b]} ${c+1}</h2><p>${vs.length} verses. Neighbouring chapters sit folded at the sides like an accordion: tap one to unfold it, or swipe and use the arrow keys. Tap any verse to zoom into it.</p></div>${planBarHTML(b,c)}
+      <div class="vhead"><span class="eyebrow">Z2 · Chapter</span><h2>${NAMES[b]} ${c+1}</h2><p>${vs.length} verses. Neighbouring chapters sit folded at the sides like an accordion: tap one to unfold it, or swipe and use the arrow keys. Tap any verse to zoom into it.</p><div class="trrow">${trSelect()}</div></div>${planBarHTML(b,c)}
       <div class="listen" role="group" aria-label="Read aloud"><button class="btn play" id="playBtn" aria-pressed="${reader.on}">${reader.on?'■ Stop':'▶ Listen'}</button>
         <select id="voiceSel" aria-label="Voice">${voiceOptions()}</select>
         <select id="rateSel" aria-label="Speed">${[0.75,0.9,1,1.15,1.3,1.5].map(r=>`<option value="${r}" ${r==reader.rate?'selected':''}>${r}×</option>`).join('')}</select>
-        <span class="note">${hasAI(b,c)?'Studio AI narration is available for this chapter. ':`Studio AI narration samples: ${Object.entries(AI_CHAPTERS).map(([k,n])=>`<a href="#" data-ai="${k}">${n}</a>`).join(' · ')}. `}Reads from the verse in focus and carries on into the next chapter.</span></div>
-      <div class="reading" id="reading">${vs.map((t,i)=>`<span class="vs" data-v="${i}" tabindex="0" role="button"><sup class="${hot[i]>=Math.max(8,hmax*0.6)?'hot':''}">${i+1}</sup>${esc(t)}</span>`).join('')}</div>
+        <span class="note">${hasAI(b,c)?'Studio AI narration is available for this chapter. ':`${tr!=='kjv'?'Studio AI narration is recorded from the KJV, so this translation uses your device voice. ':''}Studio AI narration samples: ${Object.entries(AI_CHAPTERS).map(([k,n])=>`<a href="#" data-ai="${k}">${n}</a>`).join(' · ')}. `}Reads from the verse in focus and carries on into the next chapter.</span></div>
+      <div class="reading" id="reading">${vs.map((t,i)=>`<span class="vs ${markCls(chapStart[b][c]+i)}" data-v="${i}" tabindex="0" role="button"><sup class="${hot[i]>=Math.max(8,hmax*0.6)?'hot':''}">${i+1}</sup>${esc(t)}${markIcons(chapStart[b][c]+i)}</span>`).join('')}</div>
       <div class="upnext">${prev?`<button class="btn" data-p="${prev}" data-s="-1">← ${NAMES[prev[0]]} ${prev[1]+1}</button>`:'<span></span>'}${next?`<button class="btn" data-p="${next}" data-s="1">Continue to ${NAMES[next[0]]} ${next[1]+1} →</button>`:''}</div>
       </section>${sideList(1).map(x=>strip(x,1)).join('')}</div>`);
     // Accordion: the tapped chapter unfolds while the open one folds into a strip
@@ -601,7 +678,8 @@ function render(){
     const words=t.split(/(\s+)/).map(w=>{const core=w.replace(/[^A-Za-z']/g,'');return core.length>1?`<span class="w" data-w="${esc(core)}" tabindex="0" role="button">${esc(w)}</span>`:esc(w);}).join('');
     const xs=xrefsOf(i).slice(0,24);
     const v=view(`<div class="vhead"><span class="eyebrow">Z3 · Verse</span><h2>${NAMES[b]} ${c+1}:${vi+1}</h2></div>
-      <div class="vcard" id="vcard"><div class="vtext">${words}</div><span class="hint">King James Version · tap any word to zoom into it</span>${NATIVE||navigator.share?'<button class="btn" id="vshare" style="margin-top:10px">Share verse</button>':''}</div>
+      <div class="vcard" id="vcard"><div class="vtext">${words}</div><span class="hint">${trInfo()[1]} · tap any word to zoom into it</span><div class="trrow">${trSelect()}${NATIVE||navigator.share?'<button class="btn" id="vshare">Share verse</button>':''}</div>${marksHTML(i)}</div>
+      <div class="vhead"><span class="eyebrow">Compare translations</span></div><div class="compare" id="compare"><div><button class="btn" id="cmpBtn">Show this verse in all ${TRANSLATIONS.length} translations</button></div></div>
       <div class="vhead"><span class="eyebrow">Original ${b<39?'Hebrew':'Greek'} · tap a word to zoom into it</span><p>${b<39?'Read right to left. ':''}Each card shows the word as written, how to say it, its meaning here, and its Strong's number.</p></div>
       <div class="interlin ${b<39?'rtl':''}" id="interlin"><span class="hint">Loading the ${b<39?'Hebrew':'Greek'} text…</span></div>
       <div class="navrow">${vi>0?`<button class="btn" data-vv="${vi-1}">← Verse ${vi}</button>`:''}${vi<T[b][c].length-1?`<button class="btn" data-vv="${vi+1}">Verse ${vi+2} →</button>`:''}</div>
@@ -611,7 +689,12 @@ function render(){
     loadOrig(b).then(d=>{ows=(d[c]&&d[c][vi])||[];const box=v.querySelector('#interlin');if(!box)return;const cls=b<39?'heb':'grk',lang=b<39?'he':'el';
       box.innerHTML=ows.length?ows.map((w,j)=>`<button class="iw" data-j="${j}" title="${esc(w[3])}"><span class="o ${cls}" lang="${lang}">${esc(w[0])}</span><span class="t">${esc(w[1])}</span><span class="g">${esc(w[2])}</span><span class="s">${esc(w[3])}</span></button>`).join(''):'<span class="hint">No tagged original text for this verse.</span>';}).catch(()=>{const box=v.querySelector('#interlin');if(box)box.innerHTML='<span class="hint">The original text could not be loaded. Reload to try again.</span>';});
     loadLex();
-    v.addEventListener('click',e=>{if(e.target.id==='vshare'){const t=`"${T[b][c][vi]}" (${NAMES[b]} ${c+1}:${vi+1}, KJV)`;NATIVE?NATIVE.share(t):navigator.share({text:t}).catch(()=>{});return;}const iw=e.target.closest('.iw');if(iw){const w=ows[+iw.dataset.j];return go({...state,level:4,word:null,strong:w[3],form:w[0],tr:w[1],gl:w[2],morph:w[4]},iw,1);}
+    const showCompare=()=>Promise.all(TRANSLATIONS.map(([id])=>loadTr(id).then(x=>[id,x]).catch(()=>[id,null]))).then(rs=>{const box=v.querySelector('#compare');if(!box)return;
+      box.innerHTML=rs.filter(r=>r[1]).map(([id,x])=>`<div class="${id===tr?'cur':''}"><b>${trInfo(id)[2]} · ${trInfo(id)[1]}</b><p>${esc(trText(x,b,c,vi,id))}</p></div>`).join('');});
+    if(TRANSLATIONS.every(([id])=>trCache[id])||mem.cmp)showCompare();
+    v.querySelector('#cmpBtn')?.addEventListener('click',e=>{e.target.textContent='Loading translations…';mem.cmp=1;save();showCompare();});
+    wireMarks(v,i);
+    v.addEventListener('click',e=>{if(e.target.id==='vshare'){const t=`"${T[b][c][vi]}" (${NAMES[b]} ${c+1}:${vi+1}, ${trInfo()[2]})`;NATIVE?NATIVE.share(t):navigator.share({text:t}).catch(()=>{});return;}const iw=e.target.closest('.iw');if(iw){const w=ows[+iw.dataset.j];return go({...state,level:4,word:null,strong:w[3],form:w[0],tr:w[1],gl:w[2],morph:w[4]},iw,1);}
       const w=e.target.closest('.w');if(w)return go({...state,level:4,word:w.dataset.w,strong:null},w,1);
       const x=e.target.closest('[data-to]');if(x){const k=+x.dataset.to;return go({level:3,b:VB[k],c:VC[k],v:VV[k]},x,0);}
       const n=e.target.closest('[data-vv]');if(n)go({level:3,b,c,v:+n.dataset.vv},n,0);});
@@ -626,8 +709,8 @@ function render(){
     for(let i=0;i<N;i++)if(re.test(flat[i]))hits.push(i);
     const books=new Set(hits.map(i=>VB[i])).size;
     const hl=t=>esc(t).replace(new RegExp(`\\b(${w})\\b`,'gi'),'<mark>$1</mark>');
-    const v=view(`<div class="vhead"><span class="eyebrow">Z4 · Word</span><div class="bigword">${esc(w)}</div><p>Appears in ${fmt(hits.length)} verse${hits.length===1?'':'s'} across ${books} book${books===1?'':'s'} of the King James text. Each tick below is one of those verses, placed where it falls in the Bible. Tap the strip or a verse to fly there.</p></div>
-      <canvas class="strip" id="strip"></canvas>
+    const v=view(`<div class="vhead"><span class="eyebrow">Z4 · Word</span><div class="bigword">${esc(w)}</div><p>Appears in ${fmt(hits.length)} verse${hits.length===1?'':'s'} across ${books} book${books===1?'':'s'} of the ${trInfo()[1]}. Each tick below is one of those verses, placed where it falls in the Bible. Tap the strip or a verse to fly there.</p></div>
+      <canvas class="strip" id="strip" role="img" aria-label="Where this word appears across the Bible. The list below has every verse."></canvas>
       <div class="legend">${GENRES.map(g=>`<span style="--c:var(${g[2]})">${g[3]}</span>`).join('')}</div>
       <div class="occ">${hits.slice(0,80).map(i=>`<button data-to="${i}"><b>${ref(i)}</b><span>${hl(flat[i])}</span></button>`).join('')}</div>
       ${hits.length>80?`<p class="hint">Showing the first 80 of ${fmt(hits.length)}. Tap the strip to reach the rest.</p>`:''}
@@ -662,13 +745,22 @@ const sc=$('#scrub'),tip=$('#tip');let scrubbing=false,lastX=0,lastT=0,scrubPos=
 function drawScrub(){const dpr=Math.min(2,devicePixelRatio||1),W=sc.clientWidth,H=sc.clientHeight;if(!W)return;sc.width=W*dpr;sc.height=H*dpr;const g=sc.getContext('2d');g.scale(dpr,dpr);
   for(let b=0;b<66;b++){const x=bookStart[b]/N*W,w=bookLen[b]/N*W;g.fillStyle=css(gvar(b));g.globalAlpha=.35;g.fillRect(x,0,Math.max(1,w-0.5),H);
     g.globalAlpha=1;T[b].forEach((_,c)=>{if(mem.read[b+'.'+c]){const cx=chapStart[b][c]/N*W;g.fillRect(cx,H-8,Math.max(1.5,T[b][c].length/N*W),8);}});}
-  const i=scrubPos??curIndex(),x=i/N*W;g.globalAlpha=1;g.fillStyle=css('--ink');g.fillRect(x-1,0,2,H);g.beginPath();g.arc(x,H/2,5,0,7);g.fill();}
+  const i=scrubPos??curIndex(),x=i/N*W;sc.setAttribute('aria-valuenow',i);sc.setAttribute('aria-valuetext',`${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}`);g.globalAlpha=1;g.fillStyle=css('--ink');g.fillRect(x-1,0,2,H);g.beginPath();g.arc(x,H/2,5,0,7);g.fill();}
 function scrubAt(e){const r=sc.getBoundingClientRect();const f=Math.max(0,Math.min(0.99999,(e.clientX-r.left)/r.width));const i=Math.floor(f*N);scrubPos=i;
   tip.hidden=false;tip.style.left=Math.max(170,Math.min(r.width-150,e.clientX-r.left+16))+'px';tip.innerHTML=`<b>${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}</b>${esc(flat[i].slice(0,140))}${flat[i].length>140?'…':''}`;
   const now=performance.now(),vel=Math.abs(e.clientX-lastX)/Math.max(1,now-lastT);lastX=e.clientX;lastT=now;posTone(i,state.level);if(Math.random()<0.15)whoosh(vel);drawScrub();return i;}
 sc.addEventListener('pointerdown',e=>{scrubbing=true;sc.setPointerCapture(e.pointerId);scrubAt(e);haptic();});
 sc.addEventListener('pointermove',e=>{if(scrubbing)scrubAt(e);});
 sc.addEventListener('pointerup',e=>{if(!scrubbing)return;scrubbing=false;const i=scrubAt(e);tip.hidden=true;scrubPos=null;if(mode!=='zoom')setMode('zoom');go({level:2,b:VB[i],c:VC[i],flash:VV[i]},null,1);});
+let keyPos=null;
+sc.addEventListener('keydown',e=>{let i=keyPos??curIndex();const b=VB[i],c=VC[i];
+  if(e.key==='ArrowRight'||e.key==='ArrowUp'){const a=adjChapter(b,c,1);if(a)i=chapStart[a[0]][a[1]];}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowDown'){const a=adjChapter(b,c,-1);if(a)i=chapStart[a[0]][a[1]];}
+  else if(e.key==='PageDown')i=bookStart[Math.min(65,b+1)];else if(e.key==='PageUp')i=bookStart[Math.max(0,b-1)];
+  else if(e.key==='Home')i=0;else if(e.key==='End')i=bookStart[65];
+  else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(mode!=='zoom')setMode('zoom');go({level:2,b,c},null,1);keyPos=null;scrubPos=null;return;}else return;
+  e.preventDefault();e.stopPropagation();keyPos=i;scrubPos=i;posTone(i,state.level);drawScrub();announce(`${NAMES[VB[i]]} ${VC[i]+1}. Press Enter to open.`);});
+sc.addEventListener('blur',()=>{keyPos=null;scrubPos=null;drawScrub();});
 sc.addEventListener('pointercancel',()=>{scrubbing=false;tip.hidden=true;scrubPos=null;drawScrub();});
 addEventListener('resize',()=>{drawScrub();gal&&gal.resize();});
 
@@ -688,6 +780,7 @@ async function openGalaxy(){if(gal){gal.resize();gal.start();return;}
 function initGalaxy(host){
   const THREE=window.THREE;const R=11;
   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));host.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute('role','img');renderer.domElement.setAttribute('aria-label','3D ring of the 66 books joined by threads of cross-references. Use the book list in the panel to explore it with a keyboard or screen reader.');
   const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(50,1,0.1,200);let camDist=30,camDistT=30,baseDist=30,tilt=0.42;
   const world=new THREE.Group();scene.add(world);
   // Books as nodes on a ring; size follows length
@@ -714,11 +807,14 @@ function initGalaxy(host){
   const label=document.createElement('div');label.className='glabel';label.hidden=true;host.appendChild(label);
   const ringLabels=nodes.map(n=>{const d=document.createElement('div');d.className='gbook';d.textContent=SHORT[n.b];d.style.color=css(gvar(n.b));host.appendChild(d);return d;});
   const lp=new THREE.Vector3(),camPos=new THREE.Vector3();
-  function showPanel(){if(focus==null){panel.innerHTML=`<h3>Cross-reference galaxy</h3><p>The 66 books on a ring, joined by their 520 strongest threads of cross-references. Drag empty space to spin it, scroll to move closer, and grab a book to pull its threads. Tap a book to follow its threads in Descent.</p>`;return;}
+  function showPanel(){if(focus==null){panel.innerHTML=`<h3>Cross-reference galaxy</h3><p>The 66 books on a ring, joined by their 520 strongest threads of cross-references. Drag empty space to spin it, scroll to move closer, and grab a book to pull its threads. Tap a book to follow its threads in Descent.</p>${gjump()}`;wireJump();return;}
     const top=links.filter(l=>l.a===focus||l.c===focus).sort((x,y)=>y.w-x.w).slice(0,5);
-    panel.innerHTML=`<h3>${NAMES[focus]}</h3><p>Strongest threads: ${top.map(l=>`${NAMES[l.a===focus?l.c:l.a]} (${fmt(l.w)})`).join(', ')||'none in the top 520'}.</p><div class="navrow"><button class="btn" id="gthreads">Follow its threads</button><button class="btn" id="gopen">Open in Zoom</button><button class="btn" id="gclear">Show all</button></div>`;
+    panel.innerHTML=`<h3>${NAMES[focus]}</h3><p>Strongest threads: ${top.map(l=>`${NAMES[l.a===focus?l.c:l.a]} (${fmt(l.w)})`).join(', ')||'none in the top 520'}.</p><div class="navrow"><button class="btn" id="gthreads">Follow its threads</button><button class="btn" id="gopen">Open in Zoom</button><button class="btn" id="gclear">Show all</button></div>${gjump()}`;wireJump();
     panel.querySelector('#gthreads').onclick=()=>{const b=focus;setMode('descent');openThreads(b);};
     panel.querySelector('#gopen').onclick=()=>{const b=focus;setMode('zoom');go({level:1,b},null,1);};panel.querySelector('#gclear').onclick=()=>{focus=null;showPanel();tick(330);};}
+  function gjump(){return `<label class="gjump">Book <select id="gsel"><option value="">Choose a book…</option>${NAMES.map((n,b)=>`<option value="${b}" ${b===focus?'selected':''}>${n}</option>`).join('')}</select></label>`;}
+  function wireJump(){const sel=panel.querySelector('#gsel');if(sel)sel.onchange=()=>{focus=sel.value===''?null:+sel.value;showPanel();tick(focus!=null?300+focus*5:330);
+    const top=focus!=null?links.filter(l=>l.a===focus||l.c===focus).length:0;announce(focus!=null?`${NAMES[focus]} selected, with ${top} of the strongest threads. Its details and buttons are in the panel.`:'Showing all books.');panel.querySelector('#gsel')?.focus();};}
   showPanel();
   // Interaction: spin with inertia, grab nodes with springs
   const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),plane=new THREE.Plane(),hit=new THREE.Vector3(),inv=new THREE.Matrix4();
@@ -829,7 +925,44 @@ let start={level:0};
 if(mem.last){const {b,c,v}=mem.last;const r=$('#resume');r.hidden=false;r.textContent=`Continue at ${SHORT[b]} ${c+1}`;r.onclick=()=>{setMode('zoom');go({level:2,b,c,flash:v},r,1);};
   const total=mem.dwell.reduce((a,x)=>a+x,0),fav=mem.dwell.indexOf(Math.max(...mem.dwell));
   if(total>45&&fav>=2){start={level:2,b,c,flash:v};setTimeout(()=>toast(`Opened at the chapter you were reading, because you spend most of your time at ${['canon','book','chapter','verse','word'][fav]} level.`),700);}}
-function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),4200);}
+function toast(t){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),4200);}
+
+// ---------- Highlights, bookmarks and notes (kept on this device) ----------
+mem.marks=mem.marks||{};
+const HL=[['gold','Gold'],['green','Green'],['blue','Blue'],['pink','Pink']];
+const markOf=i=>mem.marks[i]||{};
+function setMark(i,patch){const m=Object.assign({},markOf(i),patch,{t:Date.now()});if(!m.h&&!m.bm&&!m.n)delete mem.marks[i];else mem.marks[i]=m;save();}
+const markCls=i=>{const m=markOf(i);return m.h?'hl-'+m.h:'';};
+const markIcons=i=>{const m=markOf(i);return (m.bm?'<span class="mk" aria-label="bookmarked">★</span>':'')+(m.n?`<span class="mk" aria-label="has a note" title="${esc(m.n)}">✎</span>`:'');};
+function marksHTML(i){const m=markOf(i);
+  return `<div class="marks" role="group" aria-label="Highlight, bookmark or note"><span class="ml">Highlight</span>${HL.map(([k,l])=>`<button class="hl-sw" data-hl="${k}" aria-pressed="${m.h===k}" aria-label="${l} highlight" style="--sw:var(--hl-${k})"></button>`).join('')}<button class="hl-sw none" data-hl="" aria-label="No highlight" aria-pressed="${!m.h}"></button>
+    <button class="btn" data-bm aria-pressed="${!!m.bm}">${m.bm?'★ Bookmarked':'☆ Bookmark'}</button><button class="btn" data-addnote ${m.n?'hidden':''}>✎ Add note</button></div>
+    <div class="notebox" ${m.n?'':'hidden'}><label for="noteText">Your note on this verse</label><textarea id="noteText" rows="3">${esc(m.n||'')}</textarea><div class="row"><button class="btn primary" data-savenote>Save note</button><button class="btn" data-delnote>Delete note</button></div></div>`;}
+function wireMarks(v,i){
+  const card=v.querySelector('#vcard'),txt=v.querySelector('.vtext');const paint=()=>{const m=markOf(i);txt.className='vtext '+markCls(i);
+    v.querySelectorAll('[data-hl]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.hl||'')===(m.h||'')));const bm=v.querySelector('[data-bm]');bm.setAttribute('aria-pressed',!!m.bm);bm.textContent=m.bm?'★ Bookmarked':'☆ Bookmark';};
+  paint();
+  card.addEventListener('click',e=>{const h=e.target.closest('[data-hl]');if(h){haptic();setMark(i,{h:h.dataset.hl||null});paint();announce(h.dataset.hl?`Highlighted ${h.dataset.hl}.`:'Highlight removed.');tick(660);return;}
+    if(e.target.closest('[data-bm]')){haptic();const on=!markOf(i).bm;setMark(i,{bm:on?1:0});paint();announce(on?'Bookmarked.':'Bookmark removed.');tick(on?784:392);return;}
+    if(e.target.closest('[data-addnote]')){const box=v.querySelector('.notebox');box.hidden=false;e.target.closest('[data-addnote]').hidden=true;v.querySelector('#noteText').focus();return;}
+    if(e.target.closest('[data-savenote]')){const t=v.querySelector('#noteText').value.trim();setMark(i,{n:t||null});announce(t?'Note saved.':'Note removed.');toast(t?'Note saved on this device.':'Note removed.');tick(587);return;}
+    if(e.target.closest('[data-delnote]')){setMark(i,{n:null});v.querySelector('#noteText').value='';v.querySelector('.notebox').hidden=true;v.querySelector('[data-addnote]').hidden=false;announce('Note deleted.');return;}});
+  v.querySelector('#noteText').addEventListener('blur',e=>{const t=e.target.value.trim();if(t!==(markOf(i).n||''))setMark(i,{n:t||null});});}
+let libTab='all';
+function libraryHTML(){const all=Object.entries(mem.marks).map(([i,m])=>[+i,m]).sort((a,b)=>b[1].t-a[1].t);
+  const f={all:()=>true,bm:([,m])=>m.bm,hl:([,m])=>m.h,n:([,m])=>m.n}[libTab];const list=all.filter(f);
+  const tabs=[['all','All'],['bm','Bookmarks'],['hl','Highlights'],['n','Notes']];
+  return `<button class="x" data-a="close" aria-label="Close">×</button><span class="eyebrow">Saved on this device</span><h2>Your highlights and notes</h2>
+  <div class="libtabs" role="group" aria-label="Filter">${tabs.map(([k,l])=>`<button data-tab="${k}" aria-pressed="${libTab===k}">${l} · ${all.filter({all:()=>true,bm:([,m])=>m.bm,hl:([,m])=>m.h,n:([,m])=>m.n}[k]).length}</button>`).join('')}</div>
+  ${list.length?`<ul class="liblist">${list.map(([i,m])=>`<li><button data-to="${i}" class="${m.h?'hl-'+m.h:''}"><b>${m.bm?'★ ':''}${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}</b><span>${esc(flat[i])}</span>${m.n?`<em>✎ ${esc(m.n)}</em>`:''}</button></li>`).join('')}</ul>`:'<p class="libempty">Nothing here yet. Open any verse to highlight it, bookmark it or add a note.</p>'}`;}
+function openLibrary(){closeSheet();const bg=document.createElement('div');bg.className='sheetbg';bg.setAttribute('role','dialog');bg.setAttribute('aria-modal','true');bg.setAttribute('aria-label','Your highlights, bookmarks and notes');
+  const s=document.createElement('div');s.className='sheet';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;sheetEl._esc=closeSheet;trapFocus(bg);
+  const paint=()=>{s.innerHTML=libraryHTML();const f=s.querySelector('.libtabs [aria-pressed="true"]');f&&f.focus({preventScroll:true});};paint();
+  bg.addEventListener('click',e=>{if(e.target===bg)return closeSheet();const t=e.target.closest('button');if(!t)return;
+    if(t.dataset.a==='close')return closeSheet();if(t.dataset.tab){libTab=t.dataset.tab;paint();return;}
+    if(t.dataset.to){const k=+t.dataset.to;closeSheet();setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);}});}
+$('#libChip').onclick=openLibrary;
+
 // ---------- Reading plan: daily or weekly portions that pop up when the app opens ----------
 const DAY=864e5,MIN_WPM=180,WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const today=()=>{const d=new Date();return Math.round(new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/DAY);};
@@ -881,9 +1014,9 @@ function calLink(){const p=P(),t=p.time||'07:30',[hh,mm]=t.split(':');const d=ne
   try{q.set('ctz',Intl.DateTimeFormat().resolvedOptions().timeZone)}catch(_){}
   return 'https://calendar.google.com/calendar/render?'+q.toString();}
 let sheetEl=null,pick={cad:'daily',id:'bible',day:0,time:'07:30'};
-function closeSheet(){if(sheetEl){sheetEl.remove();sheetEl=null;}}
+function closeSheet(){if(sheetEl){const r=sheetEl._restore;sheetEl.remove();sheetEl=null;r&&r();}}
 function openSheet(view){closeSheet();const bg=document.createElement('div');bg.className='sheetbg';bg.setAttribute('role','dialog');bg.setAttribute('aria-modal','true');
-  const s=document.createElement('div');s.className='sheet';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;
+  const s=document.createElement('div');s.className='sheet';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;trapFocus(bg);
   bg.addEventListener('click',e=>{if(e.target===bg)later();});
   const paint=v=>{view=v;s.innerHTML=v==='pick'?pickHTML():v==='done'?doneHTML():todayHTML();bg.setAttribute('aria-label',v==='pick'?'Choose a reading plan':'Reading plan');const f=s.querySelector('.primary');f&&f.focus({preventScroll:true});};
   s.addEventListener('click',e=>{const t=e.target.closest('button,a');if(!t)return;const a=t.dataset.a;if(!a)return;if(t.tagName==='A'&&a==='cal')return;e.preventDefault();haptic();
@@ -900,7 +1033,7 @@ function openSheet(view){closeSheet();const bg=document.createElement('div');bg.
     if(P()&&view==='today'&&e.target.id==='ptime2'){P().time=e.target.value;save();if(NATIVE)NATIVE.scheduleReminders(P());else s.querySelector('[data-a="cal"]').href=calLink();}});
   paint(view);}
 function later(){if(P()){P().snoozeUntil=Date.now()+3*36e5;save();}closeSheet();}
-addEventListener('keydown',e=>{if(sheetEl&&e.key==='Escape'){e.stopImmediatePropagation();later();}},true);
+addEventListener('keydown',e=>{if(sheetEl&&e.key==='Escape'){e.stopImmediatePropagation();sheetEl._esc?sheetEl._esc():later();}},true);
 function pickHTML(){const n=c=>c==='daily'?'day':'week';
   return `<button class="x" data-a="close" aria-label="Close">×</button><span class="eyebrow">Reading plan</span><h2>Read the Bible a little at a time</h2>
   <p>Pick a pace that fits a busy life. Each time you open Selah it shows ${pick.cad==='daily'?"today's":"this week's"} portion, how long it takes, and your streak. If you miss a ${n(pick.cad)}, it picks up where you left off, so nothing is skipped.</p>
