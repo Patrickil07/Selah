@@ -18,7 +18,7 @@
   --lapis:#7ea3ec; --gold:#e0b65c; --lapis-soft:#1b2a4a; --gold-soft:#33291a; color-scheme:dark}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;overflow:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;overflow:hidden}
 button{font:inherit;color:inherit}
 button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .app{height:100%;display:grid;grid-template-rows:auto 1fr auto}
@@ -347,16 +347,107 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
 .tl-chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;font-size:.8rem;cursor:pointer;color:var(--ink)}
 .tl-chips button:hover{border-color:var(--lapis)}
 .tl-note{font-size:.75rem;color:var(--muted);margin:0}
+/* Stories: guided journeys and explainers */
+#stories{overflow:auto;--ph:600px}
+.st-home,.st-x{max-width:980px;margin:0 auto;padding:18px 16px 40px;box-sizing:border-box}
+.st-home h2:focus,.st-x h2:focus,.st-step h2:focus{outline:none}
+.st-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px;margin-top:14px}
+.st-card{display:grid;gap:6px;align-content:start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:16px 16px 18px;cursor:pointer;color:var(--ink);font:inherit;transition:transform .2s,border-color .2s;min-height:150px;position:relative;overflow:hidden}
+.st-card:hover{transform:translateY(-2px);border-color:var(--lapis)}
+.st-card b{font-family:var(--display);font-weight:400;font-size:1.45rem;line-height:1.15}
+.st-card span:last-child{color:var(--muted);font-size:.9rem}
+.st-card::after{content:"";position:absolute;right:-18px;bottom:-18px;width:90px;height:90px;border-radius:50%;background:var(--lapis-soft);opacity:.7}
+.st-card.plan::after{border-radius:8px;background:var(--gold-soft)}.st-card.ark::after{border-radius:14px 14px 40px 40px;width:130px;height:46px;bottom:-6px;background:var(--gold-soft)}
+.st-back{display:block;margin-bottom:10px}
+.st-j{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);align-items:start}
+.st-vis{position:sticky;top:0;height:var(--ph);padding:12px;box-sizing:border-box;z-index:1}
+.st-vis svg{display:block;width:100%;height:100%;border-radius:14px;border:1px solid var(--line);background:var(--lapis-soft);box-sizing:border-box}
+.st-vis .sea{fill:var(--lapis-soft)}.st-vis .land{fill:var(--surface);stroke:var(--line);stroke-width:calc(var(--u) * 1px)}
+.st-vis path.j0,.st-vis path.all{stroke:var(--g-rev)}.st-vis path.j1{stroke:var(--lapis)}.st-vis path.j2{stroke:var(--g-acts)}.st-vis path.j3{stroke:var(--gold)}.st-vis path.j4{stroke:var(--g-rev)}
+#stDone path,#stNow{fill:none;stroke-width:calc(var(--u) * 2.6px);stroke-linecap:round;stroke-linejoin:round}
+#stDone path{opacity:.45}
+#stNow{stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 1.2s ease-in-out}
+#stNow.all{stroke-dasharray:none;opacity:.8}
+#stDots circle{fill:var(--muted);stroke:var(--surface);stroke-width:calc(var(--u) * 1.2px)}
+#stDots circle.on{fill:var(--g-rev)}
+#stLabels text{fill:var(--muted);stroke:var(--surface);stroke-width:.28em;paint-order:stroke;font-family:var(--body)}
+#stLabels text.on{fill:var(--ink);font-weight:700}
+.st-legend{position:absolute;left:22px;bottom:22px;display:flex;flex-wrap:wrap;gap:4px 10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:.72rem;max-width:calc(100% - 44px);box-sizing:border-box}
+.st-legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle;background:var(--g-rev)}
+.st-legend .j1 i{background:var(--lapis)}.st-legend .j2 i{background:var(--g-acts)}.st-legend .j3 i{background:var(--gold)}
+.st-steps{padding:calc(var(--ph) * .3) 16px calc(var(--ph) * .5) 8px;display:grid;gap:calc(var(--ph) * .42)}
+.st-step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;opacity:.55;transition:opacity .4s,box-shadow .4s}
+.st-step.cur,.st-step:focus-within{opacity:1;box-shadow:0 6px 24px rgb(0 0 0/.08)}
+.st-step h2{font-family:var(--display);font-weight:400;font-size:2rem;margin:4px 0 8px}
+.st-step h3{font-family:var(--display);font-weight:400;font-size:1.45rem;margin:4px 0 6px}
+.st-step p{margin:0 0 10px;line-height:1.5}
+.st-step .eyebrow.j1{color:var(--lapis)}.st-step .eyebrow.j2{color:var(--g-acts)}.st-step .eyebrow.j4{color:var(--g-rev)}
+.st-hint{color:var(--muted);font-size:.85rem}
+.st-q{margin:10px 0;padding:8px 0 8px 14px;border-left:3px solid var(--gold);font-family:var(--serif,Georgia,serif);font-size:1.02rem;line-height:1.5}
+.st-q cite{display:block;margin-top:4px;font:normal .72rem var(--mono);color:var(--muted)}
+.st-x h2{font-family:var(--display);font-weight:400;font-size:2.2rem;margin:4px 0 8px}
+.st-lead{font-size:1.02rem;line-height:1.55;max-width:68ch}
+.st-fig{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;gap:10px;margin:14px 0}
+.st-slider{display:flex;gap:10px;align-items:center;font-weight:600;font-size:.88rem}
+.st-slider input{flex:1;accent-color:var(--gold);min-height:28px}
+.st-units{display:flex;flex-wrap:wrap;gap:6px}
+.st-units .btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.st-card-now{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:200px}
+.st-card-now h3{font-family:var(--display);font-weight:400;font-size:1.5rem;margin:4px 0 6px}
+.st-card-now p{margin:0;line-height:1.5}
+.tb-plan,.tb-side{width:100%;height:auto;display:block}
+.tb-plan{max-height:min(52vh,560px)}.tb-side{max-height:150px}
+.tb-ground{fill:var(--bg)}
+.tb-court{fill:var(--surface);stroke:var(--ink);stroke-width:2;transition:fill .4s}
+.tb-gate{stroke:var(--g-rev);stroke-width:7}
+.tb-tent{fill:var(--surface);stroke:var(--gold);stroke-width:3;transition:fill .4s}
+.tb-most{fill:var(--surface);stroke:var(--gold);stroke-width:3;transition:fill .4s}
+.tb-veil{stroke:var(--g-rev);stroke-width:4}
+.tb-item{fill:var(--muted);transition:fill .3s;cursor:pointer}.tb-item.gold{fill:var(--gold)}
+.tb-item.on{fill:var(--g-rev)}
+.tb-plan[data-zone="court"] .tb-ground,.tb-plan[data-zone="gate"] .tb-court,.tb-plan[data-zone="altar"] .tb-court,.tb-plan[data-zone="laver"] .tb-court,.tb-plan[data-zone="holy"] .tb-tent,.tb-plan[data-zone="veil"] .tb-most,.tb-plan[data-zone="most"] .tb-most{fill:var(--gold-soft)}
+.tb-plan[data-zone="holy"] .tb-court,.tb-plan[data-zone="most"] .tb-court,.tb-plan[data-zone="veil"] .tb-court{fill:var(--bg)}
+.tb-lab text,.tb-dims text,.tb-compass text,#tbYou text,.tb-side-lab{font:600 22px var(--body);fill:var(--ink);stroke:var(--surface);stroke-width:5px;paint-order:stroke}
+.tb-dims text{fill:var(--muted);font-weight:500}
+.tb-compass line{stroke:var(--ink);stroke-width:3}.tb-compass path{fill:var(--ink)}
+#tbYou circle{fill:var(--lapis);stroke:var(--surface);stroke-width:4}
+#tbYou,#tbMan{transition:transform .15s}
+.tb-floor{stroke:var(--line);stroke-width:2}
+.tb-fence{fill:var(--bg);stroke:var(--ink);stroke-width:2}
+.tb-tentside{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+#tbMan circle{fill:var(--lapis)}#tbMan path{stroke:var(--lapis);stroke-width:4;fill:none;stroke-linecap:round}
+.tb-side-lab{font-size:20px}
+.ark-svg{width:100%;height:auto;aspect-ratio:2.6;display:block;background:linear-gradient(var(--lapis-soft),var(--surface));border-radius:10px}
+.ark-ground{stroke:var(--muted)}
+.ark-hull{fill:rgb(139 90 43/.55);stroke:#8b5a2b}
+.ark-svg text{stroke:var(--surface);stroke-width:.25em;paint-order:stroke}
+.ark-deck{stroke:var(--surface);opacity:.6}
+.ark-cmp{fill:var(--lapis);opacity:.45}
+.ark-svg text{fill:var(--ink);font-family:var(--body);font-weight:600}
+.ark-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;margin:0 0 14px}
+.ark-stats div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:3px}
+.ark-stats b{font-family:var(--display);font-weight:400;font-size:1.45rem}
+.ark-stats span{color:var(--muted);font-size:.85rem}
+@media (max-width:760px){
+  .st-j{grid-template-columns:1fr}
+  .st-vis{height:calc(var(--ph) * .46);padding:8px 10px;background:var(--bg)}
+  .st-steps{padding:16px 12px calc(var(--ph) * .4);gap:calc(var(--ph) * .3)}
+  .st-legend{display:none}
+  .tb-lab text,.tb-dims text,.tb-compass text,#tbYou text{font-size:36px;stroke-width:7px}.tb-side-lab{font-size:32px}
+  .st-x h2{font-size:1.8rem}
+}
 @media (max-width:760px){.tl{grid-template-rows:auto auto auto auto}.tl-lower{grid-template-columns:1fr}.tl-map{height:300px;min-height:0}.tl-scroll{max-height:55vh}}
 @media (max-width:480px){.brand{display:none}}
 /* Phone and tablet fit */
 #galaxy{overflow:hidden}
+@media (max-width:900px){.modes .m3d{display:none}#sound,#planChip,#libChip{font-size:0;padding:6px 7px;line-height:1}#sound::before{content:"🔇";font-size:.95rem}#sound[aria-pressed="true"]::before{content:"🔊"}#planChip::after{content:"📖";font-size:.95rem}#libChip::before{font-size:.95rem;margin:0}}
 @media (max-width:600px){
   header{gap:6px 5px;padding:8px 10px}
   header .spacer{display:none}
   #planChip{margin-left:auto}
   .brand{font-size:1.2rem}
-  .modes button{padding:5px 6px;font-size:.78rem}
+  .modes button{padding:5px 4px;font-size:.78rem}
+  #planChip{gap:4px}
   .modes{padding:2px;gap:2px}
   .gbook{font-size:.6rem}
   .modes .m3d{display:none}
@@ -377,7 +468,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
   .dgauge{right:14px}.dgauge span{display:none}
   .dintro{padding-inline:16px 38px;top:14px}
 }
-@media (max-width:380px){header{padding:8px 10px;gap:6px}.brand{display:none}.modes button{padding:5px 5px;font-size:.74rem}#sound,#planChip,#libChip{padding:6px 5px}.modes button{padding:5px 4px}.pane.strip{--sw:18px}.pane.strip .sl{display:none}}
+@media (max-width:380px){header{padding:8px 10px;gap:6px}.brand{display:none}.modes button{padding:5px 5px;font-size:.74rem}#sound,#planChip,#libChip{padding:6px 4px}.modes button{padding:5px 3px;font-size:.7rem}.pane.strip{--sw:18px}.pane.strip .sl{display:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -391,6 +482,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
       <button data-mode="time" aria-pressed="false">Time</button>
       <button data-mode="galaxy" aria-pressed="false"><span class="m3d">3D </span>Galaxy</button>
       <button data-mode="descent" aria-pressed="false">Descent</button>
+      <button data-mode="stories" aria-pressed="false">Stories</button>
     </div>
     <span class="spacer"></span>
     <button class="chip" id="planChip" title="Daily or weekly reading plan">Reading plan</button>
@@ -406,6 +498,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
     </section>
     <section class="panel" id="time" hidden aria-label="Timeline and map"></section>
     <section class="panel" id="galaxy" hidden><div class="gload" id="gload">Loading 3D…</div></section>
+    <section class="panel" id="stories" hidden aria-label="Stories: guided journeys and explainers"></section>
     <section class="panel" id="descent" hidden tabindex="0" aria-label="Descent: scroll through the Bible"></section>
   </main>
   <div class="scrub" id="scrubWrap">
@@ -851,8 +944,8 @@ addEventListener('resize',()=>{drawScrub();gal&&gal.resize();});
 // ---------- Modes ----------
 let mode='zoom';
 function setMode(m){mode=m;if(m!=='zoom')stopReader();document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
-  ['zoom','time','galaxy','descent'].forEach(id=>$('#'+id).hidden=id!==m);$('#crumbs').hidden=m!=='zoom';$('#scrubWrap').hidden=m==='descent'||m==='time';
-  tick(440);if(m==='galaxy')openGalaxy();else gal&&gal.stop();if(m==='descent')openDescent();if(m==='time')openTime();if(m==='zoom')requestAnimationFrame(drawScrub);}
+  ['zoom','time','galaxy','descent','stories'].forEach(id=>$('#'+id).hidden=id!==m);$('#crumbs').hidden=m!=='zoom';$('#scrubWrap').hidden=m==='descent'||m==='time'||m==='stories';
+  tick(440);if(m==='galaxy')openGalaxy();else gal&&gal.stop();if(m==='descent')openDescent();if(m==='time')openTime();if(m==='stories')openStories();if(m==='zoom')requestAnimationFrame(drawScrub);}
 document.querySelectorAll('.modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 
 // ---------- 3D Galaxy (Three.js, loaded on demand) ----------
@@ -1078,6 +1171,212 @@ function buildTime(host){
   host._refresh=()=>{const f=fitPPY();if(ppy<f)zoomTo(f);};
   ppy=fitPPY();layout();intro();drawLabels();linkMap();
   addEventListener('resize',()=>{if(mode==='time'){const f=fitPPY();if(ppy<f){ppy=f;layout();}}});}
+
+// ---------- Stories: guided journeys on the map, and hands-on explainers ----------
+// Routes and sites follow traditional identifications; several (Mount Sinai, the sea crossing) are debated.
+const vi=(b,c,v)=>chapStart[b][c-1]+v-1;
+const JOURNEYS={
+exodus:{title:'The Exodus',sub:'From slavery in Egypt to the edge of the promised land',eyebrow:'Journey · Exodus to Joshua',
+  intro:'Follow Israel out of Egypt, through the sea and the wilderness to Mount Sinai, and on to the Jordan. Scroll, and the map follows the story.',
+  note:'Many of these places cannot be pinned down. This route follows the traditional southern path through Sinai, and the crossing point and the mountain are both debated.',
+  legend:[],
+  steps:[
+  {j:0,t:'Out of Egypt',p:[['Rameses',30.8,31.83],['Succoth',30.55,32.1]],r:[1,12,37],x:'After the tenth plague, Pharaoh lets the people go. They leave Rameses on foot, with their flocks and the dough still unleavened.'},
+  {j:0,t:'A pillar of cloud',p:[['Etham',30.47,32.28]],r:[1,13,21],x:'God leads them the long way round, not by the coast road, and goes ahead of them day and night.'},
+  {j:0,t:'Trapped by the sea',p:[['Pi-hahiroth',29.95,32.43]],r:[1,14,13],x:'They camp by the sea. Pharaoh changes his mind and his chariots close in behind them.'},
+  {j:0,t:'Through the sea',p:[['Wilderness of Shur',29.85,32.66]],r:[1,14,22],x:'The waters part, Israel crosses on dry ground, and Miriam leads the song on the far shore.'},
+  {j:0,t:'Bitter water made sweet',p:[['Marah',29.35,32.93],['Elim',29.27,33.02]],r:[1,15,25],x:'Three days without water, then bitter water at Marah. Further on, Elim has twelve wells and seventy palm trees.'},
+  {j:0,t:'Bread from heaven',p:[['Wilderness of Sin',28.95,33.3]],r:[1,16,4],x:'The people grumble about food. Each morning manna lies on the ground, enough for each day, and twice as much before the sabbath.'},
+  {j:0,t:'Water from the rock',p:[['Rephidim',28.73,33.84]],r:[1,17,6],x:'With no water again, Moses strikes the rock at Horeb. Here too Israel fights Amalek while Moses holds up his hands.'},
+  {j:0,t:'Mount Sinai',p:[['Mount Sinai',28.54,33.98]],r:[1,20,2],x:'The people camp at the mountain for about a year. God gives the Ten Commandments and the plans for the tabernacle.'},
+  {j:0,t:'Spies at Kadesh',p:[['Hazeroth',28.92,34.42],['Kadesh',30.65,34.42]],r:[3,13,27],x:'Twelve spies explore Canaan. Ten say the land cannot be taken. Only Joshua and Caleb trust God, and the people refuse to go in.'},
+  {j:0,t:'Forty years',p:[['Mount Hor',30.33,35.45],['',29.9,35.75],['',30.9,36.05],['Plains of Moab',31.8,35.62]],r:[4,8,2],x:'A generation dies in the wilderness. Aaron dies on Mount Hor, and the people go around Edom to reach the plains of Moab.'},
+  {j:0,t:'Moses sees the land',p:[['Mount Nebo',31.77,35.73]],r:[4,34,4],x:'From the top of Nebo, God shows Moses the whole land. He dies there, and Joshua takes his place.'},
+  {j:0,t:'Across the Jordan',p:[['Jordan',31.84,35.55]],r:[5,3,17],x:'The priests carry the ark into the river in flood. The water stops, and the people cross on dry ground.'},
+  {j:0,t:'Jericho',p:[['Jericho',31.87,35.44]],r:[5,6,20],x:'Forty years after leaving Egypt, the first city of the promised land falls.'}]},
+paul:{title:'Paul\'s journeys',sub:'Three missionary journeys and the voyage to Rome',eyebrow:'Journey · Acts 9 to 28',
+  intro:'Trace Paul from the Damascus road across Asia Minor and Greece, and finally by ship to Rome. Each journey has its own colour.',
+  note:'Stops follow the order in Acts. Some legs, such as the inland routes through Galatia, are only summarised there, so their exact paths are approximate.',
+  legend:['Before the journeys','First journey','Second journey','Third journey','Voyage to Rome'],
+  steps:[
+  {j:0,t:'The road to Damascus',p:[['Jerusalem',31.78,35.23],['Damascus',33.51,36.31]],r:[43,9,3],x:'Saul sets out to arrest believers. A light from heaven stops him, and he arrives in Damascus blind and changed.'},
+  {j:0,t:'Sent home to Tarsus',p:[['Jerusalem',31.78,35.23],['Caesarea',32.5,34.89],['Tarsus',36.91,34.9]],r:[43,9,30],x:'Threats on his life follow him. The believers take him down to Caesarea and send him home to Tarsus.'},
+  {j:0,t:'Antioch',p:[['Antioch',36.2,36.16]],r:[43,11,26],x:'Barnabas brings Saul to Antioch, where they teach for a whole year and the disciples are first called Christians.'},
+  {j:1,t:'Sent out to Cyprus',p:[['Antioch',36.2,36.16],['Seleucia',36.12,35.94],['Salamis',35.18,33.9],['Paphos',34.71,32.57]],r:[43,13,4],x:'The church at Antioch sends Barnabas and Saul out. They cross Cyprus, and from here on he is called Paul.'},
+  {j:1,t:'A light to the Gentiles',p:[['Perga',36.96,30.85],['Pisidian Antioch',38.31,31.19]],r:[43,13,47],x:'In the synagogue at Pisidian Antioch, Paul preaches. When many reject the message, he turns to the Gentiles.'},
+  {j:1,t:'Iconium, Lystra and Derbe',p:[['Iconium',37.87,32.49],['Lystra',37.6,32.34],['Derbe',37.35,33.36]],r:[43,14,22],x:'At Lystra the crowd first calls him a god, then stones him and leaves him for dead. He gets up and goes on to Derbe.'},
+  {j:1,t:'Home again',p:[['Lystra',37.6,32.34],['Iconium',37.87,32.49],['Pisidian Antioch',38.31,31.19],['Perga',36.96,30.85],['Attalia',36.88,30.7],['Antioch',36.2,36.16]],r:[43,14,27],x:'They retrace their steps to strengthen the new churches, then sail home and report how God opened the door of faith to the Gentiles.'},
+  {j:2,t:'A call to Europe',p:[['Antioch',36.2,36.16],['Derbe',37.35,33.36],['Lystra',37.6,32.34],['Troas',39.75,26.16]],r:[43,16,9],x:'With Silas, and Timothy from Lystra, Paul revisits the churches. At Troas he dreams of a man of Macedonia asking for help.'},
+  {j:2,t:'Philippi',p:[['Samothrace',40.48,25.53],['Neapolis',40.94,24.41],['Philippi',41.01,24.28]],r:[43,16,25],x:'Lydia becomes the first believer in Europe. Paul and Silas are beaten and jailed, and sing hymns at midnight.'},
+  {j:2,t:'Thessalonica and Berea',p:[['Amphipolis',40.82,23.85],['Apollonia',40.63,23.49],['Thessalonica',40.63,22.95],['Berea',40.52,22.2]],r:[43,17,11],x:'A riot drives them out of Thessalonica. In Berea, people check what Paul says against the scriptures every day.'},
+  {j:2,t:'Athens',p:[['Athens',37.97,23.73]],r:[43,17,28],x:'Among the idols of Athens, Paul speaks on the Areopagus about the unknown God, quoting their own poets.'},
+  {j:2,t:'Corinth',p:[['Corinth',37.91,22.88]],r:[43,18,9],x:'Paul makes tents with Aquila and Priscilla and stays a year and six months. Later he will write two letters to this church.'},
+  {j:2,t:'Back to Antioch',p:[['Cenchreae',37.88,22.99],['Ephesus',37.94,27.34],['Caesarea',32.5,34.89],['Jerusalem',31.78,35.23],['Antioch',36.2,36.16]],r:[43,18,22],x:'He sails by way of Ephesus to Caesarea, goes up to greet the church, most likely in Jerusalem, and returns to Antioch.'},
+  {j:3,t:'Two years in Ephesus',p:[['Antioch',36.2,36.16],['Derbe',37.35,33.36],['Iconium',37.87,32.49],['Pisidian Antioch',38.31,31.19],['Ephesus',37.94,27.34]],r:[43,19,10],x:'Paul teaches daily in the school of Tyrannus, until all Asia has heard. A silversmiths\' riot ends his stay.'},
+  {j:3,t:'Macedonia and Greece',p:[['Troas',39.75,26.16],['Philippi',41.01,24.28],['Thessalonica',40.63,22.95],['Corinth',37.91,22.88]],r:[43,20,2],x:'He encourages the churches in Macedonia and spends three months in Greece, where he likely writes Romans.'},
+  {j:3,t:'Farewell at Miletus',p:[['Thessalonica',40.63,22.95],['Philippi',41.01,24.28],['Troas',39.75,26.16],['Assos',39.49,26.34],['Mitylene',39.11,26.55],['Samos',37.73,26.98],['Miletus',37.53,27.28]],r:[43,20,35],x:'At Troas, Eutychus falls from a window during a long sermon. At Miletus, Paul says goodbye to the Ephesian elders.'},
+  {j:3,t:'Up to Jerusalem',p:[['Cos',36.89,27.29],['Rhodes',36.43,28.22],['Patara',36.26,29.31],['Tyre',33.27,35.2],['Ptolemais',32.92,35.07],['Caesarea',32.5,34.89],['Jerusalem',31.78,35.23]],r:[43,21,13],x:'Friends beg him not to go, knowing what awaits. He goes anyway, and is arrested in the temple.'},
+  {j:4,t:'I appeal unto Caesar',p:[['Jerusalem',31.78,35.23],['Caesarea',32.5,34.89]],r:[43,25,11],x:'Taken to Caesarea under guard, Paul waits two years in custody, then appeals to the emperor.'},
+  {j:4,t:'Late in the sailing season',p:[['Sidon',33.56,35.37],['',34.9,33.9],['Myra',36.26,29.99],['Cnidus',36.69,27.37],['Salmone',35.3,26.3],['Fair Havens',34.93,24.73]],r:[43,27,10],x:'Under a centurion named Julius, Paul sails along the coast to Crete. He warns that going on will be dangerous.'},
+  {j:4,t:'Storm and shipwreck',p:[['Malta',35.9,14.45]],r:[43,27,25],x:'A northeaster drives the ship for fourteen days. All 276 on board reach the shore of Malta alive.'},
+  {j:4,t:'Rome at last',p:[['Syracuse',37.07,15.29],['Rhegium',38.11,15.65],['Puteoli',40.82,14.12],['Rome',41.89,12.48]],r:[43,28,31],x:'Paul lives two years in a rented house in Rome under guard, welcoming everyone who comes, which is where Acts ends.'}]}};
+
+let storiesMap=null;
+async function openStories(){const host=$('#stories');host.style.setProperty('--ph',host.clientHeight+'px');if(host.dataset.built)return;host.dataset.built=1;storiesHome(host);}
+function storiesHome(host){host._cleanup&&host._cleanup();host.scrollTop=0;
+  const card=(id,eb,t,s,kind)=>`<button class="st-card ${kind}" data-story="${id}"><span class="eyebrow">${eb}</span><b>${t}</b><span>${s}</span></button>`;
+  host.innerHTML=`<div class="st-home"><h2 class="tl-title" tabindex="-1">Stories</h2><p class="tl-muted">Guided journeys you scroll through, and explainers you can play with.</p>
+    <div class="st-cards">${card('exodus',JOURNEYS.exodus.eyebrow,JOURNEYS.exodus.title,JOURNEYS.exodus.sub,'map')}${card('paul',JOURNEYS.paul.eyebrow,JOURNEYS.paul.title,JOURNEYS.paul.sub,'map')}
+    ${card('tabernacle','Explainer · Exodus 25 to 27','Inside the tabernacle','Walk from the gate to the ark, to scale','plan')}${card('ark','Explainer · Genesis 6','How big was the ark?','Compare it with a whale, a jumbo jet and the Titanic','ark')}</div></div>`;
+  host.onclick=e=>{const t=e.target.closest('[data-story],[data-read],[data-home]');if(!t)return;
+    if(t.dataset.home!=null){storiesHome(host);host.querySelector('h2').focus();return;}
+    if(t.dataset.read!=null){const k=+t.dataset.read;setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);return;}
+    const id=t.dataset.story;if(JOURNEYS[id])openJourney(host,id);else if(id==='tabernacle')openTabernacle(host);else openArk(host);};}
+const stBack='<button class="btn st-back" data-home>← All stories</button>';
+const quote=(r,label)=>{const k=vi(...r);return `<blockquote class="st-q">${esc(T[VB[k]][VC[k]][VV[k]])}<cite>${NAMES[r[0]]} ${r[1]}:${r[2]} KJV</cite></blockquote><button class="btn" data-read="${k}">${label||'Read'} ${NAMES[r[0]]} ${r[1]}</button>`;};
+
+async function openJourney(host,id){const J=JOURNEYS[id];
+  if(!storiesMap){host.innerHTML='<div class="loading">Loading the map…</div>';try{storiesMap=await fetch('map.json').then(r=>r.json());}catch(e){host.innerHTML=`<div class="loading">The map could not be loaded. Check your connection and try again.${stBack}</div>`;return;}}
+  const map=storiesMap,[W,S,E,N]=map.box,K=Math.cos(33*Math.PI/180),px=lon=>(lon-W)*K*10,py=lat=>(N-lat)*10,MW=(E-W)*K*10,MH=(N-S)*10;
+  const ring=r=>{let d='';for(let k=0;k<r.length;k+=2)d+=(k?'L':'M')+px(r[k]/map.scale).toFixed(1)+' '+py(r[k+1]/map.scale).toFixed(1);return d+'Z';};
+  // Each step's segment starts where the previous step of the same journey ended
+  const segs=J.steps.map((s,k)=>{const prev=k&&J.steps[k-1].j===s.j?J.steps[k-1].p.slice(-1):[];return prev.concat(s.p).filter((p,i,a)=>!i||p[1]!==a[i-1][1]||p[2]!==a[i-1][2]);});
+  const pts=p=>p.map(([,la,lo],i)=>(i?'L':'M')+px(lo).toFixed(1)+' '+py(la).toFixed(1)).join('');
+  host.innerHTML=`<div class="st-j">
+    <div class="st-vis"><svg id="stMap" role="img" aria-label="Map of ${esc(J.title)}"><rect class="sea" width="${MW}" height="${MH}"/><path class="land" d="${map.rings.map(ring).join('')}"/>
+      <g id="stDone"></g><path id="stNow" pathLength="1"/><g id="stDots"></g><g id="stLabels"></g></svg>
+      ${J.legend.length?`<div class="st-legend">${J.legend.map((l,i)=>`<span class="j${i}"><i></i>${l}</span>`).join('')}</div>`:''}</div>
+    <div class="st-steps">
+      <div class="st-step st-intro" data-k="-1">${stBack}<span class="eyebrow">${J.eyebrow}</span><h2 tabindex="-1">${J.title}</h2><p>${J.intro}</p><p class="tl-note">${J.note}</p><p class="st-hint" aria-hidden="true">Scroll to begin ↓</p></div>
+      ${J.steps.map((s,k)=>`<article class="st-step" data-k="${k}" aria-label="Stop ${k+1} of ${J.steps.length}: ${esc(s.t)}"><span class="eyebrow j${s.j}">${J.legend[s.j]?J.legend[s.j]+' · ':''}Stop ${k+1} of ${J.steps.length}</span><h3>${esc(s.t)}</h3><p>${esc(s.x)}</p>${quote(s.r)}</article>`).join('')}
+      <div class="st-step st-end" data-k="${J.steps.length}"><h3>The whole route</h3><p>${J.steps.length} stops and about ${(Math.round(segs.flat().reduce((d,p,i,a)=>i?d+dist(a[i-1],p):d,0)/50)*50).toLocaleString('en')} km, measured in straight lines between them.</p><div class="navrow">${stBack}<button class="btn" data-top>Start again</button></div></div>
+    </div></div>`;
+  const svg=host.querySelector('#stMap'),done=svg.querySelector('#stDone'),now=svg.querySelector('#stNow'),dotsG=svg.querySelector('#stDots'),labs=svg.querySelector('#stLabels');
+  let vb=[0,0,MW,MH],cur=-2,raf=0;
+  const fit=list=>{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;list.forEach(([,la,lo])=>{x0=Math.min(x0,px(lo));x1=Math.max(x1,px(lo));y0=Math.min(y0,py(la));y1=Math.max(y1,py(la));});
+    const r=svg.getBoundingClientRect(),ar=r.width/Math.max(1,r.height)||1.5;let w=Math.max(60,(x1-x0)*1.35+24),h=Math.max(45,(y1-y0)*1.35+24);if(w/h>ar)h=w/ar;else w=h*ar;return [(x0+x1)/2-w/2,(y0+y1)/2-h/2,w,h];};
+  function draw(){const r=svg.getBoundingClientRect();if(!r.width)return;const k=Math.min(r.width/vb[2],r.height/vb[3]),u=1/k;
+    svg.style.setProperty('--u',u);svg.setAttribute('viewBox',vb.map(v=>v.toFixed(2)).join(' '));
+    const show=cur<0?[]:cur>=J.steps.length?J.steps.flatMap(s=>s.p):segs[cur];const seen=new Map();
+    J.steps.slice(0,Math.min(cur+1,J.steps.length)).forEach(s=>s.p.forEach(p=>p[0]&&seen.set(p[0],p)));
+    dotsG.innerHTML=[...seen.values()].map(([n,la,lo])=>`<circle cx="${px(lo)}" cy="${py(la)}" r="${(show.some(q=>q[0]===n)?5:3.2)*u}" class="${show.some(q=>q[0]===n)?'on':''}"/>`).join('');
+    const fs=12.5*u,out=[],boxes=show.map(([,la,lo])=>[px(lo)-4*u,py(la)-4*u,px(lo)+4*u,py(la)+4*u]);
+    [...show.filter(p=>p[0]),...[...seen.values()]].forEach(([n,la,lo])=>{if(out.some(o=>o.n===n))return;const cx=px(lo),cy=py(la),w=n.length*fs*.56;
+      for(const [x,y] of [[cx+fs*.5,cy-fs*.35],[cx-fs*.5-w,cy-fs*.35],[cx-w/2,cy+fs*1.25],[cx-w/2,cy-fs*.75]]){const b=[x,y-fs,x+w,y+fs*.25];
+        if(boxes.some(o=>b[0]<o[2]&&b[2]>o[0]&&b[1]<o[3]&&b[3]>o[1]))continue;boxes.push(b);out.push({n,s:`<text x="${x}" y="${y}" style="font-size:${fs}px" class="${show.some(q=>q[0]===n)?'on':''}">${esc(n)}</text>`});break;}});
+    labs.innerHTML=out.map(o=>o.s).join('');}
+  function view(t,instant){cancelAnimationFrame(raf);const from=vb.slice(),t0=performance.now(),D=reduce||instant?0:900;
+    (function a(){const p=D?Math.min(1,(performance.now()-t0)/D):1,e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;vb=from.map((v,i)=>v+(t[i]-v)*e);draw();if(p<1)raf=requestAnimationFrame(a);})();}
+  function step(k){if(k===cur)return;cur=k;
+    done.innerHTML=J.steps.slice(0,Math.max(0,Math.min(k,J.steps.length))).map((s,i)=>`<path class="j${s.j}" d="${pts(segs[i])}"/>`).join('');
+    if(k>=0&&k<J.steps.length){now.setAttribute('class','j'+J.steps[k].j);now.setAttribute('d',pts(segs[k]));now.style.transition='none';now.style.strokeDashoffset=1;now.getBoundingClientRect();now.style.transition='';now.style.strokeDashoffset=0;}
+    else{now.setAttribute('d',k>=J.steps.length?J.steps.map((s,i)=>pts(segs[i])).join(''):'');now.setAttribute('class','all');}
+    view(k<0||k>=J.steps.length?fit(J.steps.flatMap(s=>s.p)):fit(segs[k]));
+    svg.setAttribute('aria-label',k>=0&&k<J.steps.length?`Map: ${J.steps[k].t}, ${segs[k].filter(p=>p[0]).map(p=>p[0]).join(', ')}`:`Map of ${J.title}`);
+    host.querySelectorAll('.st-step').forEach(el=>el.classList.toggle('cur',+el.dataset.k===k));}
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)step(+e.target.dataset.k);});},{root:host,rootMargin:matchMedia('(max-width:760px)').matches?'-66% 0px -30% 0px':'-45% 0px -45% 0px'});
+  host.querySelectorAll('.st-step').forEach(el=>io.observe(el));
+  const ro=new ResizeObserver(()=>{host.style.setProperty('--ph',host.clientHeight+'px');draw();});ro.observe(svg);
+  host._cleanup=()=>{io.disconnect();ro.disconnect();cancelAnimationFrame(raf);host._cleanup=null;};
+  host.querySelector('[data-top]').onclick=()=>{host.scrollTo({top:0,behavior:reduce?'auto':'smooth'});host.querySelector('h2').focus({preventScroll:true});};
+  host.scrollTop=0;cur=-2;step(-1);view(fit(J.steps.flatMap(s=>s.p)),true);host.querySelector('h2').focus({preventScroll:true});announce(`${J.title}. ${J.steps.length} stops. Scroll or press Tab to move through them.`);}
+function dist(a,b){const R=6371,r=Math.PI/180,dl=(b[1]-a[1])*r,dn=(b[2]-a[2])*r,h=Math.sin(dl/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+
+// ----- Explainer: the tabernacle, to scale (Exodus 25 to 27). East is on the left, so north is at the bottom. -----
+function openTabernacle(host){host._cleanup&&host._cleanup();host.scrollTop=0;
+  const U=8; // drawing units per cubit
+  const C=x=>x*U,ITEMS=[
+    {id:'court',a:-10,b:0,t:'Outside the court',r:[1,27,18],x:'A linen fence #100# long, #50# wide and #5# high closes off the courtyard. Anyone in Israel could bring an offering to the gate.',who:'Everyone'},
+    {id:'gate',a:0,b:6,t:'The gate',r:[1,27,16],x:'The only way in is a screen #20# wide, of blue, purple and scarlet on the east side, facing the sunrise.',who:'Everyone bringing an offering'},
+    {id:'altar',a:6,b:30,t:'The bronze altar',r:[1,27,1],x:'The first thing you meet is the altar of burnt offering, #5# square and #3# high, overlaid with bronze.',who:'Worshippers and priests'},
+    {id:'laver',a:30,b:56,t:'The laver',r:[1,30,18],x:'A bronze basin between the altar and the tent, where priests washed their hands and feet before going in. Its size is not given.',who:'Worshippers and priests'},
+    {id:'holy',a:56,b:79,t:'The holy place',r:[1,26,35],x:'Inside the tent, #20# long and #10# wide. The table of showbread stands on the north side, the golden lampstand on the south, and the altar of incense before the veil.',who:'Priests only'},
+    {id:'veil',a:79,b:81,t:'The veil',r:[1,26,33],x:'A heavy curtain of blue, purple and scarlet, embroidered with cherubim, divides the holy place from the most holy.',who:'High priest only'},
+    {id:'most',a:81,b:91,t:'The most holy place',r:[1,25,22],x:'Probably a perfect cube, #10# each way, holding only the ark of the covenant. The high priest entered once a year, on the Day of Atonement.',who:'The high priest, once a year'}];
+  const plan=`<svg class="tb-plan" viewBox="${C(-14)} ${C(-6)} ${C(124)} ${C(62)}" role="img" aria-label="Plan of the tabernacle courtyard, 100 by 50 cubits, with the entrance on the east">
+    <rect class="tb-ground" x="${C(-14)}" y="${C(-6)}" width="${C(124)}" height="${C(62)}"/>
+    <rect class="tb-court" x="0" y="0" width="${C(100)}" height="${C(50)}"/>
+    <line class="tb-gate" x1="0" y1="${C(15)}" x2="0" y2="${C(35)}"/>
+    <rect class="tb-tent" x="${C(60)}" y="${C(20)}" width="${C(30)}" height="${C(10)}"/>
+    <rect class="tb-most" x="${C(80)}" y="${C(20)}" width="${C(10)}" height="${C(10)}"/>
+    <line class="tb-veil" x1="${C(80)}" y1="${C(20)}" x2="${C(80)}" y2="${C(30)}"/>
+    <rect class="tb-item" data-i="altar" x="${C(17.5)}" y="${C(22.5)}" width="${C(5)}" height="${C(5)}"><title>Bronze altar, 5 by 5 cubits</title></rect>
+    <circle class="tb-item" data-i="laver" cx="${C(43)}" cy="${C(25)}" r="${C(1.6)}"><title>Laver (size not given)</title></circle>
+    <rect class="tb-item gold" data-i="holy" x="${C(68)}" y="${C(26.5)}" width="${C(2)}" height="${C(1)}"><title>Table of showbread, 2 by 1 cubits, north side</title></rect>
+    <circle class="tb-item gold" data-i="holy" cx="${C(69)}" cy="${C(22.6)}" r="${C(.8)}"><title>Golden lampstand, south side</title></circle>
+    <rect class="tb-item gold" data-i="holy" x="${C(77.5)}" y="${C(24.5)}" width="${C(1)}" height="${C(1)}"><title>Altar of incense, 1 by 1 cubit</title></rect>
+    <rect class="tb-item gold" data-i="most" x="${C(83.75)}" y="${C(24.25)}" width="${C(2.5)}" height="${C(1.5)}"><title>Ark of the covenant, 2.5 by 1.5 cubits</title></rect>
+    <g class="tb-lab"><text x="${C(-1)}" y="${C(13)}" text-anchor="end">Gate</text><text x="${C(20)}" y="${C(21)}" text-anchor="middle">Altar</text><text x="${C(43)}" y="${C(22.4)}" text-anchor="middle">Laver</text>
+      <text x="${C(70)}" y="${C(18.8)}" text-anchor="middle">Holy place</text><text x="${C(85)}" y="${C(18.8)}" text-anchor="middle">Most holy</text></g>
+    <g class="tb-compass" transform="translate(${C(104)},${C(4)})"><line x1="0" y1="${C(-1)}" x2="0" y2="${C(5)}"/><path d="M${C(-1.2)} ${C(3.4)}L0 ${C(5.4)}L${C(1.2)} ${C(3.4)}Z"/><text x="0" y="${C(8)}" text-anchor="middle">N</text></g>
+    <g class="tb-dims"><text x="${C(50)}" y="${C(53.5)}" text-anchor="middle" id="tbW">100 cubits</text><text transform="translate(${C(103)},${C(25)}) rotate(90)" text-anchor="middle" id="tbH">50</text></g>
+    <g id="tbYou"><circle r="${C(1.6)}"/><text y="${C(-2.4)}" text-anchor="middle">You</text></g></svg>`;
+  // Side view, looking north: the court fence and the tent with a person for scale
+  const side=`<svg class="tb-side" viewBox="${C(-14)} ${C(-13)} ${C(124)} ${C(16)}" role="img" aria-label="Side view: the court fence is 5 cubits high and the tent 10 cubits high, beside a person for scale">
+    <line class="tb-floor" x1="${C(-14)}" y1="0" x2="${C(110)}" y2="0"/>
+    <rect class="tb-fence" x="0" y="${C(-5)}" width="${C(100)}" height="${C(5)}"/>
+    <rect class="tb-tentside" x="${C(60)}" y="${C(-10)}" width="${C(30)}" height="${C(10)}"/>
+    <line class="tb-veil" x1="${C(80)}" y1="${C(-10)}" x2="${C(80)}" y2="0"/>
+    <rect class="tb-item" x="${C(17.5)}" y="${C(-3)}" width="${C(5)}" height="${C(3)}"/>
+    <g id="tbMan"><circle cy="${C(-3.45)}" r="${C(.42)}"/><path d="M0 ${C(-3)}V${C(-1.4)}M0 ${C(-1.4)}L${C(-.45)} 0M0 ${C(-1.4)}L${C(.45)} 0M${C(-.6)} ${C(-2.5)}L0 ${C(-2.8)}L${C(.6)} ${C(-2.5)}"/></g>
+    <text class="tb-side-lab" x="${C(1)}" y="${C(-5.6)}" id="tbFenceLab">Fence 5 cubits</text><text class="tb-side-lab" x="${C(61)}" y="${C(-10.6)}" id="tbTentLab">Tent 10 cubits</text></svg>`;
+  host.innerHTML=`<div class="st-x">${stBack}<span class="eyebrow">Explainer · Exodus 25 to 27</span><h2 tabindex="-1">Inside the tabernacle</h2>
+    <p class="st-lead">God told Moses exactly how to build a tent where he would live among his people. Drag the slider to walk in from the east gate. Each step brings you closer to the ark, and fewer people were allowed to follow.</p>
+    <div class="st-fig">${plan}${side}
+      <label class="st-slider"><span>Walk in</span><input type="range" id="tbWalk" min="-10" max="88" step="0.5" value="-8" aria-valuetext="Outside the court"></label>
+      <div class="st-units" role="group" aria-label="Units"><button class="btn" data-u="c" aria-pressed="true">Cubits</button><button class="btn" data-u="m" aria-pressed="false">Metres</button><button class="btn" data-u="f" aria-pressed="false">Feet</button></div></div>
+    <div class="st-card-now" id="tbCard" aria-live="polite"></div>
+    <p class="tl-note">A cubit was the length from elbow to fingertip, about 45 cm or 18 inches. Exodus gives the sizes of the court, the tent and most of the furniture, but not where each piece stood, so the positions here follow a common reconstruction. Hebrews 9 describes the same layout, and Matthew 27:51 records the veil torn in two.</p></div>`;
+  const inp=host.querySelector('#tbWalk'),you=host.querySelector('#tbYou'),man=host.querySelector('#tbMan'),card=host.querySelector('#tbCard');let unit='c',last='';
+  const fmt=c=>unit==='c'?`${c} cubit${c===1?'':'s'}`:unit==='m'?`${(c*.457).toFixed(c*.457<10?1:0)} m`:`${Math.round(c*1.5)} ft`;
+  function upd(){const x=+inp.value,it=ITEMS.find(i=>x>=i.a&&x<i.b)||ITEMS[ITEMS.length-1];
+    you.setAttribute('transform',`translate(${C(x)},${C(25)})`);man.setAttribute('transform',`translate(${C(x)},0)`);
+    host.querySelectorAll('.tb-item').forEach(el=>el.classList.toggle('on',el.dataset.i===it.id));
+    host.querySelector('.tb-plan').dataset.zone=it.id;inp.setAttribute('aria-valuetext',it.t);
+    host.querySelector('#tbW').textContent=fmt(100);host.querySelector('#tbH').textContent=fmt(50);host.querySelector('#tbFenceLab').textContent='Fence '+fmt(5);host.querySelector('#tbTentLab').textContent='Tent '+fmt(10);
+    if(it.id!==last){last=it.id;card.innerHTML=`<span class="eyebrow">Who may come here: ${it.who}</span><h3>${it.t}</h3><p>${it.x.replace(/#([\d.]+)#/g,(m,n)=>fmt(+n))}</p>${quote(it.r)}`;}}
+  inp.oninput=upd;
+  host.querySelector('.st-units').onclick=e=>{const b=e.target.closest('[data-u]');if(!b)return;unit=b.dataset.u;host.querySelectorAll('[data-u]').forEach(x=>x.setAttribute('aria-pressed',x===b));last='';upd();};
+  host.querySelector('.tb-plan').onclick=e=>{const t=e.target.closest('.tb-item');if(!t)return;const it=ITEMS.find(i=>i.id===t.dataset.i);inp.value=(it.a+it.b)/2;upd();};
+  upd();host.querySelector('h2').focus();}
+
+// ----- Explainer: the size of Noah's ark (Genesis 6:15), against things we know -----
+function openArk(host){host._cleanup&&host._cleanup();host.scrollTop=0;
+  const THINGS=[['person','A person',1.75,1.75],['bus','A double-decker bus',11,4.4],['whale','A blue whale',30,4],['jet','A Boeing 747',70.7,19.4],['titanic','The Titanic',269,53]];
+  host.innerHTML=`<div class="st-x">${stBack}<span class="eyebrow">Explainer · Genesis 6</span><h2 tabindex="-1">How big was the ark?</h2>
+    <p class="st-lead">God gave Noah its size in cubits: 300 long, 50 wide and 30 high, with three decks. Nobody knows exactly how long Noah's cubit was, so the slider lets you try the common range. Then pick something to compare it with.</p>
+    <div class="st-fig"><svg class="ark-svg" id="arkSvg" role="img"></svg>
+      <label class="st-slider"><span>Cubit</span><input type="range" id="arkCubit" min="44.4" max="52.5" step="0.1" value="45.7"></label>
+      <div class="st-units" role="group" aria-label="Compare with">${THINGS.map(([id,n],i)=>`<button class="btn" data-cmp="${id}" aria-pressed="${i===3}">${n.replace(/^(A|The) /,'')}</button>`).join('')}</div></div>
+    <div class="ark-stats" id="arkStats" aria-live="polite"></div>
+    ${quote([0,6,15],'Read')}
+    <p class="tl-note">The common cubit was about 45.7 cm (18 inches). The longer royal cubit used in Egypt was about 52.5 cm. The ark's 6 to 1 ratio of length to width is close to what shipbuilders use for stability. The ark is drawn here as a plain box, since Genesis gives only its outer size.</p></div>`;
+  const svg=host.querySelector('#arkSvg'),inp=host.querySelector('#arkCubit'),stats=host.querySelector('#arkStats');let cmp='jet';
+  const shape=(id,x,w,h)=>{const g=0;switch(id){
+    case'person':return `<circle cx="${x+w/2}" cy="${g-h*.88}" r="${h*.12}"/><rect x="${x+w*.3}" y="${g-h*.76}" width="${w*.4}" height="${h*.76}" rx="${w*.15}"/>`;
+    case'bus':return `<rect x="${x}" y="${g-h}" width="${w}" height="${h*.92}" rx="${h*.08}"/><circle cx="${x+w*.18}" cy="${g-h*.08}" r="${h*.1}"/><circle cx="${x+w*.8}" cy="${g-h*.08}" r="${h*.1}"/>`;
+    case'whale':return `<path d="M${x} ${g-h*.55}C${x+w*.1} ${g-h*1.05} ${x+w*.7} ${g-h*1.05} ${x+w*.88} ${g-h*.45}L${x+w} ${g-h*.95}L${x+w*.97} ${g-h*.4}L${x+w} ${g}L${x+w*.86} ${g-h*.3}C${x+w*.6} ${g} ${x+w*.15} ${g} ${x} ${g-h*.55}Z"/>`;
+    case'jet':return `<path d="M${x} ${g-h*.55}C${x} ${g-h*.75} ${x+w*.05} ${g-h*.8} ${x+w*.12} ${g-h*.8}L${x+w*.78} ${g-h*.8}L${x+w*.95} ${g-h}L${x+w} ${g-h}L${x+w} ${g-h*.6}C${x+w*.6} ${g-h*.45} ${x+w*.2} ${g-h*.4} ${x} ${g-h*.55}Z"/><rect x="${x+w*.42}" y="${g-h*.5}" width="${w*.03}" height="${h*.5}"/>`;
+    case'titanic':return `<path d="M${x} ${g-h*.55}L${x+w} ${g-h*.55}L${x+w*.97} ${g}L${x+w*.04} ${g}Z"/><rect x="${x+w*.12}" y="${g-h*.68}" width="${w*.76}" height="${h*.13}"/>${[.25,.4,.55,.7].map(f=>`<rect x="${x+w*f}" y="${g-h}" width="${w*.04}" height="${h*.32}"/>`).join('')}`;}};
+  function upd(){const cu=+inp.value/100,L=300*cu,Wd=50*cu,H=30*cu,th=THINGS.find(t=>t[0]===cmp);
+    inp.setAttribute('aria-valuetext',`${inp.value} centimetres`);
+    const span=Math.max(L,th[2])*1.06,top=Math.max(H,th[3])*1.25;
+    svg.setAttribute('viewBox',`${-span*.03} ${-top} ${span} ${top+span*.06}`);
+    svg.setAttribute('aria-label',`Side view: the ark, ${Math.round(L)} metres long and ${Math.round(H)} high, beside ${th[1].toLowerCase()}, ${th[2]} metres long`);
+    const fs=span*.028;
+    svg.innerHTML=`<line class="ark-ground" x1="${-span*.03}" y1="0" x2="${span}" y2="0" stroke-width="${span*.003}"/>
+      <g class="ark-cmp">${shape(cmp,L*.04,th[2],th[3])}</g>
+      <rect class="ark-hull" x="0" y="${-H}" width="${L}" height="${H}" stroke-width="${span*.004}"/>${[1,2].map(d=>`<line class="ark-deck" x1="0" x2="${L}" y1="${-H*d/3}" y2="${-H*d/3}" stroke-width="${span*.0025}"/>`).join('')}
+      <text x="${L/2}" y="${-H/2+fs*.35}" text-anchor="middle" style="font-size:${fs}px" class="ark-lab">Ark · ${Math.round(L)} m</text>
+      <text x="${L*.04+th[2]/2}" y="${span*.045}" text-anchor="middle" style="font-size:${fs}px" class="ark-cmplab">${th[1]} · ${th[2]} m</text>`;
+    const area=L*Wd*3,vol=L*Wd*H,ratio=L/th[2];
+    stats.innerHTML=`<div><b>${Math.round(L)} × ${Math.round(Wd)} × ${Math.round(H)} m</b><span>${Math.round(L*3.281)} × ${Math.round(Wd*3.281)} × ${Math.round(H*3.281)} ft</span></div>
+      <div><b>${(Math.round(area/100)*100).toLocaleString('en')} m²</b><span>of floor across three decks, about ${(area/7140).toFixed(1)} football pitches</span></div>
+      <div><b>${(Math.round(vol/1000)*1000).toLocaleString('en')} m³</b><span>inside, enough for about ${Math.round(vol/67.7)} forty-foot shipping containers</span></div>
+      <div><b>${ratio>=1?ratio.toFixed(ratio<10?1:0)+'×':Math.round(ratio*100)+'%'}</b><span>${ratio>=1?'':'of '}the length of ${th[1].replace(/^A /,'a ').replace(/^The /,'the ')}</span></div>`;}
+  inp.oninput=upd;
+  host.querySelector('.st-units').onclick=e=>{const b=e.target.closest('[data-cmp]');if(!b)return;cmp=b.dataset.cmp;host.querySelectorAll('[data-cmp]').forEach(x=>x.setAttribute('aria-pressed',x===b));upd();};
+  upd();host.querySelector('h2').focus();}
 
 // ---------- Descent (scrollytelling) ----------
 addEventListener('resize',()=>{const h=$('#descent');h&&h._resize&&h._resize();});
