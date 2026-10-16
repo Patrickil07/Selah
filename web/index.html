@@ -140,6 +140,7 @@ main{position:relative;min-height:0}
 .iw .g{font-size:.78rem;color:var(--muted);direction:ltr;max-width:14ch}
 .iw .s{font:.6rem var(--mono);color:var(--gold);direction:ltr}
 .lemma{font-size:clamp(3rem,10vw,5.5rem);line-height:1.15}
+.btn.hear{margin:6px 0 2px}.btn.hear.playing{background:var(--gold-soft);border-color:var(--gold)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips span{font-size:.8rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px}
 .chips b{font-weight:600;color:var(--gold)}
@@ -705,6 +706,20 @@ function speakCurrent(){if(!reader.on)return;const view=curView();if(!view||!vie
   if(reader.voice.startsWith('ai:')&&hasAI(b,c)){const a=new Audio(`audio/${reader.voice.slice(3)}/${b}_${c}_${k}.mp3`);a.playbackRate=reader.rate;reader.audio=a;
     a.onended=()=>advance(b,c,k,gen);a.onerror=()=>{if(gen===reader.gen){stopReader();toast('The AI narration file could not be loaded.');}};
     a.play().catch(()=>{if(gen===reader.gen){stopReader();toast('Tap Listen again to start the narration.');}});return;}
+  if(reader.voice.startsWith('ai:')&&NARR_REPO&&tr==='kjv'){const voice=reader.voice.slice(3);
+    narrTimings(voice).then(t=>{if(gen!==reader.gen||!reader.on)return;const st=t&&t[b+'_'+c];if(st)playChapter(b,c,k,gen,st,voice);else speakDevice(b,c,k,gen);});return;}
+  speakDevice(b,c,k,gen);}
+// Whole-Bible narration, streamed chapter by chapter from GitHub releases (see scripts/narration/narration.yml)
+const NARR_REPO='';// set to the public audio repository, such as 'Patrickil07/selah-audio', once it is rendered
+const narrTimes={};
+function narrTimings(voice){return narrTimes[voice]||(narrTimes[voice]=fetch(`https://cdn.jsdelivr.net/gh/${NARR_REPO}@main/timings/${voice}.json`).then(r=>r.ok?r.json():null).catch(()=>null));}
+function playChapter(b,c,k,gen,st,voice){const a=new Audio(`https://github.com/${NARR_REPO}/releases/download/${voice}-${b}/${b}_${c}.mp3`);a.preload='auto';a.playbackRate=reader.rate;reader.audio=a;
+  a.ontimeupdate=()=>{if(gen!==reader.gen)return;let j=reader.k;while(j+1<st.length-1&&a.currentTime>=st[j+1]-.05)j++;if(j!==reader.k){reader.k=j;curView()?._focusVerse(j,true);}};
+  a.onended=()=>advance(b,c,T[b][c].length-1,gen);
+  a.onerror=()=>{if(gen===reader.gen)speakDevice(b,c,reader.k,gen);};
+  const go=()=>{if(gen!==reader.gen)return;a.currentTime=st[k]||0;a.play().catch(()=>{if(gen===reader.gen){stopReader();toast('Tap Listen again to start the narration.');}});};
+  a.readyState>=1?go():a.addEventListener('loadedmetadata',go,{once:true});}
+function speakDevice(b,c,k,gen){
   if(!synth){stopReader();return;}
   if(reader.voice.startsWith('ai:')&&!warnedAI){warnedAI=true;toast(`Studio AI narration covers ${Object.values(AI_CHAPTERS).join(', ')} in this prototype. Using your device's best voice here.`);}
   const u=new SpeechSynthesisUtterance(T[b][c][k]);
@@ -728,6 +743,14 @@ addEventListener('keydown',e=>{if(mode!=='zoom')return;if(e.key==='Escape'||e.ke
 // ---------- Original languages (STEPBible tagged Hebrew OT and Greek NT, CC BY 4.0) ----------
 const origCache={};let lexicon=null,lexP=null;
 function loadOrig(b){return origCache[b]||(origCache[b]=fetch(`orig/${b}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}));}
+// Spoken dictionary words: Kokoro voice, pronunciation from espeak-ng (scripts/narration/words.py)
+let wordsIdx=null;
+function loadWords(){return wordsIdx||(wordsIdx=fetch('words/index.json').then(r=>r.ok?r.json():{w:{}}).catch(()=>({w:{}})));}
+const wordAudio={};let wordTimer=0;
+function sayWord(strong,btn){loadWords().then(ix=>{const e=ix.w[strong];if(!e)return;const [pack,start,dur]=e;stopReader&&reader.on&&stopReader();
+  const a=wordAudio[pack]||(wordAudio[pack]=new Audio('words/p'+pack+'.mp3'));a.preload='auto';clearTimeout(wordTimer);
+  const go=()=>{a.currentTime=Math.max(0,start-.02);a.play().catch(()=>{});btn&&btn.classList.add('playing');wordTimer=setTimeout(()=>{a.pause();btn&&btn.classList.remove('playing');},(dur+.12)*1000);};
+  a.readyState>=1?go():a.addEventListener('loadedmetadata',go,{once:true});a.load&&a.readyState<1&&a.load();});}
 function loadLex(){return lexP||(lexP=fetch('lexicon.json').then(r=>r.json()).then(j=>lexicon=j));}
 function decodeHeb(m){if(!m)return '';const P={N:'noun',V:'verb',A:'adjective',R:'preposition',C:'conjunction',T:'particle',P:'pronoun',S:'suffix',D:'adverb'};
   const G={m:'masculine',f:'feminine',b:'both genders',c:'common'},Nm={s:'singular',p:'plural',d:'dual'},St={a:'absolute',c:'construct',d:'definite'};
@@ -748,12 +771,13 @@ function decodeGrk(m){if(!m)return '';const pre={N:'noun',V:'verb',A:'adjective'
   return out.join(', ');}
 function renderOrig(){const {b,c,strong}=state,heb=strong[0]==='H',cls=heb?'heb':'grk',lang=heb?'he':'el';
   const v=view(`<div class="vhead"><span class="eyebrow">Z4 · Original word · ${heb?'Hebrew':'Greek'}</span>
-      <div class="lemma ${cls}" lang="${lang}" id="lemma">${esc(state.form)}</div><p id="lsub">Loading the lexicon…</p></div>
+      <div class="lemma ${cls}" lang="${lang}" id="lemma">${esc(state.form)}</div><button class="btn hear" id="hearWord" hidden>🔊 Hear it</button><p id="lsub">Loading the lexicon…</p></div>
       <div class="chips"><span><b>In ${NAMES[b]} ${c+1}:${state.v+1}</b> ${esc(state.form)} · ${esc(state.tr)} · “${esc(state.gl)}”</span><span><b>Grammar</b> ${esc((heb?decodeHeb:decodeGrk)(state.morph))}</span><span><b>Strong's</b> ${esc(strong)}</span></div>
       <div id="lbody"></div>`);
   loadLex().then(L=>{const e=L[strong];const sub=v.querySelector('#lsub'),body=v.querySelector('#lbody');if(!sub)return;
     if(!e){sub.textContent='No lexicon entry for this word.';return;}
     const [lemma,tr,gloss,def,occ]=e;v.querySelector('#lemma').textContent=lemma||state.form;
+    loadWords().then(ix=>{const hb=v.querySelector('#hearWord');if(!hb||!ix.w[strong])return;hb.hidden=false;hb.setAttribute('aria-label',`Hear the ${heb?'Hebrew':'Greek'} word ${tr?tr+', ':''}meaning ${gloss}`);hb.onclick=()=>sayWord(strong,hb);});
     const books=new Set(occ.map(i=>VB[i])).size;
     sub.innerHTML=`<b>${esc(tr||'')}</b> · “${esc(gloss)}”. Dictionary form of the word. It appears in ${fmt(occ.length)} verse${occ.length===1?'':'s'} across ${books} book${books===1?'':'s'}, shown below wherever they fall in the Bible.`;
     body.innerHTML=`${def?`<div class="def" id="def">${esc(def)}</div><button class="btn" id="defmore">Show full definition</button>`:''}
