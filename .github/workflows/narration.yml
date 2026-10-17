@@ -8,7 +8,6 @@ name: Narration
 on:
   push:
     branches: [narration]
-    paths: ['.github/workflows/narration.yml', 'scripts/narration/**']
   workflow_dispatch:
     inputs:
       voice:
