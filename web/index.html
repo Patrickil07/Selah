@@ -710,9 +710,9 @@ function speakCurrent(){if(!reader.on)return;const view=curView();if(!view||!vie
     narrTimings(voice).then(t=>{if(gen!==reader.gen||!reader.on)return;const st=t&&t[b+'_'+c];if(st)playChapter(b,c,k,gen,st,voice);else speakDevice(b,c,k,gen);});return;}
   speakDevice(b,c,k,gen);}
 // Whole-Bible narration, streamed chapter by chapter from GitHub releases (see scripts/narration/narration.yml)
-const NARR_REPO='';// set to the public audio repository, such as 'Patrickil07/selah-audio', once it is rendered
+const NARR_REPO='Patrickil07/Selah',NARR_REF='narration';// audio in releases {voice}-{book}; timings on the narration branch
 const narrTimes={};
-function narrTimings(voice){return narrTimes[voice]||(narrTimes[voice]=fetch(`https://cdn.jsdelivr.net/gh/${NARR_REPO}@main/timings/${voice}.json`).then(r=>r.ok?r.json():null).catch(()=>null));}
+function narrTimings(voice){return narrTimes[voice]||(narrTimes[voice]=fetch(`https://cdn.jsdelivr.net/gh/${NARR_REPO}@${NARR_REF}/timings/${voice}.json`).then(r=>r.ok?r.json():null).catch(()=>null));}
 function playChapter(b,c,k,gen,st,voice){const a=new Audio(`https://github.com/${NARR_REPO}/releases/download/${voice}-${b}/${b}_${c}.mp3`);a.preload='auto';a.playbackRate=reader.rate;reader.audio=a;
   a.ontimeupdate=()=>{if(gen!==reader.gen)return;let j=reader.k;while(j+1<st.length-1&&a.currentTime>=st[j+1]-.05)j++;if(j!==reader.k){reader.k=j;curView()?._focusVerse(j,true);}};
   a.onended=()=>advance(b,c,T[b][c].length-1,gen);

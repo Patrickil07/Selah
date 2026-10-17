@@ -47,4 +47,4 @@ Every push builds an Android debug APK and an unsigned iOS simulator build on Gi
 
 ## Whole-Bible narration
 
-`scripts/narration/chapters.py` renders one MP3 per chapter plus verse timings. `scripts/narration/narration.yml` runs it on GitHub Actions in parallel and publishes each book as a release in a public audio repository. Once that repository exists, set `NARR_REPO` in `web/index.html` and the app streams every chapter, following along verse by verse.
+`scripts/narration/chapters.py` renders one MP3 per chapter plus verse timings. `.github/workflows/narration.yml` runs it on GitHub Actions in 40 parallel jobs whenever the `narration` branch is pushed (or by hand from the Actions tab once it is on `main`). Each book becomes a release tagged `{voice}-{book}`, and the timings are committed to `timings/{voice}.json` on the `narration` branch. The app streams any chapter that has timings and falls back to device voices for the rest.
