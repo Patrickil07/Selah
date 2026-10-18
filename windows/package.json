@@ -1,0 +1,54 @@
+{
+  "name": "selah-windows",
+  "productName": "Selah",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Selah: a Bible you can zoom",
+  "author": "Patrick Ilunga",
+  "main": "main.cjs",
+  "scripts": {
+    "prepare-app": "node prepare.mjs",
+    "start": "npm run prepare-app && electron .",
+    "dist": "npm run prepare-app && electron-builder --win --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.9.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.patrickil07.selah",
+    "productName": "Selah",
+    "files": [
+      "main.cjs",
+      "icon.png",
+      "www/**/*"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        "appx",
+        "nsis"
+      ],
+      "icon": "icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "artifactName": "Selah-Setup-${version}.${ext}"
+    },
+    "appx": {
+      "artifactName": "Selah-${version}.${ext}",
+      "displayName": "Selah Bible",
+      "applicationId": "Selah",
+      "backgroundColor": "#0c1220",
+      "languages": [
+        "en-US"
+      ],
+      "identityName": "Nobleman.SelahBible",
+      "publisher": "CN=625E39A6-4914-4FB3-BE6D-7694205A9EC4",
+      "publisherDisplayName": "Nobleman"
+    }
+  }
+}

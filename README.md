@@ -48,3 +48,14 @@ Every push builds an Android debug APK and an unsigned iOS simulator build on Gi
 ## Whole-Bible narration
 
 `scripts/narration/chapters.py` renders one MP3 per chapter plus verse timings. `.github/workflows/narration.yml` runs it on GitHub Actions in 40 parallel jobs whenever the `narration` branch is pushed (or by hand from the Actions tab once it is on `main`). Each book becomes a release tagged `{voice}-{book}`, and the timings are committed to `timings/{voice}.json` on the `narration` branch. The app streams any chapter that has timings and falls back to device voices for the rest.
+
+## Windows and the Microsoft Store
+
+`windows/` wraps the same app (`www/`) in Electron. CI builds two files on a Windows runner and checks the app opens:
+an `.appx` for the Microsoft Store (Microsoft signs it when it is published) and a `Selah-Setup` installer for direct testing.
+
+The Store product is **Selah Bible** (Store ID 9N120SPF1JMG). Its Partner Center *Product identity* is in
+`windows/package.json` (`build.appx`), so every build's `.appx` can be uploaded to a Store submission.
+Raise `version` there for each new submission.
+
+Run locally on Windows: `npm ci && npm run build`, then in `windows/`: `npm ci && npm start`.
