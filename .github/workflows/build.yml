@@ -48,3 +48,40 @@ jobs:
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO build
+
+  windows:
+    name: Windows (Microsoft Store package and installer)
+    runs-on: windows-latest
+    env:
+      STORE_IDENTITY_NAME: ${{ vars.STORE_IDENTITY_NAME }}
+      STORE_PUBLISHER: ${{ vars.STORE_PUBLISHER }}
+      STORE_PUBLISHER_NAME: ${{ vars.STORE_PUBLISHER_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            windows/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Package for Windows
+        working-directory: windows
+        run: |
+          npm ci
+          npm run dist
+      - name: Check the app opens and shows the Bible
+        working-directory: windows
+        run: |
+          npm install --no-save playwright@1.56.1
+          node smoke.mjs dist/win-unpacked/Selah.exe
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: selah-windows
+          path: |
+            windows/dist/*.appx
+            windows/dist/*.exe
+            windows/dist/smoke.png
