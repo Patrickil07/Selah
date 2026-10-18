@@ -59,3 +59,11 @@ The Store product is **Selah Bible** (Store ID 9N120SPF1JMG). Its Partner Center
 Raise `version` there for each new submission.
 
 Run locally on Windows: `npm ci && npm run build`, then in `windows/`: `npm ci && npm start`.
+
+## Google Play
+
+The `android-release` job builds a signed Android App Bundle (`.aab`) for Google Play and attaches it to the
+`android-1.0.0` release. It signs with the upload key in the repository secrets `ANDROID_KEYSTORE_B64`
+(the `.jks` file in base64), `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_ALIAS`. The key itself is kept by the
+app's owner; Google Play holds the final app signing key. The version code is the workflow run number, so each new
+bundle can be uploaded after the previous one.
