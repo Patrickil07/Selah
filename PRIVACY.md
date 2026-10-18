@@ -43,4 +43,4 @@ If this policy changes, the new version will be posted on this page with a new d
 
 ## Contact
 
-Questions about this policy can be asked by opening an issue at https://github.com/Patrickil07/Selah/issues.
+For questions about this policy, use the support contact shown on the Selah Bible page in the Microsoft Store.
