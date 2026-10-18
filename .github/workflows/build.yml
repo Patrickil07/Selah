@@ -31,6 +31,74 @@ jobs:
           name: selah-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
+  android-release:
+    name: Android (Play Store bundle)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build
+      - run: npx cap sync android
+      - name: Restore the Play upload key
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::No ANDROID_KEYSTORE_B64 secret yet, so this bundle is unsigned and can't go to Google Play."
+          fi
+      - name: Check the upload key opens with its password and alias
+        if: env.ANDROID_KEYSTORE_FILE != ''
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if ! out=$(keytool -list -keystore "$ANDROID_KEYSTORE_FILE" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" 2>&1); then
+            echo "::error::The upload key could not be opened: $(echo "$out" | grep -m1 -i 'error\|exception')"
+            exit 1
+          fi
+      - name: Build the release bundle
+        working-directory: android
+        env:
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -o pipefail
+          if ! ./gradlew bundleRelease --no-daemon 2>&1 | tee "$RUNNER_TEMP/gradle.log"; then
+            echo "::error::$(grep -A4 'What went wrong' "$RUNNER_TEMP/gradle.log" | tr '\n' ' ' | cut -c1-600)"
+            exit 1
+          fi
+          cp app/build/outputs/bundle/release/app-release.aab "../Selah-1.0.0-${{ github.run_number }}.aab"
+      - name: Check the bundle is signed
+        if: env.ANDROID_KEYSTORE_FILE != ''
+        run: jarsigner -verify Selah-*.aab | grep -q "jar verified"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: selah-play-bundle
+          path: Selah-*.aab
+      # A direct download for the Play Console upload, without signing in to GitHub
+      - name: Attach the bundle to the Android release
+        if: env.ANDROID_KEYSTORE_FILE != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view android-1.0.0 >/dev/null 2>&1 || gh release create android-1.0.0 --prerelease --target "$GITHUB_SHA" \
+            --title "Selah Bible 1.0.0 for Android" --notes "The .aab file is the bundle to upload in the Google Play Console. The newest build has the highest number."
+          gh release upload android-1.0.0 Selah-*.aab --clobber
+
   ios:
     name: iOS (simulator build, unsigned)
     runs-on: macos-15
