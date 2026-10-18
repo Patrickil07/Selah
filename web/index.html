@@ -1,10 +1,11 @@
+<meta charset="utf-8">
 <title>Selah Prototype</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Noto+Serif+Hebrew:wght@400;600&family=Noto+Serif:wght@400;600&display=swap">
 <style>
 /* Layout: full-height app. Header (modes + breadcrumb), one main panel per mode, canon scrubber pinned at the bottom of Zoom mode. */
 :root{
   --bg:#eef1f5; --surface:#ffffff; --ink:#152033; --muted:#566377; --line:#d4dbe5;
-  --lapis:#1f4fa8; --gold:#a8771a; --lapis-soft:#dfe7f6; --gold-soft:#f4e9d2;
+  --lapis:#1f4fa8; --gold:#8a6212; --lapis-soft:#dfe7f6; --gold-soft:#f4e9d2;
   --g-law:#1f4fa8; --g-hist:#3a7d6b; --g-poet:#8a5aa8; --g-maj:#b4522f; --g-min:#d0874a;
   --g-gosp:#a8771a; --g-acts:#6d8a2c; --g-paul:#2f7fb4; --g-gen:#5b6fb8; --g-rev:#9b3557;
   --display:"Gloock", Georgia, serif; --body:"Figtree", system-ui, sans-serif;
@@ -18,7 +19,7 @@
   --lapis:#7ea3ec; --gold:#e0b65c; --lapis-soft:#1b2a4a; --gold-soft:#33291a; color-scheme:dark}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;overflow:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;overflow:hidden}
 button{font:inherit;color:inherit}
 button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .app{height:100%;display:grid;grid-template-rows:auto 1fr auto}
@@ -140,6 +141,7 @@ main{position:relative;min-height:0}
 .iw .g{font-size:.78rem;color:var(--muted);direction:ltr;max-width:14ch}
 .iw .s{font:.6rem var(--mono);color:var(--gold);direction:ltr}
 .lemma{font-size:clamp(3rem,10vw,5.5rem);line-height:1.15}
+.btn.hear{margin:6px 0 2px}.btn.hear.playing{background:var(--gold-soft);border-color:var(--gold)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips span{font-size:.8rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px}
 .chips b{font-weight:600;color:var(--gold)}
@@ -255,17 +257,215 @@ main{position:relative;min-height:0}
 .planbar .btn{margin-left:auto}
 .cele{font-size:2.6rem;line-height:1;margin-bottom:6px;animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
 @media (max-width:600px){.sheetbg{place-items:end center;padding:0}.sheet{border-radius:20px 20px 0 0;max-height:90%}}
+/* Accessibility helpers */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:8px;top:-60px;z-index:80;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600}
+.skip:focus{top:8px}
+h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
+#scrub:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.gjump{display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--muted)}
+.gjump select,.trsel{font:inherit;font-size:.82rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 8px;max-width:100%}
+/* Translations */
+.trrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.compare{display:grid;gap:8px}
+.compare div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.compare b{font:600 .72rem var(--mono);color:var(--gold);letter-spacing:.08em;display:block;margin-bottom:2px}
+.compare p{margin:0;font-family:var(--read);font-size:1.02rem;line-height:1.55}
+.compare .cur{border-color:var(--lapis)}
+/* Highlights, bookmarks and notes */
+:root{--hl-gold:rgb(240 196 80/.35);--hl-green:rgb(110 190 120/.32);--hl-blue:rgb(110 160 240/.32);--hl-pink:rgb(236 120 170/.30)}
+.vs.hl-gold,.vtext.hl-gold{background:var(--hl-gold)}.vs.hl-green,.vtext.hl-green{background:var(--hl-green)}
+.vs.hl-blue,.vtext.hl-blue{background:var(--hl-blue)}.vs.hl-pink,.vtext.hl-pink{background:var(--hl-pink)}
+.vs[class*="hl-"]{border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.vs .mk{font-size:.72em;margin-left:2px;color:var(--gold);vertical-align:super}
+.marks{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.marks .ml{font-size:.78rem;color:var(--muted)}
+.hl-sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--sw);cursor:pointer;padding:0}
+.hl-sw[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--surface) inset}
+.hl-sw.none{background:var(--surface);position:relative}
+.hl-sw.none::after{content:"";position:absolute;left:5px;right:5px;top:50%;height:2px;background:var(--muted);transform:rotate(-45deg)}
+.notebox{display:grid;gap:6px;margin-top:10px}
+.notebox label{font-size:.78rem;color:var(--muted)}
+.notebox textarea{font:inherit;font-size:.95rem;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);color:var(--ink);resize:vertical;min-height:70px}
+.notebox .row{display:flex;gap:8px}
+.libtabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:3px;margin:8px 0 12px}
+.libtabs button{flex:1;border:0;background:transparent;padding:7px;border-radius:8px;cursor:pointer;font-weight:600;color:var(--muted);font-size:.85rem}
+.libtabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0/.12)}
+.liblist{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.liblist button{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;cursor:pointer;display:grid;gap:3px}
+.liblist button:hover{border-color:var(--lapis)}
+.liblist b{font:600 .78rem var(--mono);color:var(--gold)}
+.liblist span{font-family:var(--read);font-size:.95rem;line-height:1.45}
+.liblist em{font-style:normal;font-size:.85rem;color:var(--muted)}
+.libempty{color:var(--muted);font-size:.9rem}
+#libChip::before{content:"🔖";margin-right:4px}
+@media (max-width:600px){.libtabs button{font-size:.74rem;padding:7px 3px;white-space:nowrap}#libChip,#findChip{font-size:0;padding:6px 7px;line-height:1}#libChip::before,#findChip::before{font-size:.95rem;margin:0}}
+/* Time: timeline and linked map */
+#time{overflow:auto}
+.tl{display:grid;grid-template-rows:auto auto minmax(300px,1fr) auto;gap:10px;padding:12px 16px;min-height:100%;box-sizing:border-box;max-width:1500px;margin:0 auto}
+.tl-bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.tl-title{font-family:var(--display);font-weight:400;font-size:1.6rem;margin:0}
+.tl-find{flex:1 1 220px;max-width:420px}
+.tl-find input{width:100%;box-sizing:border-box;font:inherit;font-size:.9rem;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.tl-zoom{display:flex;gap:4px}
+.tl-scroll{--evy:126px;--prow:146px;overflow:auto;max-height:44vh;border:1px solid var(--line);border-radius:14px;background:var(--surface);overscroll-behavior-x:contain;cursor:grab}
+.tl-canvas{position:relative;min-height:220px}
+.tl-era{position:absolute;top:0;height:22px;border-right:1px solid var(--surface);background:var(--lapis-soft);overflow:hidden;font-size:.68rem;color:var(--muted);display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.tl-era{border:0;padding:0;cursor:zoom-in}.tl-era.alt{background:var(--gold-soft)}.tl-era:hover{filter:brightness(.95)}
+.tl-tick{position:absolute;top:22px;bottom:0;border-left:1px dashed var(--line);pointer-events:none}
+.tl-tick span{position:absolute;top:2px;left:4px;font:.62rem var(--mono);color:var(--muted);white-space:nowrap}
+.tl-ev{position:absolute;transform:translateX(-5px);border:0;background:none;padding:0;cursor:pointer;color:var(--ink)}
+.tl-ev i{position:absolute;left:0;bottom:0;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--surface)}
+.tl-ev:not(.lab){top:calc(var(--evy) - 5px);width:10px;height:10px}
+.tl-ev.lab{top:calc(var(--evy) - 5px - (var(--r) + 1) * 18px);height:calc((var(--r) + 1) * 18px + 10px);width:10px}
+.tl-ev.lab::before{content:"";position:absolute;left:4.5px;top:14px;bottom:9px;border-left:1px solid var(--line)}
+.tl-ev span{position:absolute;left:-2px;top:0;white-space:nowrap;font-size:.72rem;line-height:14px;padding:0 4px;border-radius:4px;background:var(--surface)}
+.tl-ev:hover span,.tl-ev.on span{background:var(--gold-soft)}
+.tl-ev.on i{background:var(--lapis);transform:scale(1.5)}
+.tl-p{position:absolute;height:18px;border-radius:9px;border:1px solid var(--lapis);background:var(--lapis-soft);padding:0 6px;cursor:pointer;overflow:visible;color:var(--ink);text-align:left}
+.tl-p.out span{position:absolute;left:calc(100% + 4px);top:0}
+.tl-p.active{border-style:dashed}
+.tl-p span{display:inline-block;font-size:.7rem;white-space:nowrap;line-height:16px}
+.tl-p.on{background:var(--gold);border-color:var(--gold);color:var(--surface)}
+.tl-lower{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:10px;min-height:0}
+.tl-map{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);min-height:300px;background:var(--lapis-soft)}
+.tl-map svg{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.tl-map .sea{fill:var(--lapis-soft)}
+.tl-map .land{fill:var(--surface);stroke:var(--line);stroke-width:.4}
+.tl-map .river{fill:none;stroke:var(--lapis);stroke-width:1.2;opacity:.45;vector-effect:non-scaling-stroke}
+.tl-map .lake{fill:var(--lapis-soft);stroke:var(--lapis);stroke-width:.6;opacity:.8;vector-effect:non-scaling-stroke}
+.tl-map circle{fill:var(--muted);opacity:.28;stroke:var(--surface);cursor:pointer;transition:opacity .3s,fill .3s}
+.tl-map circle.now{fill:var(--gold);opacity:.85}
+.tl-map circle.sel{fill:var(--g-rev);opacity:1}
+.tl-map .route{fill:none;stroke:var(--g-rev);stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke;opacity:.8}
+.tl-map text{fill:var(--ink);stroke:var(--surface);stroke-width:.25em;paint-order:stroke;font-family:var(--body);pointer-events:none}
+.tl-map text.on{font-weight:700}
+.tl-mapbtns{position:absolute;right:8px;bottom:8px;display:flex;gap:6px}
+.tl-detail{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;overflow:auto;max-height:100%}
+.tl-detail h3{font-family:var(--display);font-weight:400;font-size:1.5rem;margin:2px 0 8px}
+.tl-muted{color:var(--muted);font-size:.88rem;margin:0 0 10px}
+.tl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;align-items:center}
+.tl-chips b{font:600 .7rem var(--mono);color:var(--gold);letter-spacing:.06em;text-transform:uppercase;width:100%}
+.tl-chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;font-size:.8rem;cursor:pointer;color:var(--ink)}
+.tl-chips button:hover{border-color:var(--lapis)}
+.tl-note{font-size:.75rem;color:var(--muted);margin:0}
+.sheet.search{max-width:620px}
+.semform{display:flex;gap:8px;margin:6px 0 10px}
+.semform input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.semscope{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.semscope button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:.8rem;cursor:pointer;color:var(--ink)}
+.semscope button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.semstatus{color:var(--muted);font-size:.85rem;margin:4px 0 8px;min-height:1.2em}
+.semex{display:flex;flex-wrap:wrap;gap:6px}
+.semnote{color:var(--muted);font-size:.78rem;margin:12px 0 0}
+#findChip::before{content:"🔍";margin-right:4px}
+.zoombar #findFab{display:none}
+@media (max-width:600px){#findChip{display:none}.zoombar #findFab{display:block;font-size:.95rem}}
+/* Stories: guided journeys and explainers */
+#stories{overflow:auto;--ph:600px}
+.st-home,.st-x{max-width:980px;margin:0 auto;padding:18px 16px 40px;box-sizing:border-box}
+.st-home h2:focus,.st-x h2:focus,.st-step h2:focus{outline:none}
+.st-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px;margin-top:14px}
+.st-card{display:grid;gap:6px;align-content:start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:16px 16px 18px;cursor:pointer;color:var(--ink);font:inherit;transition:transform .2s,border-color .2s;min-height:150px;position:relative;overflow:hidden}
+.st-card:hover{transform:translateY(-2px);border-color:var(--lapis)}
+.st-card b{font-family:var(--display);font-weight:400;font-size:1.45rem;line-height:1.15}
+.st-card span:last-child{color:var(--muted);font-size:.9rem}
+.st-card::after{content:"";position:absolute;right:-18px;bottom:-18px;width:90px;height:90px;border-radius:50%;background:var(--lapis-soft);opacity:.7}
+.st-card.plan::after{border-radius:8px;background:var(--gold-soft)}.st-card.ark::after{border-radius:14px 14px 40px 40px;width:130px;height:46px;bottom:-6px;background:var(--gold-soft)}
+.st-back{display:block;margin-bottom:10px}
+.st-j{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);align-items:start}
+.st-vis{position:sticky;top:0;height:var(--ph);padding:12px;box-sizing:border-box;z-index:1}
+.st-vis svg{display:block;width:100%;height:100%;border-radius:14px;border:1px solid var(--line);background:var(--lapis-soft);box-sizing:border-box}
+.st-vis .sea{fill:var(--lapis-soft)}.st-vis .land{fill:var(--surface);stroke:var(--line);stroke-width:calc(var(--u) * 1px)}
+.st-vis path.j0,.st-vis path.all{stroke:var(--g-rev)}.st-vis path.j1{stroke:var(--lapis)}.st-vis path.j2{stroke:var(--g-acts)}.st-vis path.j3{stroke:var(--gold)}.st-vis path.j4{stroke:var(--g-rev)}
+#stDone path,#stNow{fill:none;stroke-width:calc(var(--u) * 2.6px);stroke-linecap:round;stroke-linejoin:round}
+#stDone path{opacity:.45}
+#stNow{stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 1.2s ease-in-out}
+#stNow.all{stroke-dasharray:none;opacity:.8}
+#stDots circle{fill:var(--muted);stroke:var(--surface);stroke-width:calc(var(--u) * 1.2px)}
+#stDots circle.on{fill:var(--g-rev)}
+#stLabels text{fill:var(--muted);stroke:var(--surface);stroke-width:.28em;paint-order:stroke;font-family:var(--body)}
+#stLabels text.on{fill:var(--ink);font-weight:700}
+.st-legend{position:absolute;left:22px;bottom:22px;display:flex;flex-wrap:wrap;gap:4px 10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:.72rem;max-width:calc(100% - 44px);box-sizing:border-box}
+.st-legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle;background:var(--g-rev)}
+.st-legend .j1 i{background:var(--lapis)}.st-legend .j2 i{background:var(--g-acts)}.st-legend .j3 i{background:var(--gold)}
+.st-steps{padding:calc(var(--ph) * .3) 16px calc(var(--ph) * .5) 8px;display:grid;gap:calc(var(--ph) * .42)}
+.st-step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;opacity:.55;transition:opacity .4s,box-shadow .4s}
+.st-step.cur,.st-step:focus-within{opacity:1;box-shadow:0 6px 24px rgb(0 0 0/.08)}
+.st-step h2{font-family:var(--display);font-weight:400;font-size:2rem;margin:4px 0 8px}
+.st-step h3{font-family:var(--display);font-weight:400;font-size:1.45rem;margin:4px 0 6px}
+.st-step p{margin:0 0 10px;line-height:1.5}
+.st-step .eyebrow.j1{color:var(--lapis)}.st-step .eyebrow.j2{color:var(--g-acts)}.st-step .eyebrow.j4{color:var(--g-rev)}
+.st-hint{color:var(--muted);font-size:.85rem}
+.st-q{margin:10px 0;padding:8px 0 8px 14px;border-left:3px solid var(--gold);font-family:var(--serif,Georgia,serif);font-size:1.02rem;line-height:1.5}
+.st-q cite{display:block;margin-top:4px;font:normal .72rem var(--mono);color:var(--muted)}
+.st-x h2{font-family:var(--display);font-weight:400;font-size:2.2rem;margin:4px 0 8px}
+.st-lead{font-size:1.02rem;line-height:1.55;max-width:68ch}
+.st-fig{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;gap:10px;margin:14px 0}
+.st-slider{display:flex;gap:10px;align-items:center;font-weight:600;font-size:.88rem}
+.st-slider input{flex:1;accent-color:var(--gold);min-height:28px}
+.st-units{display:flex;flex-wrap:wrap;gap:6px}
+.st-units .btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.st-card-now{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:200px}
+.st-card-now h3{font-family:var(--display);font-weight:400;font-size:1.5rem;margin:4px 0 6px}
+.st-card-now p{margin:0;line-height:1.5}
+.tb-plan,.tb-side{width:100%;height:auto;display:block}
+.tb-plan{max-height:min(52vh,560px)}.tb-side{max-height:150px}
+.tb-ground{fill:var(--bg)}
+.tb-court{fill:var(--surface);stroke:var(--ink);stroke-width:2;transition:fill .4s}
+.tb-gate{stroke:var(--g-rev);stroke-width:7}
+.tb-tent{fill:var(--surface);stroke:var(--gold);stroke-width:3;transition:fill .4s}
+.tb-most{fill:var(--surface);stroke:var(--gold);stroke-width:3;transition:fill .4s}
+.tb-veil{stroke:var(--g-rev);stroke-width:4}
+.tb-item{fill:var(--muted);transition:fill .3s;cursor:pointer}.tb-item.gold{fill:var(--gold)}
+.tb-item.on{fill:var(--g-rev)}
+.tb-plan[data-zone="court"] .tb-ground,.tb-plan[data-zone="gate"] .tb-court,.tb-plan[data-zone="altar"] .tb-court,.tb-plan[data-zone="laver"] .tb-court,.tb-plan[data-zone="holy"] .tb-tent,.tb-plan[data-zone="veil"] .tb-most,.tb-plan[data-zone="most"] .tb-most{fill:var(--gold-soft)}
+.tb-plan[data-zone="holy"] .tb-court,.tb-plan[data-zone="most"] .tb-court,.tb-plan[data-zone="veil"] .tb-court{fill:var(--bg)}
+.tb-lab text,.tb-dims text,.tb-compass text,#tbYou text,.tb-side-lab{font:600 22px var(--body);fill:var(--ink);stroke:var(--surface);stroke-width:5px;paint-order:stroke}
+.tb-dims text{fill:var(--muted);font-weight:500}
+.tb-compass line{stroke:var(--ink);stroke-width:3}.tb-compass path{fill:var(--ink)}
+#tbYou circle{fill:var(--lapis);stroke:var(--surface);stroke-width:4}
+#tbYou,#tbMan{transition:transform .15s}
+.tb-floor{stroke:var(--line);stroke-width:2}
+.tb-fence{fill:var(--bg);stroke:var(--ink);stroke-width:2}
+.tb-tentside{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+#tbMan circle{fill:var(--lapis)}#tbMan path{stroke:var(--lapis);stroke-width:4;fill:none;stroke-linecap:round}
+.tb-side-lab{font-size:20px}
+.ark-svg{width:100%;height:auto;aspect-ratio:2.6;display:block;background:linear-gradient(var(--lapis-soft),var(--surface));border-radius:10px}
+.ark-ground{stroke:var(--muted)}
+.ark-hull{fill:rgb(139 90 43/.55);stroke:#8b5a2b}
+.ark-svg text{stroke:var(--surface);stroke-width:.25em;paint-order:stroke}
+.ark-deck{stroke:var(--surface);opacity:.6}
+.ark-cmp{fill:var(--lapis);opacity:.45}
+.ark-svg text{fill:var(--ink);font-family:var(--body);font-weight:600}
+.ark-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;margin:0 0 14px}
+.ark-stats div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:3px}
+.ark-stats b{font-family:var(--display);font-weight:400;font-size:1.45rem}
+.ark-stats span{color:var(--muted);font-size:.85rem}
+@media (max-width:760px){
+  .st-j{grid-template-columns:1fr}
+  .st-vis{height:calc(var(--ph) * .46);padding:8px 10px;background:var(--bg)}
+  .st-steps{padding:16px 12px calc(var(--ph) * .4);gap:calc(var(--ph) * .3)}
+  .st-legend{display:none}
+  .tb-lab text,.tb-dims text,.tb-compass text,#tbYou text{font-size:36px;stroke-width:7px}.tb-side-lab{font-size:32px}
+  .st-x h2{font-size:1.8rem}
+}
+@media (max-width:760px){.tl{grid-template-rows:auto auto auto auto}.tl-lower{grid-template-columns:1fr}.tl-map{height:300px;min-height:0}.tl-scroll{max-height:55vh}}
+@media (max-width:480px){.brand{display:none}}
 /* Phone and tablet fit */
 #galaxy{overflow:hidden}
+@media (max-width:900px){.modes .m3d{display:none}#sound,#planChip,#libChip,#findChip{font-size:0;padding:6px 7px;line-height:1}#sound::before{content:"🔇";font-size:.95rem}#sound[aria-pressed="true"]::before{content:"🔊"}#planChip::after{content:"📖";font-size:.95rem}#libChip::before,#findChip::before{font-size:.95rem;margin:0}}
 @media (max-width:600px){
-  header{gap:6px 8px;padding:8px 12px}
+  header{gap:6px 5px;padding:8px 10px}
   header .spacer{display:none}
   #planChip{margin-left:auto}
   .brand{font-size:1.2rem}
-  .modes button{padding:5px 7px;font-size:.8rem}
+  .modes button{padding:5px 4px;font-size:.78rem}
+  #planChip{gap:4px}
+  .modes{padding:2px;gap:2px}
   .gbook{font-size:.6rem}
   .modes .m3d{display:none}
-  #sound,#planChip{font-size:0;padding:6px 9px;line-height:1}
+  #sound,#planChip{font-size:0;padding:6px 7px;line-height:1}
   #sound::before{content:"🔇";font-size:.95rem}
   #sound[aria-pressed="true"]::before{content:"🔊"}
   #planChip::after{content:"📖";font-size:.95rem}
@@ -282,38 +482,47 @@ main{position:relative;min-height:0}
   .dgauge{right:14px}.dgauge span{display:none}
   .dintro{padding-inline:16px 38px;top:14px}
 }
-@media (max-width:380px){header{padding:8px 10px;gap:6px}.brand{font-size:1.05rem}.modes button{padding:5px 5px;font-size:.74rem}#sound,#planChip{padding:6px 7px}.pane.strip{--sw:18px}.pane.strip .sl{display:none}}
+@media (max-width:380px){header{padding:8px 10px;gap:6px}.brand{display:none}.modes button{padding:5px 5px;font-size:.74rem}#sound,#planChip,#libChip{padding:6px 4px}.modes button{padding:5px 3px;font-size:.7rem}.pane.strip{--sw:18px}.pane.strip .sl{display:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+<a class="skip" href="#stage">Skip to the Bible text</a>
+<h1 class="sr-only">Selah, a Bible you can zoom</h1>
 <div class="app">
   <header>
     <span class="brand">Selah</span>
     <div class="modes" role="group" aria-label="Mode">
       <button data-mode="zoom" aria-pressed="true">Zoom</button>
+      <button data-mode="time" aria-pressed="false">Time</button>
       <button data-mode="galaxy" aria-pressed="false"><span class="m3d">3D </span>Galaxy</button>
       <button data-mode="descent" aria-pressed="false">Descent</button>
+      <button data-mode="stories" aria-pressed="false">Stories</button>
     </div>
     <span class="spacer"></span>
-    <button class="chip" id="planChip" title="Daily or weekly reading plan" aria-label="Reading plan">Reading plan</button>
+    <button class="chip" id="planChip" title="Daily or weekly reading plan">Reading plan</button>
+    <button class="chip" id="findChip" title="Search by meaning (/)">Search</button>
+    <button class="chip" id="libChip" title="Highlights, bookmarks and notes">Saved</button>
     <button class="chip" id="resume" hidden></button>
     <button class="btn" id="sound" aria-pressed="false" aria-label="Sound">Sound off</button>
     <nav class="crumbs" id="crumbs" aria-label="Location"></nav>
   </header>
   <main>
     <section class="panel" id="zoom">
-      <div class="stage" id="stage"><div class="loading" id="loading"><span class="eyebrow">Loading</span>Loading the full King James text and 100,000 cross-references…</div></div>
-      <div class="zoombar"><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
+      <div class="stage" id="stage" tabindex="-1"><div class="loading" id="loading"><span class="eyebrow">Loading</span>Loading the full King James text and 100,000 cross-references…</div></div>
+      <div class="zoombar"><button class="btn" id="findFab" aria-label="Search by meaning" title="Search by meaning">🔍</button><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
     </section>
+    <section class="panel" id="time" hidden aria-label="Timeline and map"></section>
     <section class="panel" id="galaxy" hidden><div class="gload" id="gload">Loading 3D…</div></section>
-    <section class="panel" id="descent" hidden></section>
+    <section class="panel" id="stories" hidden aria-label="Stories: guided journeys and explainers"></section>
+    <section class="panel" id="descent" hidden tabindex="0" aria-label="Descent: scroll through the Bible"></section>
   </main>
   <div class="scrub" id="scrubWrap">
     <div class="lbl"><span>Genesis</span><span id="scrubHint">Drag across the whole Bible</span><span>Revelation</span></div>
-    <canvas id="scrub" aria-label="Scrub through the whole Bible"></canvas>
+    <canvas id="scrub" tabindex="0" role="slider" aria-label="Position in the whole Bible" aria-valuemin="0" aria-valuemax="31101" aria-valuenow="0" aria-valuetext="Genesis 1:1"></canvas>
     <div class="tip" id="tip" hidden></div>
   </div>
 </div>
+<div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 (async function(){
@@ -346,6 +555,22 @@ const flat=[],VB=[],VC=[],VV=[],bookStart=[],chapStart=[],bookLen=[];
 T.forEach((chs,b)=>{bookStart[b]=flat.length;chapStart[b]=[];chs.forEach((vs,c)=>{chapStart[b][c]=flat.length;vs.forEach((t,v)=>{flat.push(t);VB.push(b);VC.push(c);VV.push(v);});});bookLen[b]=flat.length-bookStart[b];});
 const N=flat.length;
 const ref=i=>`${SHORT[VB[i]]} ${VC[i]+1}:${VV[i]+1}`;
+// ---------- Translations (public domain): the KJV ships with the page, the others load on demand ----------
+const TRANSLATIONS=[['kjv','King James Version','KJV'],['web','World English Bible','WEB'],['bsb','Berean Standard Bible','BSB'],['asv','American Standard Version','ASV']];
+const trCache={kjv:T.map(b=>b.map(c=>c.slice()))};
+let tr='kjv';
+const trInfo=id=>TRANSLATIONS.find(t=>t[0]===(id||tr));
+function loadTr(id){return trCache[id]?Promise.resolve(trCache[id]):fetch(`tr/${id}.json`).then(r=>{if(!r.ok)throw new Error('missing');return r.json();}).then(d=>trCache[id]=d.text);}
+const trText=(txt,b,c,v,id)=>txt[b][c][v]||`[This verse is not in the ${trInfo(id)[2]} text.]`;
+async function setTranslation(id){const txt=await loadTr(id);tr=id;let k=0;
+  txt.forEach((chs,b)=>chs.forEach((vs,c)=>vs.forEach((_,v)=>{const t=trText(txt,b,c,v,id);T[b][c][v]=t;flat[k++]=t;})));
+  mem.tr=id;save();}
+const trSelect=()=>`<select class="trsel" aria-label="Translation">${TRANSLATIONS.map(([id,name,ab])=>`<option value="${id}" ${id===tr?'selected':''}>${ab} · ${name}</option>`).join('')}</select>`;
+document.addEventListener('change',async e=>{if(!e.target.classList||!e.target.classList.contains('trsel'))return;const id=e.target.value;stopReader();
+  try{await setTranslation(id);}catch(_){toast('That translation could not be loaded. Check your connection.');return;}
+  go({...state},null,'none');announce(`Now reading the ${trInfo()[1]}.`);});
+if(mem.tr&&mem.tr!=='kjv'){try{await setTranslation(mem.tr);}catch(_){}}
+
 // Cross-reference index (from-verse -> list), sorted by votes
 const XN=xr.length/3,off=new Uint32Array(N+1);
 for(let k=0;k<XN;k++)off[xr[k*3]+1]++;
@@ -356,22 +581,64 @@ const xrefsOf=i=>{const a=[];for(let p=off[i];p<off[i+1];p++)a.push([xto[p],xv[p
 const xcount=i=>off[i+1]-off[i];
 
 // ---------- Sound ----------
-let actx=null,soundOn=false,drone,droneGain,filt,noiseBuf;
+let actx=null,soundOn=false,noiseBuf;
 function initAudio(){if(actx)return;try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
-  drone=actx.createOscillator();drone.type='triangle';filt=actx.createBiquadFilter();filt.type='lowpass';filt.frequency.value=600;
-  droneGain=actx.createGain();droneGain.gain.value=0;drone.connect(filt).connect(droneGain).connect(actx.destination);drone.start();
   noiseBuf=actx.createBuffer(1,actx.sampleRate*0.4,actx.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);}
 function posTone(i,depth){ // pitch follows place in canon, brightness follows zoom depth
-  if(!soundOn||!actx)return;const f=110*Math.pow(4,i/N);drone.frequency.setTargetAtTime(f,actx.currentTime,0.08);
-  filt.frequency.setTargetAtTime(300+depth*500,actx.currentTime,0.2);}
+  if(!soundOn||!actx)return;scapeFollow(i);}
 function tick(freq){haptic();if(!soundOn||!actx)return;const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=freq;
   g.gain.setValueAtTime(0.0001,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.1,actx.currentTime+0.015);g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+0.5);
   o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+0.55);}
 function whoosh(vel){if(!soundOn||!actx||vel<0.2)return;const s=actx.createBufferSource(),g=actx.createGain(),f=actx.createBiquadFilter();s.buffer=noiseBuf;f.type='bandpass';f.frequency.value=400+vel*1600;
   g.gain.value=Math.min(0.12,vel*0.05);s.connect(f).connect(g).connect(actx.destination);s.start();}
-$('#sound').onclick=()=>{initAudio();soundOn=!soundOn;const b=$('#sound');b.textContent=soundOn?'Sound on':'Sound off';b.setAttribute('aria-pressed',soundOn);
-  if(actx){actx.resume&&actx.resume();droneGain.gain.setTargetAtTime(soundOn?0.035:0,actx.currentTime,0.15);}
+
+// ---------- Soundscape: a slow generative pad and distant bells. The key follows the part of the Bible you are in,
+// it thins out as you zoom closer to the text, and it ducks while read-aloud is speaking ----------
+// [root (Hz), mode intervals in semitones] per genre: Law, History, Poetry, Major, Minor Prophets, Gospels, Acts, Paul, General, Revelation
+const SCAPE_KEYS=[[146.83,[0,2,3,5,7,9,10]],[130.81,[0,2,4,5,7,9,10]],[174.61,[0,2,4,6,7,9,11]],[110.0,[0,2,3,5,7,8,10]],[123.47,[0,2,3,5,7,8,10]],
+  [130.81,[0,2,4,5,7,9,11]],[146.83,[0,2,4,5,7,9,11]],[164.81,[0,2,4,5,7,9,11]],[155.56,[0,2,4,5,7,9,11]],[138.59,[0,1,4,5,7,8,10]]];
+const PROG=[0,5,3,4,0,3,5,4];
+let scape=null,scapeKey=0;
+function impulse(sec){const n=actx.sampleRate*sec,b=actx.createBuffer(2,n,actx.sampleRate);for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3.2);}return b;}
+const noteOf=(key,deg,oct)=>{const [root,mode]=SCAPE_KEYS[key];const st=mode[((deg%7)+7)%7]+12*(oct+Math.floor(deg/7));return root*Math.pow(2,st/12);};
+function startScape(){if(scape||!actx)return;const t=actx.currentTime;
+  const out=actx.createGain();out.gain.value=0;out.connect(actx.destination);
+  const rev=actx.createConvolver();rev.buffer=impulse(4);const wet=actx.createGain();wet.gain.value=.7;rev.connect(wet).connect(out);
+  const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;lp.Q.value=.4;const dry=actx.createGain();dry.gain.value=.45;lp.connect(dry).connect(out);lp.connect(rev);
+  const lfo=actx.createOscillator(),lg=actx.createGain();lfo.frequency.value=.04;lg.gain.value=320;lfo.connect(lg).connect(lp.frequency);lfo.start();
+  const voices=[0,1,2,3].map(k=>{const o=actx.createOscillator(),g=actx.createGain(),pan=actx.createStereoPanner?actx.createStereoPanner():null;o.type=k===0?'sine':'triangle';o.detune.value=(k-1.5)*6;g.gain.value=0;
+    if(pan){pan.pan.value=(k-1.5)*.45;o.connect(g).connect(pan).connect(lp);}else o.connect(g).connect(lp);o.start();return {o,g};});
+  scape={out,rev,lp,lfo,voices,step:0,timers:[]};out.gain.setTargetAtTime(.06,t,2.5);
+  chord();scape.timers.push(setInterval(chord,9000));bellLoop();}
+function chord(){if(!scape)return;const t=actx.currentTime,deg=PROG[scape.step++%PROG.length];
+  const notes=[noteOf(scapeKey,deg,-1),noteOf(scapeKey,deg,0),noteOf(scapeKey,deg+2,0),noteOf(scapeKey,deg+4,0)];
+  scape.voices.forEach((v,k)=>{v.o.frequency.setTargetAtTime(notes[k],t,1.6);v.g.gain.cancelScheduledValues(t);v.g.gain.setTargetAtTime(k===0?.5:.22+Math.random()*.12,t,2.2);});
+  const depth=state.level,calm=mode==='zoom'?depth:1;scape.lp.frequency.setTargetAtTime(1100-calm*130,t,3);
+  scape.out.gain.setTargetAtTime(reader.on?.018:.06-calm*.006,t,1.2);}
+function bellLoop(){if(!scape)return;const gap=4000+Math.random()*7000+(mode==='zoom'?state.level*1800:0);
+  scape.timers.push(setTimeout(()=>{bell();bellLoop();},gap));}
+function bell(){if(!scape||reader.on)return;const t=actx.currentTime,PENTA=[0,1,2,4,5];const f=noteOf(scapeKey,PENTA[Math.floor(Math.random()*5)],2);
+  const o=actx.createOscillator(),o2=actx.createOscillator(),g=actx.createGain();o.type='sine';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2.76;
+  const g2=actx.createGain();g2.gain.value=.18;o2.connect(g2).connect(g);o.connect(g);g.connect(scape.rev);g.connect(scape.lp);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+4.5);o.start(t);o2.start(t);o.stop(t+4.6);o2.stop(t+4.6);}
+function stopScape(){if(!scape)return;const s0=scape;scape=null;s0.timers.forEach(x=>{clearInterval(x);clearTimeout(x);});s0.out.gain.setTargetAtTime(0,actx.currentTime,.8);
+  setTimeout(()=>{s0.voices.forEach(v=>v.o.stop());s0.lfo.stop();s0.out.disconnect();},4000);}
+function scapeFollow(i){const k=genreOf(VB[Math.max(0,Math.min(N-1,i))]);if(k!==scapeKey){scapeKey=k;if(scape){scape.step=0;chord();}}}
+$('#sound').onclick=()=>{initAudio();soundOn=!soundOn;const b=$('#sound');b.textContent=soundOn?'Soundscape on':'Sound off';b.setAttribute('aria-pressed',soundOn);
+  if(actx){actx.resume&&actx.resume();if(soundOn){scapeFollow(curIndex());startScape();}else stopScape();}
+  announce(soundOn?'Soundscape on.':'Sound off.');
   if(soundOn){posTone(curIndex(),state.level);tick(523);}};
+
+
+// ---------- Screen reader announcements and focus ----------
+const live=$('#live');
+function announce(t){live.textContent='';setTimeout(()=>live.textContent=t,30);}
+function describe(){const s=state;if(s.level===0)return 'The whole Bible. 66 books.';if(s.level===1)return `${NAMES[s.b]}. ${T[s.b].length} chapters.`;
+  if(s.level===2)return `${NAMES[s.b]} chapter ${s.c+1}. ${T[s.b][s.c].length} verses. Left and right arrow keys change chapter.`;
+  if(s.level===3)return `${NAMES[s.b]} ${s.c+1}:${s.v+1}. ${T[s.b][s.c][s.v]}`;return s.strong?`Original word ${s.tr||''}, meaning ${s.gl||''}.`:`The word ${s.word}.`;}
+function trapFocus(bg){const prev=document.activeElement;bg.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=[...bg.querySelectorAll('button,select,input,textarea,a[href]')].filter(x=>!x.hidden&&x.offsetParent!==null);if(!f.length)return;
+  const a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}});
+  bg._restore=()=>{try{prev&&prev.focus&&prev.focus({preventScroll:true});}catch(_){}};}
 
 // ---------- Zoom state ----------
 let state={level:0,b:0,c:0,v:0,word:null};
@@ -407,6 +674,8 @@ function go(next,originEl,dir){
   crumbs();tick(LEVEL_TONE[state.level]);posTone(curIndex(),state.level);
   if(state.level>=2){mem.read[`${state.b}.${state.c}`]=1;mem.last={b:state.b,c:state.c,v:state.level>=3?state.v:0};save();}
   drawScrub();
+  const hd=el.querySelector('h2,.bigword');if(hd&&dir!=='none'){hd.setAttribute('tabindex','-1');requestAnimationFrame(()=>hd.focus({preventScroll:true}));}
+  if(dir!=='none'||!reader.on)announce(describe());
 }
 // ---------- Read aloud (device voices via the Web Speech API) ----------
 const synth=window.speechSynthesis;
@@ -419,7 +688,7 @@ const NATURAL=/natural|neural|online|premium|enhanced|wavenet|studio/i;
 // Studio AI narration: neural voices rendered ahead of time for a few chapters (open Kokoro model)
 const AI_VOICES=[['ai:af_heart','Heart','Female, American'],['ai:af_bella','Bella','Female, American'],['ai:am_michael','Michael','Male, American'],['ai:bm_george','George','Male, British']];
 const AI_CHAPTERS={'0_0':'Genesis 1','18_22':'Psalm 23','42_2':'John 3'};
-const hasAI=(b,c)=>!!AI_CHAPTERS[b+'_'+c];
+const hasAI=(b,c)=>tr==='kjv'&&!!AI_CHAPTERS[b+'_'+c];
 const bestDevice=()=>voices.find(v=>NATURAL.test(v.name)&&genderOf(v)!=='Male')||voices.find(v=>NATURAL.test(v.name))||voices[0];
 function loadVoices(){if(!synth)return;voices=synth.getVoices().filter(v=>/^en/i.test(v.lang));
   if(!reader.voice||(!reader.voice.startsWith('ai:')&&!voices.some(v=>v.voiceURI===reader.voice)))reader.voice='ai:af_heart';
@@ -438,6 +707,20 @@ function speakCurrent(){if(!reader.on)return;const view=curView();if(!view||!vie
   if(reader.voice.startsWith('ai:')&&hasAI(b,c)){const a=new Audio(`audio/${reader.voice.slice(3)}/${b}_${c}_${k}.mp3`);a.playbackRate=reader.rate;reader.audio=a;
     a.onended=()=>advance(b,c,k,gen);a.onerror=()=>{if(gen===reader.gen){stopReader();toast('The AI narration file could not be loaded.');}};
     a.play().catch(()=>{if(gen===reader.gen){stopReader();toast('Tap Listen again to start the narration.');}});return;}
+  if(reader.voice.startsWith('ai:')&&NARR_REPO&&tr==='kjv'){const voice=reader.voice.slice(3);
+    narrTimings(voice).then(t=>{if(gen!==reader.gen||!reader.on)return;const st=t&&t[b+'_'+c];if(st)playChapter(b,c,k,gen,st,voice);else speakDevice(b,c,k,gen);});return;}
+  speakDevice(b,c,k,gen);}
+// Whole-Bible narration, streamed chapter by chapter from GitHub releases (see scripts/narration/narration.yml)
+const NARR_REPO='Patrickil07/Selah',NARR_REF='narration';// audio in releases {voice}-{book}; timings on the narration branch
+const narrTimes={};
+function narrTimings(voice){return narrTimes[voice]||(narrTimes[voice]=[`https://raw.githubusercontent.com/${NARR_REPO}/${NARR_REF}`,`https://cdn.jsdelivr.net/gh/${NARR_REPO}@${NARR_REF}`].reduce((p,base)=>p.then(t=>t||fetch(`${base}/timings/${voice}.json`).then(r=>r.ok?r.json():null).catch(()=>null)),Promise.resolve(null)));}
+function playChapter(b,c,k,gen,st,voice){const a=new Audio(`https://github.com/${NARR_REPO}/releases/download/${voice}-${b}/${b}_${c}.mp3`);a.preload='auto';a.playbackRate=reader.rate;reader.audio=a;
+  a.ontimeupdate=()=>{if(gen!==reader.gen)return;let j=reader.k;while(j+1<st.length-1&&a.currentTime>=st[j+1]-.05)j++;if(j!==reader.k){reader.k=j;curView()?._focusVerse(j,true);}};
+  a.onended=()=>advance(b,c,T[b][c].length-1,gen);
+  a.onerror=()=>{if(gen===reader.gen)speakDevice(b,c,reader.k,gen);};
+  const go=()=>{if(gen!==reader.gen)return;a.currentTime=st[k]||0;a.play().catch(()=>{if(gen===reader.gen){stopReader();toast('Tap Listen again to start the narration.');}});};
+  a.readyState>=1?go():a.addEventListener('loadedmetadata',go,{once:true});}
+function speakDevice(b,c,k,gen){
   if(!synth){stopReader();return;}
   if(reader.voice.startsWith('ai:')&&!warnedAI){warnedAI=true;toast(`Studio AI narration covers ${Object.values(AI_CHAPTERS).join(', ')} in this prototype. Using your device's best voice here.`);}
   const u=new SpeechSynthesisUtterance(T[b][c][k]);
@@ -445,13 +728,13 @@ function speakCurrent(){if(!reader.on)return;const view=curView();if(!view||!vie
   u.onend=()=>advance(b,c,k,gen);
   u.onerror=e=>{if(gen===reader.gen&&e.error!=='interrupted'&&e.error!=='canceled'){stopReader();toast('Read aloud stopped: this device could not play the voice.');}};
   synth.speak(u);}
-function startReader(k){reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}reader.on=true;reader.k=k||0;syncListen();setTimeout(speakCurrent,60);}
-function stopReader(){if(!reader.on)return;reader.on=false;reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}syncListen();curView()?.querySelectorAll('.vs.speaking').forEach(e=>e.classList.remove('speaking'));}
+function startReader(k){if(scape)scape.out.gain.setTargetAtTime(.018,actx.currentTime,.6);reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}reader.on=true;reader.k=k||0;syncListen();setTimeout(speakCurrent,60);}
+function stopReader(){if(!reader.on)return;reader.on=false;if(scape)scape.out.gain.setTargetAtTime(.05,actx.currentTime,1.5);reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}syncListen();curView()?.querySelectorAll('.vs.speaking').forEach(e=>e.classList.remove('speaking'));}
 function syncListen(){document.querySelectorAll('.listen .play').forEach(b=>{b.textContent=reader.on?'■ Stop':'▶ Listen';b.classList.toggle('on',reader.on);b.setAttribute('aria-pressed',reader.on);});}
 let slide=1;
 function goChapter(b,c,s,origin){if(b==null)return;const cv=curView();if(state.level===2&&cv&&cv._accordion&&cv._accordion(b,c))return;slide=s;go({level:2,b,c},origin||null,0);slide=1;}
 function adjChapter(b,c,d){if(d<0)return c>0?[b,c-1]:b>0?[b-1,T[b-1].length-1]:null;return c<T[b].length-1?[b,c+1]:b<65?[b+1,0]:null;}
-function zoomOut(){if(state.level===0)return;const s={...state};s.level--;if(s.level<4){s.word=null;s.strong=null;}go(s,null,-1);}
+function zoomOut(){if(state.level===0)return;const s={...state};s.level--;if(s.level<4){s.word=null;s.strong=null;}s.flash=s.level===2?state.v:null;go(s,null,-1);}
 $('#zout').onclick=zoomOut;
 addEventListener('keydown',e=>{if(mode!=='zoom')return;if(e.key==='Escape'||e.key==='-'){zoomOut();return;}
   if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;const d=e.key==='ArrowLeft'?-1:1;
@@ -461,6 +744,14 @@ addEventListener('keydown',e=>{if(mode!=='zoom')return;if(e.key==='Escape'||e.ke
 // ---------- Original languages (STEPBible tagged Hebrew OT and Greek NT, CC BY 4.0) ----------
 const origCache={};let lexicon=null,lexP=null;
 function loadOrig(b){return origCache[b]||(origCache[b]=fetch(`orig/${b}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}));}
+// Spoken dictionary words: Kokoro voice, pronunciation from espeak-ng (scripts/narration/words.py)
+let wordsIdx=null;
+function loadWords(){return wordsIdx||(wordsIdx=fetch('words/index.json').then(r=>r.ok?r.json():{w:{}}).catch(()=>({w:{}})));}
+const wordAudio={};let wordTimer=0;
+function sayWord(strong,btn){loadWords().then(ix=>{const e=ix.w[strong];if(!e)return;const [pack,start,dur]=e;stopReader&&reader.on&&stopReader();
+  const a=wordAudio[pack]||(wordAudio[pack]=new Audio('words/p'+pack+'.mp3'));a.preload='auto';clearTimeout(wordTimer);
+  const go=()=>{a.currentTime=Math.max(0,start-.02);a.play().catch(()=>{});btn&&btn.classList.add('playing');wordTimer=setTimeout(()=>{a.pause();btn&&btn.classList.remove('playing');},(dur+.12)*1000);};
+  a.readyState>=1?go():a.addEventListener('loadedmetadata',go,{once:true});a.load&&a.readyState<1&&a.load();});}
 function loadLex(){return lexP||(lexP=fetch('lexicon.json').then(r=>r.json()).then(j=>lexicon=j));}
 function decodeHeb(m){if(!m)return '';const P={N:'noun',V:'verb',A:'adjective',R:'preposition',C:'conjunction',T:'particle',P:'pronoun',S:'suffix',D:'adverb'};
   const G={m:'masculine',f:'feminine',b:'both genders',c:'common'},Nm={s:'singular',p:'plural',d:'dual'},St={a:'absolute',c:'construct',d:'definite'};
@@ -481,12 +772,13 @@ function decodeGrk(m){if(!m)return '';const pre={N:'noun',V:'verb',A:'adjective'
   return out.join(', ');}
 function renderOrig(){const {b,c,strong}=state,heb=strong[0]==='H',cls=heb?'heb':'grk',lang=heb?'he':'el';
   const v=view(`<div class="vhead"><span class="eyebrow">Z4 · Original word · ${heb?'Hebrew':'Greek'}</span>
-      <div class="lemma ${cls}" lang="${lang}" id="lemma">${esc(state.form)}</div><p id="lsub">Loading the lexicon…</p></div>
+      <div class="lemma ${cls}" lang="${lang}" id="lemma">${esc(state.form)}</div><button class="btn hear" id="hearWord" hidden>🔊 Hear it</button><p id="lsub">Loading the lexicon…</p></div>
       <div class="chips"><span><b>In ${NAMES[b]} ${c+1}:${state.v+1}</b> ${esc(state.form)} · ${esc(state.tr)} · “${esc(state.gl)}”</span><span><b>Grammar</b> ${esc((heb?decodeHeb:decodeGrk)(state.morph))}</span><span><b>Strong's</b> ${esc(strong)}</span></div>
       <div id="lbody"></div>`);
   loadLex().then(L=>{const e=L[strong];const sub=v.querySelector('#lsub'),body=v.querySelector('#lbody');if(!sub)return;
     if(!e){sub.textContent='No lexicon entry for this word.';return;}
     const [lemma,tr,gloss,def,occ]=e;v.querySelector('#lemma').textContent=lemma||state.form;
+    loadWords().then(ix=>{const hb=v.querySelector('#hearWord');if(!hb||!ix.w[strong])return;hb.hidden=false;hb.setAttribute('aria-label',`Hear the ${heb?'Hebrew':'Greek'} word ${tr?tr+', ':''}meaning ${gloss}`);hb.onclick=()=>sayWord(strong,hb);});
     const books=new Set(occ.map(i=>VB[i])).size;
     sub.innerHTML=`<b>${esc(tr||'')}</b> · “${esc(gloss)}”. Dictionary form of the word. It appears in ${fmt(occ.length)} verse${occ.length===1?'':'s'} across ${books} book${books===1?'':'s'}, shown below wherever they fall in the Bible.`;
     body.innerHTML=`${def?`<div class="def" id="def">${esc(def)}</div><button class="btn" id="defmore">Show full definition</button>`:''}
@@ -542,12 +834,12 @@ function render(){
     const strip=([sb,sc],d)=>{const n=T[sb][sc].length,mx=Math.max(...T[sb].map(x=>x.length));
       return `<button class="pane strip ${mem.read[sb+'.'+sc]?'r':''}" data-p="${sb},${sc}" data-s="${d}" style="--c:var(${gvar(sb)})" title="${NAMES[sb]} ${sc+1} · ${n} verses" aria-label="Open ${NAMES[sb]} ${sc+1}"><span class="sn">${sc+1}</span><span class="sb"><i style="height:${Math.max(8,n/mx*100)}%"></i></span><span class="sl">${sb!==b?NAMES[sb]+' ':''}${sc+1}</span></button>`;};
     const v=view(`<div class="acc" id="acc">${sideList(-1).map(x=>strip(x,-1)).join('')}<section class="pane open" id="openPane">
-      <div class="vhead"><span class="eyebrow">Z2 · Chapter</span><h2>${NAMES[b]} ${c+1}</h2><p>${vs.length} verses. Neighbouring chapters sit folded at the sides like an accordion: tap one to unfold it, or swipe and use the arrow keys. Tap any verse to zoom into it.</p></div>${planBarHTML(b,c)}
+      <div class="vhead"><span class="eyebrow">Z2 · Chapter</span><h2>${NAMES[b]} ${c+1}</h2><p>${vs.length} verses. Neighbouring chapters sit folded at the sides like an accordion: tap one to unfold it, or swipe and use the arrow keys. Tap any verse to zoom into it.</p><div class="trrow">${trSelect()}</div></div>${planBarHTML(b,c)}
       <div class="listen" role="group" aria-label="Read aloud"><button class="btn play" id="playBtn" aria-pressed="${reader.on}">${reader.on?'■ Stop':'▶ Listen'}</button>
         <select id="voiceSel" aria-label="Voice">${voiceOptions()}</select>
         <select id="rateSel" aria-label="Speed">${[0.75,0.9,1,1.15,1.3,1.5].map(r=>`<option value="${r}" ${r==reader.rate?'selected':''}>${r}×</option>`).join('')}</select>
-        <span class="note">${hasAI(b,c)?'Studio AI narration is available for this chapter. ':`Studio AI narration samples: ${Object.entries(AI_CHAPTERS).map(([k,n])=>`<a href="#" data-ai="${k}">${n}</a>`).join(' · ')}. `}Reads from the verse in focus and carries on into the next chapter.</span></div>
-      <div class="reading" id="reading">${vs.map((t,i)=>`<span class="vs" data-v="${i}" tabindex="0" role="button"><sup class="${hot[i]>=Math.max(8,hmax*0.6)?'hot':''}">${i+1}</sup>${esc(t)}</span>`).join('')}</div>
+        <span class="note">${hasAI(b,c)?'Studio AI narration is available for this chapter. ':`${tr!=='kjv'?'Studio AI narration is recorded from the KJV, so this translation uses your device voice. ':''}Studio AI narration samples: ${Object.entries(AI_CHAPTERS).map(([k,n])=>`<a href="#" data-ai="${k}">${n}</a>`).join(' · ')}. `}Reads from the verse in focus and carries on into the next chapter.</span></div>
+      <div class="reading" id="reading">${vs.map((t,i)=>`<span class="vs ${markCls(chapStart[b][c]+i)}" data-v="${i}" tabindex="0" role="button"><sup class="${hot[i]>=Math.max(8,hmax*0.6)?'hot':''}">${i+1}</sup>${esc(t)}${markIcons(chapStart[b][c]+i)}</span>`).join('')}</div>
       <div class="upnext">${prev?`<button class="btn" data-p="${prev}" data-s="-1">← ${NAMES[prev[0]]} ${prev[1]+1}</button>`:'<span></span>'}${next?`<button class="btn" data-p="${next}" data-s="1">Continue to ${NAMES[next[0]]} ${next[1]+1} →</button>`:''}</div>
       </section>${sideList(1).map(x=>strip(x,1)).join('')}</div>`);
     // Accordion: the tapped chapter unfolds while the open one folds into a strip
@@ -601,7 +893,8 @@ function render(){
     const words=t.split(/(\s+)/).map(w=>{const core=w.replace(/[^A-Za-z']/g,'');return core.length>1?`<span class="w" data-w="${esc(core)}" tabindex="0" role="button">${esc(w)}</span>`:esc(w);}).join('');
     const xs=xrefsOf(i).slice(0,24);
     const v=view(`<div class="vhead"><span class="eyebrow">Z3 · Verse</span><h2>${NAMES[b]} ${c+1}:${vi+1}</h2></div>
-      <div class="vcard" id="vcard"><div class="vtext">${words}</div><span class="hint">King James Version · tap any word to zoom into it</span>${NATIVE||navigator.share?'<button class="btn" id="vshare" style="margin-top:10px">Share verse</button>':''}</div>
+      <div class="vcard" id="vcard"><div class="vtext">${words}</div><span class="hint">${trInfo()[1]} · tap any word to zoom into it</span><div class="trrow">${trSelect()}${NATIVE||navigator.share?'<button class="btn" id="vshare">Share verse</button>':''}</div>${marksHTML(i)}</div>
+      <div class="vhead"><span class="eyebrow">Compare translations</span></div><div class="compare" id="compare"><div><button class="btn" id="cmpBtn">Show this verse in all ${TRANSLATIONS.length} translations</button></div></div>
       <div class="vhead"><span class="eyebrow">Original ${b<39?'Hebrew':'Greek'} · tap a word to zoom into it</span><p>${b<39?'Read right to left. ':''}Each card shows the word as written, how to say it, its meaning here, and its Strong's number.</p></div>
       <div class="interlin ${b<39?'rtl':''}" id="interlin"><span class="hint">Loading the ${b<39?'Hebrew':'Greek'} text…</span></div>
       <div class="navrow">${vi>0?`<button class="btn" data-vv="${vi-1}">← Verse ${vi}</button>`:''}${vi<T[b][c].length-1?`<button class="btn" data-vv="${vi+1}">Verse ${vi+2} →</button>`:''}</div>
@@ -611,7 +904,12 @@ function render(){
     loadOrig(b).then(d=>{ows=(d[c]&&d[c][vi])||[];const box=v.querySelector('#interlin');if(!box)return;const cls=b<39?'heb':'grk',lang=b<39?'he':'el';
       box.innerHTML=ows.length?ows.map((w,j)=>`<button class="iw" data-j="${j}" title="${esc(w[3])}"><span class="o ${cls}" lang="${lang}">${esc(w[0])}</span><span class="t">${esc(w[1])}</span><span class="g">${esc(w[2])}</span><span class="s">${esc(w[3])}</span></button>`).join(''):'<span class="hint">No tagged original text for this verse.</span>';}).catch(()=>{const box=v.querySelector('#interlin');if(box)box.innerHTML='<span class="hint">The original text could not be loaded. Reload to try again.</span>';});
     loadLex();
-    v.addEventListener('click',e=>{if(e.target.id==='vshare'){const t=`"${T[b][c][vi]}" (${NAMES[b]} ${c+1}:${vi+1}, KJV)`;NATIVE?NATIVE.share(t):navigator.share({text:t}).catch(()=>{});return;}const iw=e.target.closest('.iw');if(iw){const w=ows[+iw.dataset.j];return go({...state,level:4,word:null,strong:w[3],form:w[0],tr:w[1],gl:w[2],morph:w[4]},iw,1);}
+    const showCompare=()=>Promise.all(TRANSLATIONS.map(([id])=>loadTr(id).then(x=>[id,x]).catch(()=>[id,null]))).then(rs=>{const box=v.querySelector('#compare');if(!box)return;
+      box.innerHTML=rs.filter(r=>r[1]).map(([id,x])=>`<div class="${id===tr?'cur':''}"><b>${trInfo(id)[2]} · ${trInfo(id)[1]}</b><p>${esc(trText(x,b,c,vi,id))}</p></div>`).join('');});
+    if(TRANSLATIONS.every(([id])=>trCache[id])||mem.cmp)showCompare();
+    v.querySelector('#cmpBtn')?.addEventListener('click',e=>{e.target.textContent='Loading translations…';mem.cmp=1;save();showCompare();});
+    wireMarks(v,i);
+    v.addEventListener('click',e=>{if(e.target.id==='vshare'){const t=`"${T[b][c][vi]}" (${NAMES[b]} ${c+1}:${vi+1}, ${trInfo()[2]})`;NATIVE?NATIVE.share(t):navigator.share({text:t}).catch(()=>{});return;}const iw=e.target.closest('.iw');if(iw){const w=ows[+iw.dataset.j];return go({...state,level:4,word:null,strong:w[3],form:w[0],tr:w[1],gl:w[2],morph:w[4]},iw,1);}
       const w=e.target.closest('.w');if(w)return go({...state,level:4,word:w.dataset.w,strong:null},w,1);
       const x=e.target.closest('[data-to]');if(x){const k=+x.dataset.to;return go({level:3,b:VB[k],c:VC[k],v:VV[k]},x,0);}
       const n=e.target.closest('[data-vv]');if(n)go({level:3,b,c,v:+n.dataset.vv},n,0);});
@@ -626,8 +924,8 @@ function render(){
     for(let i=0;i<N;i++)if(re.test(flat[i]))hits.push(i);
     const books=new Set(hits.map(i=>VB[i])).size;
     const hl=t=>esc(t).replace(new RegExp(`\\b(${w})\\b`,'gi'),'<mark>$1</mark>');
-    const v=view(`<div class="vhead"><span class="eyebrow">Z4 · Word</span><div class="bigword">${esc(w)}</div><p>Appears in ${fmt(hits.length)} verse${hits.length===1?'':'s'} across ${books} book${books===1?'':'s'} of the King James text. Each tick below is one of those verses, placed where it falls in the Bible. Tap the strip or a verse to fly there.</p></div>
-      <canvas class="strip" id="strip"></canvas>
+    const v=view(`<div class="vhead"><span class="eyebrow">Z4 · Word</span><div class="bigword">${esc(w)}</div><p>Appears in ${fmt(hits.length)} verse${hits.length===1?'':'s'} across ${books} book${books===1?'':'s'} of the ${trInfo()[1]}. Each tick below is one of those verses, placed where it falls in the Bible. Tap the strip or a verse to fly there.</p></div>
+      <canvas class="strip" id="strip" role="img" aria-label="Where this word appears across the Bible. The list below has every verse."></canvas>
       <div class="legend">${GENRES.map(g=>`<span style="--c:var(${g[2]})">${g[3]}</span>`).join('')}</div>
       <div class="occ">${hits.slice(0,80).map(i=>`<button data-to="${i}"><b>${ref(i)}</b><span>${hl(flat[i])}</span></button>`).join('')}</div>
       ${hits.length>80?`<p class="hint">Showing the first 80 of ${fmt(hits.length)}. Tap the strip to reach the rest.</p>`:''}
@@ -662,21 +960,30 @@ const sc=$('#scrub'),tip=$('#tip');let scrubbing=false,lastX=0,lastT=0,scrubPos=
 function drawScrub(){const dpr=Math.min(2,devicePixelRatio||1),W=sc.clientWidth,H=sc.clientHeight;if(!W)return;sc.width=W*dpr;sc.height=H*dpr;const g=sc.getContext('2d');g.scale(dpr,dpr);
   for(let b=0;b<66;b++){const x=bookStart[b]/N*W,w=bookLen[b]/N*W;g.fillStyle=css(gvar(b));g.globalAlpha=.35;g.fillRect(x,0,Math.max(1,w-0.5),H);
     g.globalAlpha=1;T[b].forEach((_,c)=>{if(mem.read[b+'.'+c]){const cx=chapStart[b][c]/N*W;g.fillRect(cx,H-8,Math.max(1.5,T[b][c].length/N*W),8);}});}
-  const i=scrubPos??curIndex(),x=i/N*W;g.globalAlpha=1;g.fillStyle=css('--ink');g.fillRect(x-1,0,2,H);g.beginPath();g.arc(x,H/2,5,0,7);g.fill();}
+  const i=scrubPos??curIndex(),x=i/N*W;sc.setAttribute('aria-valuenow',i);sc.setAttribute('aria-valuetext',`${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}`);g.globalAlpha=1;g.fillStyle=css('--ink');g.fillRect(x-1,0,2,H);g.beginPath();g.arc(x,H/2,5,0,7);g.fill();}
 function scrubAt(e){const r=sc.getBoundingClientRect();const f=Math.max(0,Math.min(0.99999,(e.clientX-r.left)/r.width));const i=Math.floor(f*N);scrubPos=i;
   tip.hidden=false;tip.style.left=Math.max(170,Math.min(r.width-150,e.clientX-r.left+16))+'px';tip.innerHTML=`<b>${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}</b>${esc(flat[i].slice(0,140))}${flat[i].length>140?'…':''}`;
   const now=performance.now(),vel=Math.abs(e.clientX-lastX)/Math.max(1,now-lastT);lastX=e.clientX;lastT=now;posTone(i,state.level);if(Math.random()<0.15)whoosh(vel);drawScrub();return i;}
 sc.addEventListener('pointerdown',e=>{scrubbing=true;sc.setPointerCapture(e.pointerId);scrubAt(e);haptic();});
 sc.addEventListener('pointermove',e=>{if(scrubbing)scrubAt(e);});
 sc.addEventListener('pointerup',e=>{if(!scrubbing)return;scrubbing=false;const i=scrubAt(e);tip.hidden=true;scrubPos=null;if(mode!=='zoom')setMode('zoom');go({level:2,b:VB[i],c:VC[i],flash:VV[i]},null,1);});
+let keyPos=null;
+sc.addEventListener('keydown',e=>{let i=keyPos??curIndex();const b=VB[i],c=VC[i];
+  if(e.key==='ArrowRight'||e.key==='ArrowUp'){const a=adjChapter(b,c,1);if(a)i=chapStart[a[0]][a[1]];}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowDown'){const a=adjChapter(b,c,-1);if(a)i=chapStart[a[0]][a[1]];}
+  else if(e.key==='PageDown')i=bookStart[Math.min(65,b+1)];else if(e.key==='PageUp')i=bookStart[Math.max(0,b-1)];
+  else if(e.key==='Home')i=0;else if(e.key==='End')i=bookStart[65];
+  else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(mode!=='zoom')setMode('zoom');go({level:2,b,c},null,1);keyPos=null;scrubPos=null;return;}else return;
+  e.preventDefault();e.stopPropagation();keyPos=i;scrubPos=i;posTone(i,state.level);drawScrub();announce(`${NAMES[VB[i]]} ${VC[i]+1}. Press Enter to open.`);});
+sc.addEventListener('blur',()=>{keyPos=null;scrubPos=null;drawScrub();});
 sc.addEventListener('pointercancel',()=>{scrubbing=false;tip.hidden=true;scrubPos=null;drawScrub();});
 addEventListener('resize',()=>{drawScrub();gal&&gal.resize();});
 
 // ---------- Modes ----------
 let mode='zoom';
 function setMode(m){mode=m;if(m!=='zoom')stopReader();document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
-  ['zoom','galaxy','descent'].forEach(id=>$('#'+id).hidden=id!==m);$('#crumbs').hidden=m!=='zoom';$('#scrubWrap').hidden=m==='descent';
-  tick(440);if(m==='galaxy')openGalaxy();else gal&&gal.stop();if(m==='descent')openDescent();if(m==='zoom')requestAnimationFrame(drawScrub);}
+  ['zoom','time','galaxy','descent','stories'].forEach(id=>$('#'+id).hidden=id!==m);$('#crumbs').hidden=m!=='zoom';$('#scrubWrap').hidden=m==='descent'||m==='time'||m==='stories';
+  tick(440);if(m==='galaxy')openGalaxy();else gal&&gal.stop();if(m==='descent')openDescent();if(m==='time')openTime();if(m==='stories')openStories();if(m==='zoom')requestAnimationFrame(drawScrub);}
 document.querySelectorAll('.modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 
 // ---------- 3D Galaxy (Three.js, loaded on demand) ----------
@@ -688,6 +995,7 @@ async function openGalaxy(){if(gal){gal.resize();gal.start();return;}
 function initGalaxy(host){
   const THREE=window.THREE;const R=11;
   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));host.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute('role','img');renderer.domElement.setAttribute('aria-label','3D ring of the 66 books joined by threads of cross-references. Use the book list in the panel to explore it with a keyboard or screen reader.');
   const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(50,1,0.1,200);let camDist=30,camDistT=30,baseDist=30,tilt=0.42;
   const world=new THREE.Group();scene.add(world);
   // Books as nodes on a ring; size follows length
@@ -714,11 +1022,14 @@ function initGalaxy(host){
   const label=document.createElement('div');label.className='glabel';label.hidden=true;host.appendChild(label);
   const ringLabels=nodes.map(n=>{const d=document.createElement('div');d.className='gbook';d.textContent=SHORT[n.b];d.style.color=css(gvar(n.b));host.appendChild(d);return d;});
   const lp=new THREE.Vector3(),camPos=new THREE.Vector3();
-  function showPanel(){if(focus==null){panel.innerHTML=`<h3>Cross-reference galaxy</h3><p>The 66 books on a ring, joined by their 520 strongest threads of cross-references. Drag empty space to spin it, scroll to move closer, and grab a book to pull its threads. Tap a book to follow its threads in Descent.</p>`;return;}
+  function showPanel(){if(focus==null){panel.innerHTML=`<h3>Cross-reference galaxy</h3><p>The 66 books on a ring, joined by their 520 strongest threads of cross-references. Drag empty space to spin it, scroll to move closer, and grab a book to pull its threads. Tap a book to follow its threads in Descent.</p>${gjump()}`;wireJump();return;}
     const top=links.filter(l=>l.a===focus||l.c===focus).sort((x,y)=>y.w-x.w).slice(0,5);
-    panel.innerHTML=`<h3>${NAMES[focus]}</h3><p>Strongest threads: ${top.map(l=>`${NAMES[l.a===focus?l.c:l.a]} (${fmt(l.w)})`).join(', ')||'none in the top 520'}.</p><div class="navrow"><button class="btn" id="gthreads">Follow its threads</button><button class="btn" id="gopen">Open in Zoom</button><button class="btn" id="gclear">Show all</button></div>`;
+    panel.innerHTML=`<h3>${NAMES[focus]}</h3><p>Strongest threads: ${top.map(l=>`${NAMES[l.a===focus?l.c:l.a]} (${fmt(l.w)})`).join(', ')||'none in the top 520'}.</p><div class="navrow"><button class="btn" id="gthreads">Follow its threads</button><button class="btn" id="gopen">Open in Zoom</button><button class="btn" id="gclear">Show all</button></div>${gjump()}`;wireJump();
     panel.querySelector('#gthreads').onclick=()=>{const b=focus;setMode('descent');openThreads(b);};
     panel.querySelector('#gopen').onclick=()=>{const b=focus;setMode('zoom');go({level:1,b},null,1);};panel.querySelector('#gclear').onclick=()=>{focus=null;showPanel();tick(330);};}
+  function gjump(){return `<label class="gjump">Book <select id="gsel"><option value="">Choose a book…</option>${NAMES.map((n,b)=>`<option value="${b}" ${b===focus?'selected':''}>${n}</option>`).join('')}</select></label>`;}
+  function wireJump(){const sel=panel.querySelector('#gsel');if(sel)sel.onchange=()=>{focus=sel.value===''?null:+sel.value;showPanel();tick(focus!=null?300+focus*5:330);
+    const top=focus!=null?links.filter(l=>l.a===focus||l.c===focus).length:0;announce(focus!=null?`${NAMES[focus]} selected, with ${top} of the strongest threads. Its details and buttons are in the panel.`:'Showing all books.');panel.querySelector('#gsel')?.focus();};}
   showPanel();
   // Interaction: spin with inertia, grab nodes with springs
   const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),plane=new THREE.Plane(),hit=new THREE.Vector3(),inv=new THREE.Matrix4();
@@ -756,6 +1067,354 @@ function initGalaxy(host){
     const lb=hover??focus;if(lb!=null){const v=nodes[lb].mesh.getWorldPosition(p1).project(cam);const r=el.getBoundingClientRect();label.hidden=false;label.textContent=NAMES[lb];label.style.left=((v.x+1)/2*r.width)+'px';label.style.top=((1-v.y)/2*r.height)+'px';}else label.hidden=true;}
   return{resize(){const w=host.clientWidth,h=host.clientHeight;if(!w)return;renderer.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();const fit=w<h?Math.min(90,Math.max(30,33/Math.max(.45,w/h))):30;if(Math.abs(fit-baseDist)>.5){baseDist=fit;camDistT=fit;}},start(){if(!raf)frame();},stop(){cancelAnimationFrame(raf);raf=null;}};
 }
+
+// ---------- Time: a timeline of events and people, linked to a map of the places ----------
+// Data: Theographic Bible Metadata (CC BY-SA 4.0) for events, people and places; Natural Earth (public domain) for the land.
+const ERAS=[[-4004,-2348,'Beginnings'],[-2348,-1706,'Flood and patriarchs'],[-1706,-1491,'Israel in Egypt'],[-1491,-1451,'Exodus and wilderness'],
+  [-1451,-1095,'Conquest and judges'],[-1095,-975,'United kingdom'],[-975,-588,'Divided kingdom'],[-588,-536,'Exile'],[-536,-400,'Return'],
+  [-400,-5,'Between the Testaments'],[-5,30,'Life of Jesus'],[30,100,'Early church']];
+const Y0=-4060,Y1=110;
+const fmtYear=y=>y<0?`${Math.round(-y)} BC`:`AD ${Math.max(1,Math.round(y))}`;
+// Approximate rivers and lakes for orientation (Natural Earth 1:50m has no inland water)
+const WATER={lines:[[[31.2,30.1],[31.0,29.0],[30.9,27.6],[31.9,26.2],[32.7,25.7],[32.9,24.1],[32.9,22.0]],
+  [[38.3,37.1],[38.0,36.2],[39.1,35.9],[40.1,34.9],[41.4,34.4],[43.6,32.6],[45.3,31.6],[46.4,31.0],[47.7,30.5]],
+  [[40.2,37.9],[42.4,37.1],[43.1,36.3],[43.7,34.6],[44.4,33.3],[45.6,32.4],[46.8,31.4],[47.6,30.9]],
+  [[35.62,33.25],[35.6,32.88],[35.57,32.7],[35.55,32.3],[35.56,31.95],[35.55,31.78]]],
+  lakes:[[35.59,32.82,.08,.11],[35.5,31.5,.07,.34]]};
+let timeData=null,timeBuilt=false;
+async function openTime(){const host=$('#time');if(timeBuilt){host._refresh&&host._refresh();return;}
+  host.innerHTML='<div class="loading">Loading the timeline and map…</div>';
+  try{const [t,m]=await Promise.all([fetch('timeline.json').then(r=>r.json()),fetch('map.json').then(r=>r.json())]);timeData={...t,map:m};}
+  catch(e){host.innerHTML='<div class="loading">The timeline could not be loaded. Check your connection and open this tab again.</div>';return;}
+  timeBuilt=true;buildTime(host);}
+function buildTime(host){
+  const {events:EV,people:PE,places:PL,map}=timeData;
+  host.innerHTML=`<div class="tl">
+    <div class="tl-bar"><h2 class="tl-title">Timeline</h2>
+      <label class="tl-find"><span class="sr-only">Find an event, person or place</span><input id="tlFind" list="tlList" placeholder="Find an event, person or place" autocomplete="off"><datalist id="tlList">${EV.map(e=>`<option value="${esc(e[0])}">`).join('')}${PE.map(p=>`<option value="${esc(p[0])}">`).join('')}${PL.map(p=>`<option value="${esc(p[0])}">`).join('')}</datalist></label>
+      <div class="tl-zoom" role="group" aria-label="Timeline zoom"><button class="btn" id="tlOut" aria-label="Zoom out of time">−</button><button class="btn" id="tlFit">Whole span</button><button class="btn" id="tlIn" aria-label="Zoom into time">+</button></div></div>
+    <div class="tl-scroll" id="tlScroll" tabindex="0" aria-label="Timeline. Scroll sideways to move through time."><div class="tl-canvas" id="tlCanvas"></div></div>
+    <div class="tl-lower"><div class="tl-map"><svg id="tlMap" role="img" aria-label="Map of the lands of the Bible"></svg>
+        <div class="tl-mapbtns"><button class="btn" data-view="all">Whole region</button><button class="btn" data-view="land">Holy Land</button></div></div>
+      <div class="tl-detail" id="tlDetail" aria-live="polite"></div></div>
+    <p class="tl-note">Dates follow James Ussher's traditional chronology, as used by the open Theographic Bible dataset. Many scholars date the early periods differently. Places are plotted from OpenBible.info locations; some are uncertain.</p></div>`;
+  const sc=host.querySelector('#tlScroll'),cv=host.querySelector('#tlCanvas'),svg=host.querySelector('#tlMap'),det=host.querySelector('#tlDetail');
+  let ppy=0,sel=null; // pixels per year; selection {type:'event'|'person'|'place',i}
+  const fitPPY=()=>Math.max(.12,(sc.clientWidth-24)/(Y1-Y0));
+  const X=y=>(y-Y0)*ppy+12;
+  // ----- Map projection: equirectangular, squeezed by cos(latitude) -----
+  const [W,S,E,N]=map.box,K=Math.cos(33*Math.PI/180),px=lon=>(lon-W)*K*10,py=lat=>(N-lat)*10;
+  const MW=(E-W)*K*10,MH=(N-S)*10;
+  const ring=r=>{let d='';for(let k=0;k<r.length;k+=2)d+=(k?'L':'M')+px(r[k]/map.scale).toFixed(1)+' '+py(r[k+1]/map.scale).toFixed(1);return d+'Z';};
+  const KEY=new Set(['Jerusalem','Babylon','Rome','Nineveh','Damascus','Ur','Athens','Corinth','Antioch','Bethlehem','Nazareth','Memphis','Susa','Tyre','Ephesus','Haran','Samaria','Capernaum','Jericho','Hebron','Shechem','Beersheba','Joppa','Caesarea','Patmos','Malta','Tarsus']);
+  svg.setAttribute('viewBox',`0 0 ${MW.toFixed(0)} ${MH.toFixed(0)}`);
+  svg.innerHTML=`<rect class="sea" x="0" y="0" width="${MW}" height="${MH}"/><path class="land" d="${map.rings.map(ring).join('')}"/>
+    ${WATER.lines.map(l=>`<path class="river" d="${l.map(([lo,la],k)=>(k?'L':'M')+px(lo).toFixed(1)+' '+py(la).toFixed(1)).join('')}"/>`).join('')}
+    ${WATER.lakes.map(([lo,la,rx,ry])=>`<ellipse class="lake" cx="${px(lo)}" cy="${py(la)}" rx="${rx*K*10}" ry="${ry*10}"/>`).join('')}
+    <path class="route" id="tlRoute" d=""/>
+    <g id="tlPlaces">${PL.map((p,i)=>`<circle data-pl="${i}" data-r="${(0.9+Math.min(2.6,Math.sqrt(p[3])/7)).toFixed(2)}" cx="${px(p[2]).toFixed(1)}" cy="${py(p[1]).toFixed(1)}" r="${(0.9+Math.min(2.6,Math.sqrt(p[3])/7)).toFixed(2)}"><title>${esc(p[0])}</title></circle>`).join('')}</g>
+    <g id="tlLabels"></g>`;
+  const dots=[...svg.querySelectorAll('#tlPlaces circle')],labels=svg.querySelector('#tlLabels'),route=svg.querySelector('#tlRoute');
+  let vb=[0,0,MW,MH];
+  function setView(x,y,w,h,instant){const target=[x,y,w,h];const from=vb.slice();const t0=performance.now(),D=reduce||instant?0:600;
+    (function anim(){const t=D?Math.min(1,(performance.now()-t0)/D):1,e=1-Math.pow(1-t,3);vb=from.map((v,k)=>v+(target[k]-v)*e);svg.setAttribute('viewBox',vb.map(v=>v.toFixed(1)).join(' '));drawLabels();if(t<1)requestAnimationFrame(anim);})();}
+  function fitPlaces(idx){if(!idx.length)return setView(0,0,MW,MH);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;idx.forEach(i=>{const x=px(PL[i][2]),y=py(PL[i][1]);x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);});
+    let w=Math.max(90,(x1-x0)*1.5),h=Math.max(66,(y1-y0)*1.5);const ar=MW/MH;if(w/h>ar)h=w/ar;else w=h*ar;setView((x0+x1)/2-w/2,(y0+y1)/2-h/2,w,h);}
+  // Labels for key places and the current selection, sized to the current zoom
+  let lit=new Set();
+  function drawLabels(){const r=svg.getBoundingClientRect();if(!r.width)return;const k=Math.min(r.width/vb[2],r.height/vb[3]),fs=11.5/k;
+    const cand=[...new Set([...lit,...PL.map((p,i)=>KEY.has(p[0])?i:-1).filter(i=>i>=0)])].filter(i=>{const x=px(PL[i][2]),y=py(PL[i][1]);return x>=vb[0]&&x<=vb[0]+vb[2]&&y>=vb[1]&&y<=vb[1]+vb[3];})
+      .sort((a,b)=>(lit.has(b)-lit.has(a))||(PL[b][3]-PL[a][3]));
+    const boxes=[],out=[];for(const i of cand){const x=px(PL[i][2])+fs*.45,y=py(PL[i][1])-fs*.3,w=PL[i][0].length*fs*.56,bx=[x,y-fs,x+w,y+fs*.25];
+      if(boxes.some(o=>bx[0]<o[2]&&bx[2]>o[0]&&bx[1]<o[3]&&bx[3]>o[1]))continue;boxes.push(bx);out.push(`<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" style="font-size:${fs.toFixed(3)}px" class="${lit.has(i)?'on':''}">${esc(PL[i][0])}</text>`);}
+    labels.innerHTML=out.join('');
+    const z=Math.pow(Math.min(1,vb[2]/MW),.8);dots.forEach(d=>{d.style.strokeWidth=(vb[2]/400).toFixed(2);d.setAttribute('r',(d.dataset.r*z).toFixed(2));});}
+  // ----- Timeline layout -----
+  const lw=n=>n.length*6.1+12;
+  function packPeople(){const rows=[],where=[];PE.map((p,i)=>i).sort((a,b)=>PE[a][1]-PE[b][1]).forEach(i=>{const [n,f,t]=PE[i];const x0=X(f),x1=Math.max(X(t),x0+6),inside=x1-x0>lw(n);
+      const end=inside?x1:x1+lw(n);let r=rows.findIndex(e=>e<x0-6);if(r<0){r=rows.length;rows.push(0);}rows[r]=end;where[i]=r;});return {n:rows.length,where};}
+  function layout(){cv.style.width=(X(Y1)+12)+'px';
+    const tick=ppy>8?10:ppy>2?50:ppy>0.8?100:ppy>0.35?250:500;let h='';
+    ERAS.forEach(([a,b,name],k)=>{h+=`<button class="tl-era ${k%2?'alt':''}" data-era="${k}" style="left:${X(a)}px;width:${Math.max(1,X(b)-X(a))}px" title="${esc(name)}, ${fmtYear(a)} to ${fmtYear(b)}" aria-label="Zoom to ${esc(name)}, ${fmtYear(a)} to ${fmtYear(b)}"><span>${(X(b)-X(a))>name.length*6.5?esc(name):''}</span></button>`;});
+    for(let y=Math.ceil(Y0/tick)*tick;y<=Y1;y+=tick)h+=`<div class="tl-tick" style="left:${X(y)}px"><span>${y===0?'AD 1':fmtYear(y)}</span></div>`;
+    // events: greedy label rows so titles don't overlap
+    const rowEnd=[-1e9,-1e9,-1e9,-1e9];
+    EV.forEach((e,i)=>{const x=X(e[1]);let r=rowEnd.findIndex(end=>end<x-4);const lab=r>=0;if(lab)rowEnd[r]=x+Math.min(220,e[0].length*6.4+14);
+      h+=`<button class="tl-ev ${lab?'lab':''}" data-ev="${i}" style="left:${x}px;--r:${lab?r:0}" aria-label="${esc(e[0])}, ${fmtYear(e[1])}"><i></i>${lab?`<span>${esc(e[0])}</span>`:''}</button>`;});
+    const peopleRows=packPeople();
+    PE.forEach((p,i)=>{const x=X(p[1]),w=Math.max(6,X(p[2])-X(p[1])),inside=w>lw(p[0]);
+      h+=`<button class="tl-p ${p[5]} ${inside?'':'out'}" data-pe="${i}" style="left:${x}px;width:${w}px;top:calc(var(--prow) + ${peopleRows.where[i]*22}px)" aria-label="${esc(p[0])}, ${fmtYear(p[1])} to ${fmtYear(p[2])}"><span>${esc(p[0])}</span></button>`;});
+    cv.innerHTML=h;cv.style.height=`calc(var(--prow) + ${peopleRows.n*22+8}px)`;mark();}
+  function zoomTo(nppy,anchorYear){const a=anchorYear??(Y0+(sc.scrollLeft+sc.clientWidth/2-12)/ppy);ppy=Math.max(fitPPY(),Math.min(40,nppy));layout();sc.scrollLeft=X(a)-sc.clientWidth/2;linkMap();}
+  // ----- Linking: what is selected, and which places belong to the visible slice of time -----
+  function visibleRange(){return [Y0+(sc.scrollLeft-12)/ppy,Y0+(sc.scrollLeft+sc.clientWidth-12)/ppy];}
+  function linkMap(){const [a,b]=visibleRange(),inView=new Set();EV.forEach(e=>{if(e[1]>=a&&e[1]<=b)e[5].forEach(p=>inView.add(p));});
+    dots.forEach((d,i)=>{d.classList.toggle('now',inView.has(i));});sticky();}
+  // keep a long bar's name in view when its start is scrolled off to the left
+  function sticky(){const L=sc.scrollLeft;cv.querySelectorAll('.tl-p:not(.out)').forEach(b=>{const x=parseFloat(b.style.left),w=parseFloat(b.style.width),sp=b.firstChild;const off=Math.max(0,Math.min(L-x,w-sp.offsetWidth-14));sp.style.transform=off>0?`translateX(${off}px)`:'';});}
+  function mark(){cv.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));if(!sel)return;
+    if(sel.type==='event')cv.querySelector(`[data-ev="${sel.i}"]`)?.classList.add('on');
+    if(sel.type==='person'){cv.querySelector(`[data-pe="${sel.i}"]`)?.classList.add('on');EV.forEach((e,k)=>{if(e[4].includes(sel.i))cv.querySelector(`[data-ev="${k}"]`)?.classList.add('on');});}
+    if(sel.type==='place')EV.forEach((e,k)=>{if(e[5].includes(sel.i))cv.querySelector(`[data-ev="${k}"]`)?.classList.add('on');});}
+  const readBtn=(v,label)=>v>=0?`<button class="btn" data-read="${v}">${label||'Read'} ${NAMES[VB[v]]} ${VC[v]+1}:${VV[v]+1}</button>`:'';
+  function select(type,i,opts={}){sel={type,i};mark();dots.forEach(d=>d.classList.remove('sel'));lit=new Set();let places=[],h='';
+    if(type==='event'){const e=EV[i];places=e[5];
+      h=`<span class="eyebrow">Event · ${fmtYear(e[1])}${e[6]?` · ${e[6]}`:''}</span><h3>${esc(e[0])}</h3>
+        <div class="navrow">${readBtn(e[2])}${i>0?`<button class="btn" data-ev="${i-1}" aria-label="Previous event">←</button>`:''}${i<EV.length-1?`<button class="btn" data-ev="${i+1}" aria-label="Next event">→</button>`:''}</div>
+        ${e[4].length?`<p class="tl-chips"><b>People</b>${e[4].map(p=>`<button data-pe="${p}">${esc(PE[p][0])}</button>`).join('')}</p>`:''}
+        ${e[5].length?`<p class="tl-chips"><b>Places</b>${e[5].map(p=>`<button data-pl="${p}">${esc(PL[p][0])}</button>`).join('')}</p>`:'<p class="tl-muted">No mapped place for this event.</p>'}`;
+      route.setAttribute('d','');}
+    if(type==='person'){const p=PE[i],evs=EV.map((e,k)=>[e,k]).filter(([e])=>e[4].includes(i));
+      const path=[];evs.forEach(([e])=>e[5].slice(0,1).forEach(pl=>{if(path[path.length-1]!==pl)path.push(pl);}));places=[...new Set(evs.flatMap(([e])=>e[5]))];
+      route.setAttribute('d',path.length>1?path.map((pl,k)=>(k?'L':'M')+px(PL[pl][2]).toFixed(1)+' '+py(PL[pl][1]).toFixed(1)).join(''):'');
+      h=`<span class="eyebrow">Person · ${p[5]==='life'?'lived':'active'} ${fmtYear(p[1])} to ${fmtYear(p[2])}</span><h3>${esc(p[0])}</h3><p class="tl-muted">Named in ${fmt(p[3])} verses.${path.length>1?' The line on the map follows their events in order.':''}</p>
+        <div class="navrow">${readBtn(p[4],'First mention:')}</div>
+        ${evs.length?`<p class="tl-chips"><b>Events</b>${evs.slice(0,30).map(([e,k])=>`<button data-ev="${k}">${esc(e[0])}</button>`).join('')}</p>`:''}`;}
+    if(type==='place'){const p=PL[i],evs=EV.map((e,k)=>[e,k]).filter(([e])=>e[5].includes(i));places=[i];route.setAttribute('d','');
+      h=`<span class="eyebrow">Place · ${esc(p[4])}</span><h3>${esc(p[0])}</h3><p class="tl-muted">Named in ${fmt(p[3])} verse${p[3]===1?'':'s'}.</p><div class="navrow">${readBtn(p[5],'First mention:')}</div>
+        ${evs.length?`<p class="tl-chips"><b>Events here</b>${evs.map(([e,k])=>`<button data-ev="${k}">${esc(e[0])} · ${fmtYear(e[1])}</button>`).join('')}</p>`:'<p class="tl-muted">No dated events here in the dataset.</p>'}`;}
+    places.forEach(p=>{dots[p]?.classList.add('sel');lit.add(p);});det.innerHTML=h;fitPlaces(places);
+    if(!opts.keepScroll){const y=type==='event'?EV[i][1]:type==='person'?(PE[i][1]+PE[i][2])/2:null;if(y!=null){const target=X(y)-sc.clientWidth/2;sc.scrollTo({left:target,behavior:reduce?'auto':'smooth'});}}
+    tick(type==='event'?520:type==='person'?440:600);}
+  function intro(){det.innerHTML=`<span class="eyebrow">How to use</span><h3>From creation to the early church</h3><p class="tl-muted">${fmt(EV.length)} events and ${PE.length} people on one line of time, joined to ${fmt(PL.length)} places on the map. Scroll or drag sideways through time and the map lights up the places of the events in view. Tap an event, a person's bar or a place to see how they connect.</p>`;}
+  // ----- Events -----
+  host.addEventListener('click',e=>{const t=e.target.closest('[data-ev],[data-pe],[data-pl],[data-read],[data-view],[data-era]');if(!t)return;
+    if(t.dataset.read!=null){const k=+t.dataset.read;setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);return;}
+    if(t.dataset.era!=null){const [a,b]=ERAS[+t.dataset.era];const n=Math.min(40,(sc.clientWidth-60)/(b-a));ppy=Math.max(fitPPY(),n);layout();sc.scrollLeft=X(a)-30;linkMap();announce(`${ERAS[+t.dataset.era][2]}, ${fmtYear(a)} to ${fmtYear(b)}.`);return;}
+    if(t.dataset.view){t.dataset.view==='all'?setView(0,0,MW,MH):fitPlaces(PL.map((p,i)=>p[1]>30.8&&p[1]<33.5&&p[2]>34.2&&p[2]<36.2?i:-1).filter(i=>i>=0&&PL[i][3]>40));return;}
+    if(t.dataset.ev!=null)return select('event',+t.dataset.ev);if(t.dataset.pe!=null)return select('person',+t.dataset.pe);if(t.dataset.pl!=null)return select('place',+t.dataset.pl,{keepScroll:true});});
+  cv.addEventListener('keydown',e=>{const t=e.target.closest('[data-ev]');if(!t||(e.key!=='ArrowRight'&&e.key!=='ArrowLeft'))return;e.preventDefault();
+    const k=+t.dataset.ev+(e.key==='ArrowRight'?1:-1);const n=cv.querySelector(`[data-ev="${k}"]`);if(n){n.focus();select('event',k);}});
+  let lastQ='';host.querySelector('#tlFind').addEventListener('change',e=>{const q=e.target.value.trim().toLowerCase();if(!q||q===lastQ)return;lastQ=q;let k=EV.findIndex(x=>x[0].toLowerCase()===q);if(k>=0)return select('event',k);
+    k=PE.findIndex(x=>x[0].toLowerCase()===q);if(k>=0)return select('person',k);k=PL.findIndex(x=>x[0].toLowerCase()===q);if(k>=0)return select('place',k);
+    k=EV.findIndex(x=>x[0].toLowerCase().includes(q));if(k>=0)return select('event',k);k=PE.findIndex(x=>x[0].toLowerCase().includes(q));if(k>=0)return select('person',k);toast('Nothing in the timeline matches that.');});
+  host.querySelector('#tlIn').onclick=()=>zoomTo(ppy*2);host.querySelector('#tlOut').onclick=()=>zoomTo(ppy/2);host.querySelector('#tlFit').onclick=()=>{zoomTo(fitPPY());sc.scrollLeft=0;};
+  sc.addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();const r=sc.getBoundingClientRect(),a=Y0+(sc.scrollLeft+e.clientX-r.left-12)/ppy;zoomTo(ppy*(e.deltaY<0?1.25:0.8),a);sc.scrollLeft=X(a)-(e.clientX-r.left);}
+    else if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){e.preventDefault();sc.scrollLeft+=e.deltaY;}},{passive:false});
+  // drag to pan, pinch to zoom
+  const tp=new Map();let pinch0=0,ppy0=0,dragX=null,dragL=0,dragged=false;
+  sc.addEventListener('pointerdown',e=>{tp.set(e.pointerId,e.clientX);if(tp.size===2){const [a,b]=[...tp.values()];pinch0=Math.abs(a-b);ppy0=ppy;}else{dragX=e.clientX;dragL=sc.scrollLeft;dragged=false;}});
+  sc.addEventListener('pointermove',e=>{if(!tp.has(e.pointerId))return;tp.set(e.pointerId,e.clientX);
+    if(tp.size===2&&pinch0>10){const [a,b]=[...tp.values()];zoomTo(ppy0*Math.abs(a-b)/pinch0);}
+    else if(dragX!=null&&e.pointerType==='mouse'){const d=e.clientX-dragX;if(Math.abs(d)>4)dragged=true;sc.scrollLeft=dragL-d;}});
+  const tpEnd=e=>{tp.delete(e.pointerId);if(!tp.size)dragX=null;};sc.addEventListener('pointerup',tpEnd);sc.addEventListener('pointercancel',tpEnd);
+  sc.addEventListener('click',e=>{if(dragged){e.stopPropagation();e.preventDefault();dragged=false;}},true);
+  let lf=0;sc.addEventListener('scroll',()=>{if(!lf)lf=requestAnimationFrame(()=>{lf=0;linkMap();});},{passive:true});
+  // map: drag to pan, wheel to zoom
+  let md=null;svg.addEventListener('pointerdown',e=>{if(e.target.closest('[data-pl]'))return;md={x:e.clientX,y:e.clientY,vb:vb.slice()};svg.setPointerCapture(e.pointerId);});
+  svg.addEventListener('pointermove',e=>{if(!md)return;const r=svg.getBoundingClientRect(),s=md.vb[2]/r.width;vb=[md.vb[0]-(e.clientX-md.x)*s,md.vb[1]-(e.clientY-md.y)*s,md.vb[2],md.vb[3]];svg.setAttribute('viewBox',vb.join(' '));drawLabels();});
+  svg.addEventListener('pointerup',()=>md=null);
+  svg.addEventListener('wheel',e=>{e.preventDefault();const r=svg.getBoundingClientRect(),f=e.deltaY<0?0.8:1.25,w=Math.max(8,Math.min(MW,vb[2]*f)),h=w*vb[3]/vb[2];
+    const cx=vb[0]+(e.clientX-r.left)/r.width*vb[2],cy=vb[1]+(e.clientY-r.top)/r.height*vb[3];vb=[cx-(cx-vb[0])*w/vb[2],cy-(cy-vb[1])*h/vb[3],w,h];svg.setAttribute('viewBox',vb.join(' '));drawLabels();},{passive:false});
+  host._refresh=()=>{const f=fitPPY();if(ppy<f)zoomTo(f);};
+  ppy=fitPPY();layout();intro();drawLabels();linkMap();
+  addEventListener('resize',()=>{if(mode==='time'){const f=fitPPY();if(ppy<f){ppy=f;layout();}}});}
+
+// ---------- Stories: guided journeys on the map, and hands-on explainers ----------
+// Routes and sites follow traditional identifications; several (Mount Sinai, the sea crossing) are debated.
+const vi=(b,c,v)=>chapStart[b][c-1]+v-1;
+const JOURNEYS={
+exodus:{title:'The Exodus',sub:'From slavery in Egypt to the edge of the promised land',eyebrow:'Journey · Exodus to Joshua',
+  intro:'Follow Israel out of Egypt, through the sea and the wilderness to Mount Sinai, and on to the Jordan. Scroll, and the map follows the story.',
+  note:'Many of these places cannot be pinned down. This route follows the traditional southern path through Sinai, and the crossing point and the mountain are both debated.',
+  legend:[],
+  steps:[
+  {j:0,t:'Out of Egypt',p:[['Rameses',30.8,31.83],['Succoth',30.55,32.1]],r:[1,12,37],x:'After the tenth plague, Pharaoh lets the people go. They leave Rameses on foot, with their flocks and the dough still unleavened.'},
+  {j:0,t:'A pillar of cloud',p:[['Etham',30.47,32.28]],r:[1,13,21],x:'God leads them the long way round, not by the coast road, and goes ahead of them day and night.'},
+  {j:0,t:'Trapped by the sea',p:[['Pi-hahiroth',29.95,32.43]],r:[1,14,13],x:'They camp by the sea. Pharaoh changes his mind and his chariots close in behind them.'},
+  {j:0,t:'Through the sea',p:[['Wilderness of Shur',29.85,32.66]],r:[1,14,22],x:'The waters part, Israel crosses on dry ground, and Miriam leads the song on the far shore.'},
+  {j:0,t:'Bitter water made sweet',p:[['Marah',29.35,32.93],['Elim',29.27,33.02]],r:[1,15,25],x:'Three days without water, then bitter water at Marah. Further on, Elim has twelve wells and seventy palm trees.'},
+  {j:0,t:'Bread from heaven',p:[['Wilderness of Sin',28.95,33.3]],r:[1,16,4],x:'The people grumble about food. Each morning manna lies on the ground, enough for each day, and twice as much before the sabbath.'},
+  {j:0,t:'Water from the rock',p:[['Rephidim',28.73,33.84]],r:[1,17,6],x:'With no water again, Moses strikes the rock at Horeb. Here too Israel fights Amalek while Moses holds up his hands.'},
+  {j:0,t:'Mount Sinai',p:[['Mount Sinai',28.54,33.98]],r:[1,20,2],x:'The people camp at the mountain for about a year. God gives the Ten Commandments and the plans for the tabernacle.'},
+  {j:0,t:'Spies at Kadesh',p:[['Hazeroth',28.92,34.42],['Kadesh',30.65,34.42]],r:[3,13,27],x:'Twelve spies explore Canaan. Ten say the land cannot be taken. Only Joshua and Caleb trust God, and the people refuse to go in.'},
+  {j:0,t:'Forty years',p:[['Mount Hor',30.33,35.45],['',29.9,35.75],['',30.9,36.05],['Plains of Moab',31.8,35.62]],r:[4,8,2],x:'A generation dies in the wilderness. Aaron dies on Mount Hor, and the people go around Edom to reach the plains of Moab.'},
+  {j:0,t:'Moses sees the land',p:[['Mount Nebo',31.77,35.73]],r:[4,34,4],x:'From the top of Nebo, God shows Moses the whole land. He dies there, and Joshua takes his place.'},
+  {j:0,t:'Across the Jordan',p:[['Jordan',31.84,35.55]],r:[5,3,17],x:'The priests carry the ark into the river in flood. The water stops, and the people cross on dry ground.'},
+  {j:0,t:'Jericho',p:[['Jericho',31.87,35.44]],r:[5,6,20],x:'Forty years after leaving Egypt, the first city of the promised land falls.'}]},
+paul:{title:'Paul\'s journeys',sub:'Three missionary journeys and the voyage to Rome',eyebrow:'Journey · Acts 9 to 28',
+  intro:'Trace Paul from the Damascus road across Asia Minor and Greece, and finally by ship to Rome. Each journey has its own colour.',
+  note:'Stops follow the order in Acts. Some legs, such as the inland routes through Galatia, are only summarised there, so their exact paths are approximate.',
+  legend:['Before the journeys','First journey','Second journey','Third journey','Voyage to Rome'],
+  steps:[
+  {j:0,t:'The road to Damascus',p:[['Jerusalem',31.78,35.23],['Damascus',33.51,36.31]],r:[43,9,3],x:'Saul sets out to arrest believers. A light from heaven stops him, and he arrives in Damascus blind and changed.'},
+  {j:0,t:'Sent home to Tarsus',p:[['Jerusalem',31.78,35.23],['Caesarea',32.5,34.89],['Tarsus',36.91,34.9]],r:[43,9,30],x:'Threats on his life follow him. The believers take him down to Caesarea and send him home to Tarsus.'},
+  {j:0,t:'Antioch',p:[['Antioch',36.2,36.16]],r:[43,11,26],x:'Barnabas brings Saul to Antioch, where they teach for a whole year and the disciples are first called Christians.'},
+  {j:1,t:'Sent out to Cyprus',p:[['Antioch',36.2,36.16],['Seleucia',36.12,35.94],['Salamis',35.18,33.9],['Paphos',34.71,32.57]],r:[43,13,4],x:'The church at Antioch sends Barnabas and Saul out. They cross Cyprus, and from here on he is called Paul.'},
+  {j:1,t:'A light to the Gentiles',p:[['Perga',36.96,30.85],['Pisidian Antioch',38.31,31.19]],r:[43,13,47],x:'In the synagogue at Pisidian Antioch, Paul preaches. When many reject the message, he turns to the Gentiles.'},
+  {j:1,t:'Iconium, Lystra and Derbe',p:[['Iconium',37.87,32.49],['Lystra',37.6,32.34],['Derbe',37.35,33.36]],r:[43,14,22],x:'At Lystra the crowd first calls him a god, then stones him and leaves him for dead. He gets up and goes on to Derbe.'},
+  {j:1,t:'Home again',p:[['Lystra',37.6,32.34],['Iconium',37.87,32.49],['Pisidian Antioch',38.31,31.19],['Perga',36.96,30.85],['Attalia',36.88,30.7],['Antioch',36.2,36.16]],r:[43,14,27],x:'They retrace their steps to strengthen the new churches, then sail home and report how God opened the door of faith to the Gentiles.'},
+  {j:2,t:'A call to Europe',p:[['Antioch',36.2,36.16],['Derbe',37.35,33.36],['Lystra',37.6,32.34],['Troas',39.75,26.16]],r:[43,16,9],x:'With Silas, and Timothy from Lystra, Paul revisits the churches. At Troas he dreams of a man of Macedonia asking for help.'},
+  {j:2,t:'Philippi',p:[['Samothrace',40.48,25.53],['Neapolis',40.94,24.41],['Philippi',41.01,24.28]],r:[43,16,25],x:'Lydia becomes the first believer in Europe. Paul and Silas are beaten and jailed, and sing hymns at midnight.'},
+  {j:2,t:'Thessalonica and Berea',p:[['Amphipolis',40.82,23.85],['Apollonia',40.63,23.49],['Thessalonica',40.63,22.95],['Berea',40.52,22.2]],r:[43,17,11],x:'A riot drives them out of Thessalonica. In Berea, people check what Paul says against the scriptures every day.'},
+  {j:2,t:'Athens',p:[['Athens',37.97,23.73]],r:[43,17,28],x:'Among the idols of Athens, Paul speaks on the Areopagus about the unknown God, quoting their own poets.'},
+  {j:2,t:'Corinth',p:[['Corinth',37.91,22.88]],r:[43,18,9],x:'Paul makes tents with Aquila and Priscilla and stays a year and six months. Later he will write two letters to this church.'},
+  {j:2,t:'Back to Antioch',p:[['Cenchreae',37.88,22.99],['Ephesus',37.94,27.34],['Caesarea',32.5,34.89],['Jerusalem',31.78,35.23],['Antioch',36.2,36.16]],r:[43,18,22],x:'He sails by way of Ephesus to Caesarea, goes up to greet the church, most likely in Jerusalem, and returns to Antioch.'},
+  {j:3,t:'Two years in Ephesus',p:[['Antioch',36.2,36.16],['Derbe',37.35,33.36],['Iconium',37.87,32.49],['Pisidian Antioch',38.31,31.19],['Ephesus',37.94,27.34]],r:[43,19,10],x:'Paul teaches daily in the school of Tyrannus, until all Asia has heard. A silversmiths\' riot ends his stay.'},
+  {j:3,t:'Macedonia and Greece',p:[['Troas',39.75,26.16],['Philippi',41.01,24.28],['Thessalonica',40.63,22.95],['Corinth',37.91,22.88]],r:[43,20,2],x:'He encourages the churches in Macedonia and spends three months in Greece, where he likely writes Romans.'},
+  {j:3,t:'Farewell at Miletus',p:[['Thessalonica',40.63,22.95],['Philippi',41.01,24.28],['Troas',39.75,26.16],['Assos',39.49,26.34],['Mitylene',39.11,26.55],['Samos',37.73,26.98],['Miletus',37.53,27.28]],r:[43,20,35],x:'At Troas, Eutychus falls from a window during a long sermon. At Miletus, Paul says goodbye to the Ephesian elders.'},
+  {j:3,t:'Up to Jerusalem',p:[['Cos',36.89,27.29],['Rhodes',36.43,28.22],['Patara',36.26,29.31],['Tyre',33.27,35.2],['Ptolemais',32.92,35.07],['Caesarea',32.5,34.89],['Jerusalem',31.78,35.23]],r:[43,21,13],x:'Friends beg him not to go, knowing what awaits. He goes anyway, and is arrested in the temple.'},
+  {j:4,t:'I appeal unto Caesar',p:[['Jerusalem',31.78,35.23],['Caesarea',32.5,34.89]],r:[43,25,11],x:'Taken to Caesarea under guard, Paul waits two years in custody, then appeals to the emperor.'},
+  {j:4,t:'Late in the sailing season',p:[['Sidon',33.56,35.37],['',34.9,33.9],['Myra',36.26,29.99],['Cnidus',36.69,27.37],['Salmone',35.3,26.3],['Fair Havens',34.93,24.73]],r:[43,27,10],x:'Under a centurion named Julius, Paul sails along the coast to Crete. He warns that going on will be dangerous.'},
+  {j:4,t:'Storm and shipwreck',p:[['Malta',35.9,14.45]],r:[43,27,25],x:'A northeaster drives the ship for fourteen days. All 276 on board reach the shore of Malta alive.'},
+  {j:4,t:'Rome at last',p:[['Syracuse',37.07,15.29],['Rhegium',38.11,15.65],['Puteoli',40.82,14.12],['Rome',41.89,12.48]],r:[43,28,31],x:'Paul lives two years in a rented house in Rome under guard, welcoming everyone who comes, which is where Acts ends.'}]}};
+
+let storiesMap=null;
+async function openStories(){const host=$('#stories');host.style.setProperty('--ph',host.clientHeight+'px');if(host.dataset.built)return;host.dataset.built=1;storiesHome(host);}
+function storiesHome(host){host._cleanup&&host._cleanup();host.scrollTop=0;
+  const card=(id,eb,t,s,kind)=>`<button class="st-card ${kind}" data-story="${id}"><span class="eyebrow">${eb}</span><b>${t}</b><span>${s}</span></button>`;
+  host.innerHTML=`<div class="st-home"><h2 class="tl-title" tabindex="-1">Stories</h2><p class="tl-muted">Guided journeys you scroll through, and explainers you can play with.</p>
+    <div class="st-cards">${card('exodus',JOURNEYS.exodus.eyebrow,JOURNEYS.exodus.title,JOURNEYS.exodus.sub,'map')}${card('paul',JOURNEYS.paul.eyebrow,JOURNEYS.paul.title,JOURNEYS.paul.sub,'map')}
+    ${card('tabernacle','Explainer · Exodus 25 to 27','Inside the tabernacle','Walk from the gate to the ark, to scale','plan')}${card('ark','Explainer · Genesis 6','How big was the ark?','Compare it with a whale, a jumbo jet and the Titanic','ark')}</div></div>`;
+  host.onclick=e=>{const t=e.target.closest('[data-story],[data-read],[data-home]');if(!t)return;
+    if(t.dataset.home!=null){storiesHome(host);host.querySelector('h2').focus();return;}
+    if(t.dataset.read!=null){const k=+t.dataset.read;setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);return;}
+    const id=t.dataset.story;if(JOURNEYS[id])openJourney(host,id);else if(id==='tabernacle')openTabernacle(host);else openArk(host);};}
+const stBack='<button class="btn st-back" data-home>← All stories</button>';
+const quote=(r,label)=>{const k=vi(...r);return `<blockquote class="st-q">${esc(T[VB[k]][VC[k]][VV[k]])}<cite>${NAMES[r[0]]} ${r[1]}:${r[2]} KJV</cite></blockquote><button class="btn" data-read="${k}">${label||'Read'} ${NAMES[r[0]]} ${r[1]}</button>`;};
+
+async function openJourney(host,id){const J=JOURNEYS[id];
+  if(!storiesMap){host.innerHTML='<div class="loading">Loading the map…</div>';try{storiesMap=await fetch('map.json').then(r=>r.json());}catch(e){host.innerHTML=`<div class="loading">The map could not be loaded. Check your connection and try again.${stBack}</div>`;return;}}
+  const map=storiesMap,[W,S,E,N]=map.box,K=Math.cos(33*Math.PI/180),px=lon=>(lon-W)*K*10,py=lat=>(N-lat)*10,MW=(E-W)*K*10,MH=(N-S)*10;
+  const ring=r=>{let d='';for(let k=0;k<r.length;k+=2)d+=(k?'L':'M')+px(r[k]/map.scale).toFixed(1)+' '+py(r[k+1]/map.scale).toFixed(1);return d+'Z';};
+  // Each step's segment starts where the previous step of the same journey ended
+  const segs=J.steps.map((s,k)=>{const prev=k&&J.steps[k-1].j===s.j?J.steps[k-1].p.slice(-1):[];return prev.concat(s.p).filter((p,i,a)=>!i||p[1]!==a[i-1][1]||p[2]!==a[i-1][2]);});
+  const pts=p=>p.map(([,la,lo],i)=>(i?'L':'M')+px(lo).toFixed(1)+' '+py(la).toFixed(1)).join('');
+  host.innerHTML=`<div class="st-j">
+    <div class="st-vis"><svg id="stMap" role="img" aria-label="Map of ${esc(J.title)}"><rect class="sea" width="${MW}" height="${MH}"/><path class="land" d="${map.rings.map(ring).join('')}"/>
+      <g id="stDone"></g><path id="stNow" pathLength="1"/><g id="stDots"></g><g id="stLabels"></g></svg>
+      ${J.legend.length?`<div class="st-legend">${J.legend.map((l,i)=>`<span class="j${i}"><i></i>${l}</span>`).join('')}</div>`:''}</div>
+    <div class="st-steps">
+      <div class="st-step st-intro" data-k="-1">${stBack}<span class="eyebrow">${J.eyebrow}</span><h2 tabindex="-1">${J.title}</h2><p>${J.intro}</p><p class="tl-note">${J.note}</p><p class="st-hint" aria-hidden="true">Scroll to begin ↓</p></div>
+      ${J.steps.map((s,k)=>`<article class="st-step" data-k="${k}" aria-label="Stop ${k+1} of ${J.steps.length}: ${esc(s.t)}"><span class="eyebrow j${s.j}">${J.legend[s.j]?J.legend[s.j]+' · ':''}Stop ${k+1} of ${J.steps.length}</span><h3>${esc(s.t)}</h3><p>${esc(s.x)}</p>${quote(s.r)}</article>`).join('')}
+      <div class="st-step st-end" data-k="${J.steps.length}"><h3>The whole route</h3><p>${J.steps.length} stops and about ${(Math.round(segs.flat().reduce((d,p,i,a)=>i?d+dist(a[i-1],p):d,0)/50)*50).toLocaleString('en')} km, measured in straight lines between them.</p><div class="navrow">${stBack}<button class="btn" data-top>Start again</button></div></div>
+    </div></div>`;
+  const svg=host.querySelector('#stMap'),done=svg.querySelector('#stDone'),now=svg.querySelector('#stNow'),dotsG=svg.querySelector('#stDots'),labs=svg.querySelector('#stLabels');
+  let vb=[0,0,MW,MH],cur=-2,raf=0;
+  const fit=list=>{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;list.forEach(([,la,lo])=>{x0=Math.min(x0,px(lo));x1=Math.max(x1,px(lo));y0=Math.min(y0,py(la));y1=Math.max(y1,py(la));});
+    const r=svg.getBoundingClientRect(),ar=r.width/Math.max(1,r.height)||1.5;let w=Math.max(60,(x1-x0)*1.35+24),h=Math.max(45,(y1-y0)*1.35+24);if(w/h>ar)h=w/ar;else w=h*ar;return [(x0+x1)/2-w/2,(y0+y1)/2-h/2,w,h];};
+  function draw(){const r=svg.getBoundingClientRect();if(!r.width)return;const k=Math.min(r.width/vb[2],r.height/vb[3]),u=1/k;
+    svg.style.setProperty('--u',u);svg.setAttribute('viewBox',vb.map(v=>v.toFixed(2)).join(' '));
+    const show=cur<0?[]:cur>=J.steps.length?J.steps.flatMap(s=>s.p):segs[cur];const seen=new Map();
+    J.steps.slice(0,Math.min(cur+1,J.steps.length)).forEach(s=>s.p.forEach(p=>p[0]&&seen.set(p[0],p)));
+    dotsG.innerHTML=[...seen.values()].map(([n,la,lo])=>`<circle cx="${px(lo)}" cy="${py(la)}" r="${(show.some(q=>q[0]===n)?5:3.2)*u}" class="${show.some(q=>q[0]===n)?'on':''}"/>`).join('');
+    const fs=12.5*u,out=[],boxes=show.map(([,la,lo])=>[px(lo)-4*u,py(la)-4*u,px(lo)+4*u,py(la)+4*u]);
+    [...show.filter(p=>p[0]),...[...seen.values()]].forEach(([n,la,lo])=>{if(out.some(o=>o.n===n))return;const cx=px(lo),cy=py(la),w=n.length*fs*.56;
+      for(const [x,y] of [[cx+fs*.5,cy-fs*.35],[cx-fs*.5-w,cy-fs*.35],[cx-w/2,cy+fs*1.25],[cx-w/2,cy-fs*.75]]){const b=[x,y-fs,x+w,y+fs*.25];
+        if(boxes.some(o=>b[0]<o[2]&&b[2]>o[0]&&b[1]<o[3]&&b[3]>o[1]))continue;boxes.push(b);out.push({n,s:`<text x="${x}" y="${y}" style="font-size:${fs}px" class="${show.some(q=>q[0]===n)?'on':''}">${esc(n)}</text>`});break;}});
+    labs.innerHTML=out.map(o=>o.s).join('');}
+  function view(t,instant){cancelAnimationFrame(raf);const from=vb.slice(),t0=performance.now(),D=reduce||instant?0:900;
+    (function a(){const p=D?Math.min(1,(performance.now()-t0)/D):1,e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;vb=from.map((v,i)=>v+(t[i]-v)*e);draw();if(p<1)raf=requestAnimationFrame(a);})();}
+  function step(k){if(k===cur)return;cur=k;
+    done.innerHTML=J.steps.slice(0,Math.max(0,Math.min(k,J.steps.length))).map((s,i)=>`<path class="j${s.j}" d="${pts(segs[i])}"/>`).join('');
+    if(k>=0&&k<J.steps.length){now.setAttribute('class','j'+J.steps[k].j);now.setAttribute('d',pts(segs[k]));now.style.transition='none';now.style.strokeDashoffset=1;now.getBoundingClientRect();now.style.transition='';now.style.strokeDashoffset=0;}
+    else{now.setAttribute('d',k>=J.steps.length?J.steps.map((s,i)=>pts(segs[i])).join(''):'');now.setAttribute('class','all');}
+    view(k<0||k>=J.steps.length?fit(J.steps.flatMap(s=>s.p)):fit(segs[k]));
+    svg.setAttribute('aria-label',k>=0&&k<J.steps.length?`Map: ${J.steps[k].t}, ${segs[k].filter(p=>p[0]).map(p=>p[0]).join(', ')}`:`Map of ${J.title}`);
+    host.querySelectorAll('.st-step').forEach(el=>el.classList.toggle('cur',+el.dataset.k===k));}
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)step(+e.target.dataset.k);});},{root:host,rootMargin:matchMedia('(max-width:760px)').matches?'-66% 0px -30% 0px':'-45% 0px -45% 0px'});
+  host.querySelectorAll('.st-step').forEach(el=>io.observe(el));
+  const ro=new ResizeObserver(()=>{host.style.setProperty('--ph',host.clientHeight+'px');draw();});ro.observe(svg);
+  host._cleanup=()=>{io.disconnect();ro.disconnect();cancelAnimationFrame(raf);host._cleanup=null;};
+  host.querySelector('[data-top]').onclick=()=>{host.scrollTo({top:0,behavior:reduce?'auto':'smooth'});host.querySelector('h2').focus({preventScroll:true});};
+  host.scrollTop=0;cur=-2;step(-1);view(fit(J.steps.flatMap(s=>s.p)),true);host.querySelector('h2').focus({preventScroll:true});announce(`${J.title}. ${J.steps.length} stops. Scroll or press Tab to move through them.`);}
+function dist(a,b){const R=6371,r=Math.PI/180,dl=(b[1]-a[1])*r,dn=(b[2]-a[2])*r,h=Math.sin(dl/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+
+// ----- Explainer: the tabernacle, to scale (Exodus 25 to 27). East is on the left, so north is at the bottom. -----
+function openTabernacle(host){host._cleanup&&host._cleanup();host.scrollTop=0;
+  const U=8; // drawing units per cubit
+  const C=x=>x*U,ITEMS=[
+    {id:'court',a:-10,b:0,t:'Outside the court',r:[1,27,18],x:'A linen fence #100# long, #50# wide and #5# high closes off the courtyard. Anyone in Israel could bring an offering to the gate.',who:'Everyone'},
+    {id:'gate',a:0,b:6,t:'The gate',r:[1,27,16],x:'The only way in is a screen #20# wide, of blue, purple and scarlet on the east side, facing the sunrise.',who:'Everyone bringing an offering'},
+    {id:'altar',a:6,b:30,t:'The bronze altar',r:[1,27,1],x:'The first thing you meet is the altar of burnt offering, #5# square and #3# high, overlaid with bronze.',who:'Worshippers and priests'},
+    {id:'laver',a:30,b:56,t:'The laver',r:[1,30,18],x:'A bronze basin between the altar and the tent, where priests washed their hands and feet before going in. Its size is not given.',who:'Worshippers and priests'},
+    {id:'holy',a:56,b:79,t:'The holy place',r:[1,26,35],x:'Inside the tent, #20# long and #10# wide. The table of showbread stands on the north side, the golden lampstand on the south, and the altar of incense before the veil.',who:'Priests only'},
+    {id:'veil',a:79,b:81,t:'The veil',r:[1,26,33],x:'A heavy curtain of blue, purple and scarlet, embroidered with cherubim, divides the holy place from the most holy.',who:'High priest only'},
+    {id:'most',a:81,b:91,t:'The most holy place',r:[1,25,22],x:'Probably a perfect cube, #10# each way, holding only the ark of the covenant. The high priest entered once a year, on the Day of Atonement.',who:'The high priest, once a year'}];
+  const plan=`<svg class="tb-plan" viewBox="${C(-14)} ${C(-6)} ${C(124)} ${C(62)}" role="img" aria-label="Plan of the tabernacle courtyard, 100 by 50 cubits, with the entrance on the east">
+    <rect class="tb-ground" x="${C(-14)}" y="${C(-6)}" width="${C(124)}" height="${C(62)}"/>
+    <rect class="tb-court" x="0" y="0" width="${C(100)}" height="${C(50)}"/>
+    <line class="tb-gate" x1="0" y1="${C(15)}" x2="0" y2="${C(35)}"/>
+    <rect class="tb-tent" x="${C(60)}" y="${C(20)}" width="${C(30)}" height="${C(10)}"/>
+    <rect class="tb-most" x="${C(80)}" y="${C(20)}" width="${C(10)}" height="${C(10)}"/>
+    <line class="tb-veil" x1="${C(80)}" y1="${C(20)}" x2="${C(80)}" y2="${C(30)}"/>
+    <rect class="tb-item" data-i="altar" x="${C(17.5)}" y="${C(22.5)}" width="${C(5)}" height="${C(5)}"><title>Bronze altar, 5 by 5 cubits</title></rect>
+    <circle class="tb-item" data-i="laver" cx="${C(43)}" cy="${C(25)}" r="${C(1.6)}"><title>Laver (size not given)</title></circle>
+    <rect class="tb-item gold" data-i="holy" x="${C(68)}" y="${C(26.5)}" width="${C(2)}" height="${C(1)}"><title>Table of showbread, 2 by 1 cubits, north side</title></rect>
+    <circle class="tb-item gold" data-i="holy" cx="${C(69)}" cy="${C(22.6)}" r="${C(.8)}"><title>Golden lampstand, south side</title></circle>
+    <rect class="tb-item gold" data-i="holy" x="${C(77.5)}" y="${C(24.5)}" width="${C(1)}" height="${C(1)}"><title>Altar of incense, 1 by 1 cubit</title></rect>
+    <rect class="tb-item gold" data-i="most" x="${C(83.75)}" y="${C(24.25)}" width="${C(2.5)}" height="${C(1.5)}"><title>Ark of the covenant, 2.5 by 1.5 cubits</title></rect>
+    <g class="tb-lab"><text x="${C(-1)}" y="${C(13)}" text-anchor="end">Gate</text><text x="${C(20)}" y="${C(21)}" text-anchor="middle">Altar</text><text x="${C(43)}" y="${C(22.4)}" text-anchor="middle">Laver</text>
+      <text x="${C(70)}" y="${C(18.8)}" text-anchor="middle">Holy place</text><text x="${C(85)}" y="${C(18.8)}" text-anchor="middle">Most holy</text></g>
+    <g class="tb-compass" transform="translate(${C(104)},${C(4)})"><line x1="0" y1="${C(-1)}" x2="0" y2="${C(5)}"/><path d="M${C(-1.2)} ${C(3.4)}L0 ${C(5.4)}L${C(1.2)} ${C(3.4)}Z"/><text x="0" y="${C(8)}" text-anchor="middle">N</text></g>
+    <g class="tb-dims"><text x="${C(50)}" y="${C(53.5)}" text-anchor="middle" id="tbW">100 cubits</text><text transform="translate(${C(103)},${C(25)}) rotate(90)" text-anchor="middle" id="tbH">50</text></g>
+    <g id="tbYou"><circle r="${C(1.6)}"/><text y="${C(-2.4)}" text-anchor="middle">You</text></g></svg>`;
+  // Side view, looking north: the court fence and the tent with a person for scale
+  const side=`<svg class="tb-side" viewBox="${C(-14)} ${C(-13)} ${C(124)} ${C(16)}" role="img" aria-label="Side view: the court fence is 5 cubits high and the tent 10 cubits high, beside a person for scale">
+    <line class="tb-floor" x1="${C(-14)}" y1="0" x2="${C(110)}" y2="0"/>
+    <rect class="tb-fence" x="0" y="${C(-5)}" width="${C(100)}" height="${C(5)}"/>
+    <rect class="tb-tentside" x="${C(60)}" y="${C(-10)}" width="${C(30)}" height="${C(10)}"/>
+    <line class="tb-veil" x1="${C(80)}" y1="${C(-10)}" x2="${C(80)}" y2="0"/>
+    <rect class="tb-item" x="${C(17.5)}" y="${C(-3)}" width="${C(5)}" height="${C(3)}"/>
+    <g id="tbMan"><circle cy="${C(-3.45)}" r="${C(.42)}"/><path d="M0 ${C(-3)}V${C(-1.4)}M0 ${C(-1.4)}L${C(-.45)} 0M0 ${C(-1.4)}L${C(.45)} 0M${C(-.6)} ${C(-2.5)}L0 ${C(-2.8)}L${C(.6)} ${C(-2.5)}"/></g>
+    <text class="tb-side-lab" x="${C(1)}" y="${C(-5.6)}" id="tbFenceLab">Fence 5 cubits</text><text class="tb-side-lab" x="${C(61)}" y="${C(-10.6)}" id="tbTentLab">Tent 10 cubits</text></svg>`;
+  host.innerHTML=`<div class="st-x">${stBack}<span class="eyebrow">Explainer · Exodus 25 to 27</span><h2 tabindex="-1">Inside the tabernacle</h2>
+    <p class="st-lead">God told Moses exactly how to build a tent where he would live among his people. Drag the slider to walk in from the east gate. Each step brings you closer to the ark, and fewer people were allowed to follow.</p>
+    <div class="st-fig">${plan}${side}
+      <label class="st-slider"><span>Walk in</span><input type="range" id="tbWalk" min="-10" max="88" step="0.5" value="-8" aria-valuetext="Outside the court"></label>
+      <div class="st-units" role="group" aria-label="Units"><button class="btn" data-u="c" aria-pressed="true">Cubits</button><button class="btn" data-u="m" aria-pressed="false">Metres</button><button class="btn" data-u="f" aria-pressed="false">Feet</button></div></div>
+    <div class="st-card-now" id="tbCard" aria-live="polite"></div>
+    <p class="tl-note">A cubit was the length from elbow to fingertip, about 45 cm or 18 inches. Exodus gives the sizes of the court, the tent and most of the furniture, but not where each piece stood, so the positions here follow a common reconstruction. Hebrews 9 describes the same layout, and Matthew 27:51 records the veil torn in two.</p></div>`;
+  const inp=host.querySelector('#tbWalk'),you=host.querySelector('#tbYou'),man=host.querySelector('#tbMan'),card=host.querySelector('#tbCard');let unit='c',last='';
+  const fmt=c=>unit==='c'?`${c} cubit${c===1?'':'s'}`:unit==='m'?`${(c*.457).toFixed(c*.457<10?1:0)} m`:`${Math.round(c*1.5)} ft`;
+  function upd(){const x=+inp.value,it=ITEMS.find(i=>x>=i.a&&x<i.b)||ITEMS[ITEMS.length-1];
+    you.setAttribute('transform',`translate(${C(x)},${C(25)})`);man.setAttribute('transform',`translate(${C(x)},0)`);
+    host.querySelectorAll('.tb-item').forEach(el=>el.classList.toggle('on',el.dataset.i===it.id));
+    host.querySelector('.tb-plan').dataset.zone=it.id;inp.setAttribute('aria-valuetext',it.t);
+    host.querySelector('#tbW').textContent=fmt(100);host.querySelector('#tbH').textContent=fmt(50);host.querySelector('#tbFenceLab').textContent='Fence '+fmt(5);host.querySelector('#tbTentLab').textContent='Tent '+fmt(10);
+    if(it.id!==last){last=it.id;card.innerHTML=`<span class="eyebrow">Who may come here: ${it.who}</span><h3>${it.t}</h3><p>${it.x.replace(/#([\d.]+)#/g,(m,n)=>fmt(+n))}</p>${quote(it.r)}`;}}
+  inp.oninput=upd;
+  host.querySelector('.st-units').onclick=e=>{const b=e.target.closest('[data-u]');if(!b)return;unit=b.dataset.u;host.querySelectorAll('[data-u]').forEach(x=>x.setAttribute('aria-pressed',x===b));last='';upd();};
+  host.querySelector('.tb-plan').onclick=e=>{const t=e.target.closest('.tb-item');if(!t)return;const it=ITEMS.find(i=>i.id===t.dataset.i);inp.value=(it.a+it.b)/2;upd();};
+  upd();host.querySelector('h2').focus();}
+
+// ----- Explainer: the size of Noah's ark (Genesis 6:15), against things we know -----
+function openArk(host){host._cleanup&&host._cleanup();host.scrollTop=0;
+  const THINGS=[['person','A person',1.75,1.75],['bus','A double-decker bus',11,4.4],['whale','A blue whale',30,4],['jet','A Boeing 747',70.7,19.4],['titanic','The Titanic',269,53]];
+  host.innerHTML=`<div class="st-x">${stBack}<span class="eyebrow">Explainer · Genesis 6</span><h2 tabindex="-1">How big was the ark?</h2>
+    <p class="st-lead">God gave Noah its size in cubits: 300 long, 50 wide and 30 high, with three decks. Nobody knows exactly how long Noah's cubit was, so the slider lets you try the common range. Then pick something to compare it with.</p>
+    <div class="st-fig"><svg class="ark-svg" id="arkSvg" role="img"></svg>
+      <label class="st-slider"><span>Cubit</span><input type="range" id="arkCubit" min="44.4" max="52.5" step="0.1" value="45.7"></label>
+      <div class="st-units" role="group" aria-label="Compare with">${THINGS.map(([id,n],i)=>`<button class="btn" data-cmp="${id}" aria-pressed="${i===3}">${n.replace(/^(A|The) /,'')}</button>`).join('')}</div></div>
+    <div class="ark-stats" id="arkStats" aria-live="polite"></div>
+    ${quote([0,6,15],'Read')}
+    <p class="tl-note">The common cubit was about 45.7 cm (18 inches). The longer royal cubit used in Egypt was about 52.5 cm. The ark's 6 to 1 ratio of length to width is close to what shipbuilders use for stability. The ark is drawn here as a plain box, since Genesis gives only its outer size.</p></div>`;
+  const svg=host.querySelector('#arkSvg'),inp=host.querySelector('#arkCubit'),stats=host.querySelector('#arkStats');let cmp='jet';
+  const shape=(id,x,w,h)=>{const g=0;switch(id){
+    case'person':return `<circle cx="${x+w/2}" cy="${g-h*.88}" r="${h*.12}"/><rect x="${x+w*.3}" y="${g-h*.76}" width="${w*.4}" height="${h*.76}" rx="${w*.15}"/>`;
+    case'bus':return `<rect x="${x}" y="${g-h}" width="${w}" height="${h*.92}" rx="${h*.08}"/><circle cx="${x+w*.18}" cy="${g-h*.08}" r="${h*.1}"/><circle cx="${x+w*.8}" cy="${g-h*.08}" r="${h*.1}"/>`;
+    case'whale':return `<path d="M${x} ${g-h*.55}C${x+w*.1} ${g-h*1.05} ${x+w*.7} ${g-h*1.05} ${x+w*.88} ${g-h*.45}L${x+w} ${g-h*.95}L${x+w*.97} ${g-h*.4}L${x+w} ${g}L${x+w*.86} ${g-h*.3}C${x+w*.6} ${g} ${x+w*.15} ${g} ${x} ${g-h*.55}Z"/>`;
+    case'jet':return `<path d="M${x} ${g-h*.55}C${x} ${g-h*.75} ${x+w*.05} ${g-h*.8} ${x+w*.12} ${g-h*.8}L${x+w*.78} ${g-h*.8}L${x+w*.95} ${g-h}L${x+w} ${g-h}L${x+w} ${g-h*.6}C${x+w*.6} ${g-h*.45} ${x+w*.2} ${g-h*.4} ${x} ${g-h*.55}Z"/><rect x="${x+w*.42}" y="${g-h*.5}" width="${w*.03}" height="${h*.5}"/>`;
+    case'titanic':return `<path d="M${x} ${g-h*.55}L${x+w} ${g-h*.55}L${x+w*.97} ${g}L${x+w*.04} ${g}Z"/><rect x="${x+w*.12}" y="${g-h*.68}" width="${w*.76}" height="${h*.13}"/>${[.25,.4,.55,.7].map(f=>`<rect x="${x+w*f}" y="${g-h}" width="${w*.04}" height="${h*.32}"/>`).join('')}`;}};
+  function upd(){const cu=+inp.value/100,L=300*cu,Wd=50*cu,H=30*cu,th=THINGS.find(t=>t[0]===cmp);
+    inp.setAttribute('aria-valuetext',`${inp.value} centimetres`);
+    const span=Math.max(L,th[2])*1.06,top=Math.max(H,th[3])*1.25;
+    svg.setAttribute('viewBox',`${-span*.03} ${-top} ${span} ${top+span*.06}`);
+    svg.setAttribute('aria-label',`Side view: the ark, ${Math.round(L)} metres long and ${Math.round(H)} high, beside ${th[1].toLowerCase()}, ${th[2]} metres long`);
+    const fs=span*.028;
+    svg.innerHTML=`<line class="ark-ground" x1="${-span*.03}" y1="0" x2="${span}" y2="0" stroke-width="${span*.003}"/>
+      <g class="ark-cmp">${shape(cmp,L*.04,th[2],th[3])}</g>
+      <rect class="ark-hull" x="0" y="${-H}" width="${L}" height="${H}" stroke-width="${span*.004}"/>${[1,2].map(d=>`<line class="ark-deck" x1="0" x2="${L}" y1="${-H*d/3}" y2="${-H*d/3}" stroke-width="${span*.0025}"/>`).join('')}
+      <text x="${L/2}" y="${-H/2+fs*.35}" text-anchor="middle" style="font-size:${fs}px" class="ark-lab">Ark · ${Math.round(L)} m</text>
+      <text x="${L*.04+th[2]/2}" y="${span*.045}" text-anchor="middle" style="font-size:${fs}px" class="ark-cmplab">${th[1]} · ${th[2]} m</text>`;
+    const area=L*Wd*3,vol=L*Wd*H,ratio=L/th[2];
+    stats.innerHTML=`<div><b>${Math.round(L)} × ${Math.round(Wd)} × ${Math.round(H)} m</b><span>${Math.round(L*3.281)} × ${Math.round(Wd*3.281)} × ${Math.round(H*3.281)} ft</span></div>
+      <div><b>${(Math.round(area/100)*100).toLocaleString('en')} m²</b><span>of floor across three decks, about ${(area/7140).toFixed(1)} football pitches</span></div>
+      <div><b>${(Math.round(vol/1000)*1000).toLocaleString('en')} m³</b><span>inside, enough for about ${Math.round(vol/67.7)} forty-foot shipping containers</span></div>
+      <div><b>${ratio>=1?ratio.toFixed(ratio<10?1:0)+'×':Math.round(ratio*100)+'%'}</b><span>${ratio>=1?'':'of '}the length of ${th[1].replace(/^A /,'a ').replace(/^The /,'the ')}</span></div>`;}
+  inp.oninput=upd;
+  host.querySelector('.st-units').onclick=e=>{const b=e.target.closest('[data-cmp]');if(!b)return;cmp=b.dataset.cmp;host.querySelectorAll('[data-cmp]').forEach(x=>x.setAttribute('aria-pressed',x===b));upd();};
+  upd();host.querySelector('h2').focus();}
 
 // ---------- Descent (scrollytelling) ----------
 addEventListener('resize',()=>{const h=$('#descent');h&&h._resize&&h._resize();});
@@ -829,7 +1488,103 @@ let start={level:0};
 if(mem.last){const {b,c,v}=mem.last;const r=$('#resume');r.hidden=false;r.textContent=`Continue at ${SHORT[b]} ${c+1}`;r.onclick=()=>{setMode('zoom');go({level:2,b,c,flash:v},r,1);};
   const total=mem.dwell.reduce((a,x)=>a+x,0),fav=mem.dwell.indexOf(Math.max(...mem.dwell));
   if(total>45&&fav>=2){start={level:2,b,c,flash:v};setTimeout(()=>toast(`Opened at the chapter you were reading, because you spend most of your time at ${['canon','book','chapter','verse','word'][fav]} level.`),700);}}
-function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),4200);}
+function toast(t){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),4200);}
+
+// ---------- Highlights, bookmarks and notes (kept on this device) ----------
+mem.marks=mem.marks||{};
+const HL=[['gold','Gold'],['green','Green'],['blue','Blue'],['pink','Pink']];
+const markOf=i=>mem.marks[i]||{};
+function setMark(i,patch){const m=Object.assign({},markOf(i),patch,{t:Date.now()});if(!m.h&&!m.bm&&!m.n)delete mem.marks[i];else mem.marks[i]=m;save();}
+const markCls=i=>{const m=markOf(i);return m.h?'hl-'+m.h:'';};
+const markIcons=i=>{const m=markOf(i);return (m.bm?'<span class="mk" aria-label="bookmarked">★</span>':'')+(m.n?`<span class="mk" aria-label="has a note" title="${esc(m.n)}">✎</span>`:'');};
+function marksHTML(i){const m=markOf(i);
+  return `<div class="marks" role="group" aria-label="Highlight, bookmark or note"><span class="ml">Highlight</span>${HL.map(([k,l])=>`<button class="hl-sw" data-hl="${k}" aria-pressed="${m.h===k}" aria-label="${l} highlight" style="--sw:var(--hl-${k})"></button>`).join('')}<button class="hl-sw none" data-hl="" aria-label="No highlight" aria-pressed="${!m.h}"></button>
+    <button class="btn" data-bm aria-pressed="${!!m.bm}">${m.bm?'★ Bookmarked':'☆ Bookmark'}</button><button class="btn" data-addnote ${m.n?'hidden':''}>✎ Add note</button></div>
+    <div class="notebox" ${m.n?'':'hidden'}><label for="noteText">Your note on this verse</label><textarea id="noteText" rows="3">${esc(m.n||'')}</textarea><div class="row"><button class="btn primary" data-savenote>Save note</button><button class="btn" data-delnote>Delete note</button></div></div>`;}
+function wireMarks(v,i){
+  const card=v.querySelector('#vcard'),txt=v.querySelector('.vtext');const paint=()=>{const m=markOf(i);txt.className='vtext '+markCls(i);
+    v.querySelectorAll('[data-hl]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.hl||'')===(m.h||'')));const bm=v.querySelector('[data-bm]');bm.setAttribute('aria-pressed',!!m.bm);bm.textContent=m.bm?'★ Bookmarked':'☆ Bookmark';};
+  paint();
+  card.addEventListener('click',e=>{const h=e.target.closest('[data-hl]');if(h){haptic();setMark(i,{h:h.dataset.hl||null});paint();announce(h.dataset.hl?`Highlighted ${h.dataset.hl}.`:'Highlight removed.');tick(660);return;}
+    if(e.target.closest('[data-bm]')){haptic();const on=!markOf(i).bm;setMark(i,{bm:on?1:0});paint();announce(on?'Bookmarked.':'Bookmark removed.');tick(on?784:392);return;}
+    if(e.target.closest('[data-addnote]')){const box=v.querySelector('.notebox');box.hidden=false;e.target.closest('[data-addnote]').hidden=true;v.querySelector('#noteText').focus();return;}
+    if(e.target.closest('[data-savenote]')){const t=v.querySelector('#noteText').value.trim();setMark(i,{n:t||null});announce(t?'Note saved.':'Note removed.');toast(t?'Note saved on this device.':'Note removed.');tick(587);return;}
+    if(e.target.closest('[data-delnote]')){setMark(i,{n:null});v.querySelector('#noteText').value='';v.querySelector('.notebox').hidden=true;v.querySelector('[data-addnote]').hidden=false;announce('Note deleted.');return;}});
+  v.querySelector('#noteText').addEventListener('blur',e=>{const t=e.target.value.trim();if(t!==(markOf(i).n||''))setMark(i,{n:t||null});});}
+let libTab='all';
+function libraryHTML(){const all=Object.entries(mem.marks).map(([i,m])=>[+i,m]).sort((a,b)=>b[1].t-a[1].t);
+  const f={all:()=>true,bm:([,m])=>m.bm,hl:([,m])=>m.h,n:([,m])=>m.n}[libTab];const list=all.filter(f);
+  const tabs=[['all','All'],['bm','Bookmarks'],['hl','Highlights'],['n','Notes']];
+  return `<button class="x" data-a="close" aria-label="Close">×</button><span class="eyebrow">Saved on this device</span><h2>Your highlights and notes</h2>
+  <div class="libtabs" role="group" aria-label="Filter">${tabs.map(([k,l])=>`<button data-tab="${k}" aria-pressed="${libTab===k}">${l} · ${all.filter({all:()=>true,bm:([,m])=>m.bm,hl:([,m])=>m.h,n:([,m])=>m.n}[k]).length}</button>`).join('')}</div>
+  ${list.length?`<ul class="liblist">${list.map(([i,m])=>`<li><button data-to="${i}" class="${m.h?'hl-'+m.h:''}"><b>${m.bm?'★ ':''}${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}</b><span>${esc(flat[i])}</span>${m.n?`<em>✎ ${esc(m.n)}</em>`:''}</button></li>`).join('')}</ul>`:'<p class="libempty">Nothing here yet. Open any verse to highlight it, bookmark it or add a note.</p>'}`;}
+function openLibrary(){closeSheet();const bg=document.createElement('div');bg.className='sheetbg';bg.setAttribute('role','dialog');bg.setAttribute('aria-modal','true');bg.setAttribute('aria-label','Your highlights, bookmarks and notes');
+  const s=document.createElement('div');s.className='sheet';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;sheetEl._esc=closeSheet;trapFocus(bg);
+  const paint=()=>{s.innerHTML=libraryHTML();const f=s.querySelector('.libtabs [aria-pressed="true"]');f&&f.focus({preventScroll:true});};paint();
+  bg.addEventListener('click',e=>{if(e.target===bg)return closeSheet();const t=e.target.closest('button');if(!t)return;
+    if(t.dataset.a==='close')return closeSheet();if(t.dataset.tab){libTab=t.dataset.tab;paint();return;}
+    if(t.dataset.to){const k=+t.dataset.to;closeSheet();setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);}});}
+$('#libChip').onclick=openLibrary;
+
+// ---------- Search by meaning, entirely on the device ----------
+// Static embeddings from potion-base-8M (MinishLab, MIT): a query is the mean of its word-piece vectors,
+// compared with pre-computed verse vectors (KJV, WEB and BSB averaged). See scripts/data/prep_semantic.py.
+let sem=null,semLoading=null;
+function semLoad(){if(sem)return Promise.resolve(sem);if(semLoading)return semLoading;
+  const bin=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u);return r.arrayBuffer();});
+  return semLoading=Promise.all([bin('sem/tokens.bin'),bin('sem/proj.bin'),bin('sem/verses.bin'),fetch('sem/vocab.txt').then(r=>{if(!r.ok)throw new Error('vocab');return r.text();})]).then(([tok,proj,ver,voc])=>{
+    const words=voc.split('\n'),n=words.length,vocab=new Map(words.map((w,i)=>[w,i])),D=(tok.byteLength-n*4)/n,pr=new Float32Array(proj),K=(pr.length-D)/D;
+    // Well-known verses get a small lift: total cross-reference votes, on a log scale
+    const pop=new Float32Array(N);for(let k=0;k<xr.length;k+=3){pop[xr[k]]+=xr[k+2];pop[xr[k+1]]+=xr[k+2];}for(let i=0;i<N;i++)pop[i]=.02*Math.log1p(pop[i]);
+    return sem={vocab,scale:new Float32Array(tok,0,n),tab:new Int8Array(tok,n*4),D,mu:pr.subarray(0,D),W:pr.subarray(D),K,V:new Int8Array(ver),pop};}).catch(e=>{semLoading=null;throw e;});}
+const isPunct=ch=>/[\p{P}\p{S}]/u.test(ch);
+function basicTokens(text){const out=[];let cur='';for(const ch of text.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu,'')){
+  if(/\s/.test(ch)){if(cur)out.push(cur);cur='';}else if(isPunct(ch)&&(ch.charCodeAt(0)<128||/\p{P}/u.test(ch))){if(cur)out.push(cur);cur='';out.push(ch);}else cur+=ch;}if(cur)out.push(cur);return out;}
+function wordPiece(w,vocab){if(w.length>100)return [];const ids=[];let s=0;while(s<w.length){let e=w.length,hit=-1;while(s<e){const sub=(s?'##':'')+w.slice(s,e);if(vocab.has(sub)){hit=vocab.get(sub);break;}e--;}if(hit<0)return [];ids.push(hit);s=e;}return ids;}
+const STOP=new Set('a an and are as at be but by for from has have he her his i if in into is it its me my of on or our she so that the their them then there they this to us was we were what when where which who why will with you your yourself unto thee thou thy thine ye shall hath doth'.split(' '));
+function semSearch(q,scope){const S=sem,ids=basicTokens(q).flatMap(w=>wordPiece(w,S.vocab));if(!ids.length)return [];
+  const m=new Float32Array(S.D);ids.forEach(t=>{const sc=S.scale[t],o=t*S.D;for(let d=0;d<S.D;d++)m[d]+=S.tab[o+d]*sc;});
+  let nm=0;for(let d=0;d<S.D;d++)nm+=m[d]*m[d];nm=Math.sqrt(nm)||1;
+  const x=new Float32Array(S.K);for(let d=0;d<S.D;d++){const c=m[d]/nm-S.mu[d];if(!c)continue;const o=d*S.K;for(let k=0;k<S.K;k++)x[k]+=c*S.W[o+k];}
+  let nx=0;for(let k=0;k<S.K;k++)nx+=x[k]*x[k];nx=127*(Math.sqrt(nx)||1);
+  // Plain words still count: a phrase or rare word that appears in the verse lifts it
+  const words=basicTokens(q).filter(w=>w.length>2&&!STOP.has(w)&&!isPunct(w)),phrase=q.trim().toLowerCase().replace(/\s+/g,' ');
+  const res=words.map(w=>new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));const [a,b]=scope;const top=[];let floor=-1e9;
+  for(let i=a;i<b;i++){let s=0;const o=i*S.K;for(let k=0;k<S.K;k++)s+=S.V[o+k]*x[k];s=s/nx+S.pop[i];
+    if(words.length){const t=flat[i].toLowerCase();if(phrase.includes(' ')&&t.includes(phrase))s+=.25;for(const r of res)if(r.test(t))s+=.03;}
+    if(s>floor||top.length<40){top.push([s,i]);if(top.length>80){top.sort((p,q)=>q[0]-p[0]);top.length=40;floor=top[39][0];}}}
+  return top.sort((p,q)=>q[0]-p[0]).slice(0,30);}
+const SEM_EX=['When I feel anxious','God keeps his promises','Forgiving someone who hurt me','Wisdom about money','Courage in hard times','The Lord is my shepherd'];
+let semScope='all',semQ='';
+function openSearch(prefill){closeSheet();const bg=document.createElement('div');bg.className='sheetbg';bg.setAttribute('role','dialog');bg.setAttribute('aria-modal','true');bg.setAttribute('aria-label','Search by meaning');
+  const s=document.createElement('div');s.className='sheet search';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;sheetEl._esc=closeSheet;trapFocus(bg);
+  const cur=state&&state.level>=1?state.b:null;
+  s.innerHTML=`<button class="x" data-a="close" aria-label="Close">×</button><span class="eyebrow">Search by meaning</span><h2>What are you looking for?</h2>
+    <form class="semform" role="search"><label class="sr-only" for="semQ">Describe what you are looking for</label><input id="semQ" type="search" autocomplete="off" placeholder="Try: when I feel anxious" value="${esc(prefill??semQ)}"><button class="btn primary">Search</button></form>
+    <div class="semscope" role="group" aria-label="Where to search">${[['all','Whole Bible'],['ot','Old Testament'],['nt','New Testament'],...(cur!=null?[['book',NAMES[cur]]]:[])].map(([k,l])=>`<button type="button" data-scope="${k}" aria-pressed="${semScope===k}">${esc(l)}</button>`).join('')}</div>
+    <p class="semstatus" id="semStatus" role="status"></p><ul class="liblist" id="semList"></ul>
+    <p class="semnote">Works offline on this device. It finds verses by meaning, not just matching words, so results can surprise you. Read each one in its context.</p>`;
+  const inp=s.querySelector('#semQ'),list=s.querySelector('#semList'),st=s.querySelector('#semStatus');
+  const examples=()=>{list.innerHTML='';st.textContent='';list.insertAdjacentHTML('beforeend',`<li class="semex">${SEM_EX.map(e=>`<button type="button" class="chip" data-ex="${esc(e)}">${esc(e)}</button>`).join('')}</li>`);};
+  async function run(){const q=inp.value.trim();semQ=q;if(!q){examples();return;}
+    if(!sem){st.textContent='Getting search ready (about 12 MB, only the first time)…';try{await semLoad();}catch(e){st.textContent='Search could not load. Check your connection and try again.';return;}}
+    if(sheetEl!==bg)return;
+    const scope=semScope==='ot'?[0,bookStart[39]]:semScope==='nt'?[bookStart[39],N]:semScope==='book'&&cur!=null?[bookStart[cur],bookStart[cur]+bookLen[cur]]:[0,N];
+    const t0=performance.now(),res=semSearch(q,scope);
+    if(!res.length){list.innerHTML='';st.textContent='No results. Try describing it in other words.';return;}
+    st.textContent=`${res.length} verses that match “${q}” best.`;
+    list.innerHTML=res.map(([sc,i])=>`<li><button data-to="${i}"><b>${NAMES[VB[i]]} ${VC[i]+1}:${VV[i]+1}</b><span>${esc(flat[i])}</span></button></li>`).join('');
+    console.debug('semantic search',Math.round(performance.now()-t0)+'ms');}
+  s.querySelector('form').onsubmit=e=>{e.preventDefault();run();};
+  bg.addEventListener('click',e=>{if(e.target===bg)return closeSheet();const t=e.target.closest('button');if(!t)return;
+    if(t.dataset.a==='close')return closeSheet();
+    if(t.dataset.ex){inp.value=t.dataset.ex;run();return;}
+    if(t.dataset.scope){semScope=t.dataset.scope;s.querySelectorAll('[data-scope]').forEach(b=>b.setAttribute('aria-pressed',b===t));if(inp.value.trim())run();return;}
+    if(t.dataset.to){const k=+t.dataset.to;closeSheet();setMode('zoom');go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,1);}});
+  inp.focus();if(inp.value.trim())run();else examples();semLoad().catch(()=>{});}
+$('#findChip').onclick=()=>openSearch();$('#findFab').onclick=()=>openSearch();
+addEventListener('keydown',e=>{if(e.key==='/'&&!sheetEl&&!e.target.closest('input,textarea,select,[contenteditable]')){e.preventDefault();openSearch();}});
+
 // ---------- Reading plan: daily or weekly portions that pop up when the app opens ----------
 const DAY=864e5,MIN_WPM=180,WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const today=()=>{const d=new Date();return Math.round(new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/DAY);};
@@ -881,9 +1636,9 @@ function calLink(){const p=P(),t=p.time||'07:30',[hh,mm]=t.split(':');const d=ne
   try{q.set('ctz',Intl.DateTimeFormat().resolvedOptions().timeZone)}catch(_){}
   return 'https://calendar.google.com/calendar/render?'+q.toString();}
 let sheetEl=null,pick={cad:'daily',id:'bible',day:0,time:'07:30'};
-function closeSheet(){if(sheetEl){sheetEl.remove();sheetEl=null;}}
+function closeSheet(){if(sheetEl){const r=sheetEl._restore;sheetEl.remove();sheetEl=null;r&&r();}}
 function openSheet(view){closeSheet();const bg=document.createElement('div');bg.className='sheetbg';bg.setAttribute('role','dialog');bg.setAttribute('aria-modal','true');
-  const s=document.createElement('div');s.className='sheet';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;
+  const s=document.createElement('div');s.className='sheet';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;trapFocus(bg);
   bg.addEventListener('click',e=>{if(e.target===bg)later();});
   const paint=v=>{view=v;s.innerHTML=v==='pick'?pickHTML():v==='done'?doneHTML():todayHTML();bg.setAttribute('aria-label',v==='pick'?'Choose a reading plan':'Reading plan');const f=s.querySelector('.primary');f&&f.focus({preventScroll:true});};
   s.addEventListener('click',e=>{const t=e.target.closest('button,a');if(!t)return;const a=t.dataset.a;if(!a)return;if(t.tagName==='A'&&a==='cal')return;e.preventDefault();haptic();
@@ -900,7 +1655,7 @@ function openSheet(view){closeSheet();const bg=document.createElement('div');bg.
     if(P()&&view==='today'&&e.target.id==='ptime2'){P().time=e.target.value;save();if(NATIVE)NATIVE.scheduleReminders(P());else s.querySelector('[data-a="cal"]').href=calLink();}});
   paint(view);}
 function later(){if(P()){P().snoozeUntil=Date.now()+3*36e5;save();}closeSheet();}
-addEventListener('keydown',e=>{if(sheetEl&&e.key==='Escape'){e.stopImmediatePropagation();later();}},true);
+addEventListener('keydown',e=>{if(sheetEl&&e.key==='Escape'){e.stopImmediatePropagation();sheetEl._esc?sheetEl._esc():later();}},true);
 function pickHTML(){const n=c=>c==='daily'?'day':'week';
   return `<button class="x" data-a="close" aria-label="Close">×</button><span class="eyebrow">Reading plan</span><h2>Read the Bible a little at a time</h2>
   <p>Pick a pace that fits a busy life. Each time you open Selah it shows ${pick.cad==='daily'?"today's":"this week's"} portion, how long it takes, and your streak. If you miss a ${n(pick.cad)}, it picks up where you left off, so nothing is skipped.</p>

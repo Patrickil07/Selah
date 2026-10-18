@@ -1,0 +1,98 @@
+# Renders the whole KJV with one Kokoro voice and publishes it as GitHub release assets for streaming.
+# Needs a public repository (free runner minutes and public downloads). It runs when the
+# `narration` branch is pushed, or by hand once this file is on the default branch.
+# Each book gets its own release, tagged {voice}-{book}, holding one MP3 per chapter.
+# Verse timings are committed to timings/{voice}.json, which the app reads through jsDelivr.
+name: Narration
+
+on:
+  push:
+    branches: [narration]
+  workflow_dispatch:
+    inputs:
+      voice:
+        description: Kokoro voice (af_heart, af_bella, am_michael, bm_george)
+        default: af_heart
+      books:
+        description: Books to render, counted from 0 (0-65 is the whole Bible)
+        default: 0-65
+      shards:
+        description: Number of parallel jobs
+        default: '40'
+
+permissions:
+  contents: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.s.outputs.shards }}
+    steps:
+      - id: s
+        run: echo "shards=$(python3 -c "import json;print(json.dumps(list(range(${{ inputs.shards || '40' }}))))")" >> "$GITHUB_OUTPUT"
+
+  render:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: ${{ fromJson(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q kokoro-onnx==0.6.1 soundfile numpy
+          mkdir -p model
+          curl -sSL -o model/kokoro.onnx https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx
+          curl -sSL -o model/voices.bin https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+      - name: Render
+        run: python3 scripts/narration/chapters.py model/kokoro.onnx model/voices.bin ${{ inputs.voice || 'af_heart' }} --shard ${{ matrix.shard }}/${{ inputs.shards || '40' }} --books ${{ inputs.books || '0-65' }} --out out
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for f in out/*.mp3; do
+            b=$(basename "$f" .mp3 | cut -d_ -f1)
+            tag="${{ inputs.voice || 'af_heart' }}-$b"
+            gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --title "$tag" --notes "KJV narration, book $b, voice ${{ inputs.voice || 'af_heart' }}" >/dev/null 2>&1 || true
+            gh release upload "$tag" "$f" --clobber
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: timings-${{ matrix.shard }}
+          path: out/timings-*.json
+
+  timings:
+    needs: render
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: timings-*
+          merge-multiple: true
+          path: parts
+      - name: Merge and commit
+        run: |
+          mkdir -p timings
+          python3 - <<'EOF'
+          import glob, json, os
+          path = 'timings/${{ inputs.voice || 'af_heart' }}.json'
+          t = json.load(open(path)) if os.path.exists(path) else {}
+          for f in glob.glob('parts/*.json'):
+              t.update(json.load(open(f)))
+          json.dump(t, open(path, 'w'), separators=(',', ':'), sort_keys=True)
+          print(len(t), 'chapters')
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add timings && git commit -m "Narration timings for ${{ inputs.voice || 'af_heart' }}" && git push || echo "No changes"

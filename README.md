@@ -36,7 +36,15 @@ Every push builds an Android debug APK and an unsigned iOS simulator build on Gi
 
 ## Data sources
 
-- **Bible text:** King James Version (public domain).
+- **Bible text:** King James Version, plus the World English Bible, Berean Standard Bible and American Standard Version (all public domain).
 - **Cross-references:** OpenBible.info, CC BY.
 - **Hebrew and Greek:** STEPBible-Data TAHOT, TAGNT, TBESH and TBESG from Tyndale House, Cambridge, CC BY 4.0.
 - **Narration:** the Kokoro-82M open model, Apache 2.0. Audio is pre-rendered for sample chapters only.
+- **Timeline:** Theographic Bible Metadata by Robert Rouse, CC BY-SA 4.0. Dates follow Ussher's chronology. `web/timeline.json` is a derived work under the same licence.
+- **Map:** Natural Earth land outlines (public domain), via world-atlas.
+- **Search by meaning:** the potion-base-8M static embedding model by MinishLab, MIT (see `web/sem/LICENSE.txt`), taken from the npm package counterparts-model-potion. `scripts/data/prep_semantic.py` builds the verse index.
+- **Spoken Hebrew and Greek words:** rendered with the same Kokoro voice from espeak-ng pronunciations (modern Israeli Hebrew, reconstructed ancient Greek) by `scripts/narration/words.py`.
+
+## Whole-Bible narration
+
+`scripts/narration/chapters.py` renders one MP3 per chapter plus verse timings. `.github/workflows/narration.yml` runs it on GitHub Actions in 40 parallel jobs whenever the `narration` branch is pushed (or by hand from the Actions tab once it is on `main`). Each book becomes a release tagged `{voice}-{book}`, and the timings are committed to `timings/{voice}.json` on the `narration` branch. The app streams any chapter that has timings and falls back to device voices for the rest.
