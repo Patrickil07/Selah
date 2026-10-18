@@ -59,6 +59,16 @@ jobs:
           else
             echo "::warning::No ANDROID_KEYSTORE_B64 secret yet, so this bundle is unsigned and can't go to Google Play."
           fi
+      - name: Check the upload key opens with its password and alias
+        if: env.ANDROID_KEYSTORE_FILE != ''
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if ! out=$(keytool -list -keystore "$ANDROID_KEYSTORE_FILE" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" 2>&1); then
+            echo "::error::The upload key could not be opened: $(echo "$out" | grep -m1 -i 'error\|exception')"
+            exit 1
+          fi
       - name: Build the release bundle
         working-directory: android
         env:
@@ -66,7 +76,11 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
-          ./gradlew bundleRelease --no-daemon
+          set -o pipefail
+          if ! ./gradlew bundleRelease --no-daemon 2>&1 | tee "$RUNNER_TEMP/gradle.log"; then
+            echo "::error::$(grep -A4 'What went wrong' "$RUNNER_TEMP/gradle.log" | tr '\n' ' ' | cut -c1-600)"
+            exit 1
+          fi
           cp app/build/outputs/bundle/release/app-release.aab "../Selah-1.0.0-${{ github.run_number }}.aab"
       - name: Check the bundle is signed
         if: env.ANDROID_KEYSTORE_FILE != ''
