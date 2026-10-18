@@ -52,6 +52,8 @@ jobs:
   windows:
     name: Windows (Microsoft Store package and installer)
     runs-on: windows-latest
+    permissions:
+      contents: write
     env:
       STORE_IDENTITY_NAME: ${{ vars.STORE_IDENTITY_NAME }}
       STORE_PUBLISHER: ${{ vars.STORE_PUBLISHER }}
@@ -85,3 +87,15 @@ jobs:
             windows/dist/*.appx
             windows/dist/*.exe
             windows/dist/smoke.png
+      # A direct download for the Store upload, without signing in to GitHub
+      - name: Attach the Store package to the Windows release
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        working-directory: windows
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(node -p "require('./package.json').version")
+          gh release view "windows-$v" >/dev/null 2>&1 || gh release create "windows-$v" --prerelease --target "$GITHUB_SHA" \
+            --title "Selah Bible $v for Windows" --notes "Selah-$v.appx is the Microsoft Store package. Selah-Setup-$v.exe installs the app directly."
+          gh release upload "windows-$v" dist/Selah-$v.appx dist/Selah-Setup-$v.exe --clobber
