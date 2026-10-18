@@ -24,7 +24,7 @@
     "nsis": {"oneClick": true, "artifactName": "Selah-Setup-${version}.${ext}"},
     "appx": {
       "artifactName": "Selah-${version}.${ext}",
-      "displayName": "Selah",
+      "displayName": "Selah Bible",
       "applicationId": "Selah",
       "backgroundColor": "#0c1220",
       "languages": ["en-US"]
