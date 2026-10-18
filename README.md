@@ -54,9 +54,8 @@ Every push builds an Android debug APK and an unsigned iOS simulator build on Gi
 `windows/` wraps the same app (`www/`) in Electron. CI builds two files on a Windows runner and checks the app opens:
 an `.appx` for the Microsoft Store (Microsoft signs it when it is published) and a `Selah-Setup` installer for direct testing.
 
-To publish: reserve the name Selah in [Partner Center](https://partner.microsoft.com/dashboard/apps-and-games/overview),
-then copy *Product identity* (Package/Identity/Name, Package/Identity/Publisher and Publisher display name) into the
-repository variables `STORE_IDENTITY_NAME`, `STORE_PUBLISHER` and `STORE_PUBLISHER_NAME`
-(Settings → Secrets and variables → Actions → Variables). The next build's `.appx` can then be uploaded to a Store submission.
+The Store product is **Selah Bible** (Store ID 9N120SPF1JMG). Its Partner Center *Product identity* is in
+`windows/package.json` (`build.appx`), so every build's `.appx` can be uploaded to a Store submission.
+Raise `version` there for each new submission.
 
 Run locally on Windows: `npm ci && npm run build`, then in `windows/`: `npm ci && npm start`.
