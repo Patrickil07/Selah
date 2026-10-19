@@ -350,6 +350,23 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
 .tl-chips button:hover{border-color:var(--lapis)}
 .tl-note{font-size:.75rem;color:var(--muted);margin:0}
 .sheet.search{max-width:620px}
+.sheet.nat{max-width:520px}
+.nat-play{display:flex;align-items:center;gap:14px;margin:4px 0 14px}
+.nat-play .btn{min-width:96px}
+.nat-play .btn:disabled{opacity:.5;cursor:default}
+.nat-vol{flex:1;display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted)}
+.nat-vol input,.nat-grid input{flex:1;width:100%;accent-color:var(--gold)}
+.nat-grid{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.nat-grid li{border:1px solid var(--line);border-radius:14px;background:var(--surface);display:grid;gap:4px;padding:2px 2px 6px}
+.nat-grid li.on{border-color:var(--gold);background:var(--gold-soft)}
+.nat-grid button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:.9rem;text-align:left;display:flex;align-items:center;gap:8px;padding:10px 10px 4px;cursor:pointer;border-radius:12px}
+.nat-grid button span{font-size:1.3rem}
+.nat-grid input{margin:0 10px 2px;width:calc(100% - 20px);flex:none}
+.nat-mixes{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.nat-mixes .chip[aria-pressed="true"]{outline:2px solid var(--gold)}
+.nat-scape{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.nat-scape b{display:block;color:var(--ink);font-weight:600}
+.nat-credit{margin-top:12px;font-size:.78rem;color:var(--muted)}.nat-credit summary{cursor:pointer}.nat-credit p{font-size:.78rem;margin:6px 0 0}
 .semform{display:flex;gap:8px;margin:6px 0 10px}
 .semform input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 .semscope{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
@@ -503,7 +520,7 @@ h2[tabindex="-1"]:focus,.bigword[tabindex="-1"]:focus{outline:none}
     <button class="chip" id="findChip" title="Search by meaning (/)">Search</button>
     <button class="chip" id="libChip" title="Highlights, bookmarks and notes">Saved</button>
     <button class="chip" id="resume" hidden></button>
-    <button class="btn" id="sound" aria-pressed="false" aria-label="Sound">Sound off</button>
+    <button class="btn" id="sound" aria-pressed="false" aria-haspopup="dialog" aria-label="Sound" title="Nature sounds and soundscape">Sound off</button>
     <nav class="crumbs" id="crumbs" aria-label="Location"></nav>
   </header>
   <main>
@@ -624,10 +641,82 @@ function bell(){if(!scape||reader.on)return;const t=actx.currentTime,PENTA=[0,1,
 function stopScape(){if(!scape)return;const s0=scape;scape=null;s0.timers.forEach(x=>{clearInterval(x);clearTimeout(x);});s0.out.gain.setTargetAtTime(0,actx.currentTime,.8);
   setTimeout(()=>{s0.voices.forEach(v=>v.o.stop());s0.lfo.stop();s0.out.disconnect();},4000);}
 function scapeFollow(i){const k=genreOf(VB[Math.max(0,Math.min(N-1,i))]);if(k!==scapeKey){scapeKey=k;if(scape){scape.step=0;chord();}}}
-$('#sound').onclick=()=>{initAudio();soundOn=!soundOn;const b=$('#sound');b.textContent=soundOn?'Soundscape on':'Sound off';b.setAttribute('aria-pressed',soundOn);
+function toggleScape(){initAudio();soundOn=!soundOn;
   if(actx){actx.resume&&actx.resume();if(soundOn){scapeFollow(curIndex());startScape();}else stopScape();}
-  announce(soundOn?'Soundscape on.':'Sound off.');
-  if(soundOn){posTone(curIndex(),state.level);tick(523);}};
+  announce(soundOn?'Soundscape on.':'Soundscape off.');syncSoundBtn();
+  if(soundOn){posTone(curIndex(),state.level);tick(523);}}
+
+// ---------- Nature sounds: recorded loops (web/nature, credits in web/nature/CREDITS.md) that play under reading
+// and read-aloud, each with its own volume, plus distant thunder made on the fly. The mix is remembered,
+// but it only starts when you press play ----------
+const NATURE=[['waves','Sea waves','🌊'],['waterfall','Waterfall','💧'],['rain','Rain','🌧️'],['thunder','Distant thunder','⛈️'],
+  ['birds','Birdsong','🐦'],['stream','Stream','🏞️'],['wind','Wind','🍃'],['crickets','Night crickets','🦗'],['fire','Campfire','🔥']];
+const NAT_MIXES=[['Seashore at dawn',{waves:.8,birds:.45}],['Rainy evening',{rain:.8,thunder:.6,fire:.4}],['Forest stream',{stream:.7,birds:.6,wind:.3}],['Quiet night',{crickets:.6,wind:.3}]];
+mem.nature=Object.assign({vol:.7,mix:{waves:.7}},mem.nature||{});
+const nat={bus:null,on:false,tracks:{},bufs:{},sleep:0,sleepGen:0,sleepTimer:null};
+function natBus(){if(!nat.bus){nat.bus=actx.createGain();nat.bus.gain.value=0;nat.bus.connect(actx.destination);}return nat.bus;}
+const natLevel=()=>mem.nature.vol*(reader.on?.55:1); // softer while read-aloud speaks
+function natDuck(){if(nat.bus&&nat.on)nat.bus.gain.setTargetAtTime(natLevel(),actx.currentTime,.6);}
+function decode(ab){return new Promise((ok,no)=>{const p=actx.decodeAudioData(ab,ok,no);p&&p.then&&p.then(ok,no);});}
+async function natBuffer(id){if(!nat.bufs[id])nat.bufs[id]=fetch('nature/'+id+'.mp3').then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}).then(decode)
+    .catch(e=>{delete nat.bufs[id];throw e;});
+  return nat.bufs[id];}
+// The loops are seamless, but decoders pad the start and end with a little silence: loop between the first and last real samples
+function natSpan(buf){const d=buf.getChannelData(0),lim=Math.min(d.length>>2,buf.sampleRate);let a=0,b=d.length-1;
+  while(a<lim&&Math.abs(d[a])<1e-4)a++;while(b>d.length-lim&&Math.abs(d[b])<1e-4)b--;return [a/buf.sampleRate,(b+1)/buf.sampleRate];}
+async function natStart(id){if(nat.tracks[id])return;const g=actx.createGain();g.gain.value=0;g.connect(natBus());const tr=nat.tracks[id]={g,src:null,timer:null};
+  const lvl=()=>g.gain.setTargetAtTime(mem.nature.mix[id]??0,actx.currentTime,.8);
+  if(id==='thunder'){const roll=()=>{if(nat.tracks[id]!==tr)return;thunder(g);tr.timer=setTimeout(roll,14000+Math.random()*32000);};tr.timer=setTimeout(roll,1500+Math.random()*4000);lvl();return;}
+  try{const buf=await natBuffer(id);if(nat.tracks[id]!==tr)return;const s=actx.createBufferSource(),[a,b]=natSpan(buf);
+    s.buffer=buf;s.loop=true;s.loopStart=a;s.loopEnd=b;s.connect(g);s.start(0,a+Math.random()*(b-a-1));tr.src=s;lvl();}
+  catch(e){natStop(id);announce('That sound could not be loaded.');}}
+function natStop(id){const tr=nat.tracks[id];if(!tr)return;delete nat.tracks[id];clearTimeout(tr.timer);tr.g.gain.setTargetAtTime(0,actx.currentTime,.5);
+  setTimeout(()=>{try{tr.src&&tr.src.stop();}catch(e){}tr.g.disconnect();},3000);}
+let rumbleBuf=null;
+function thunder(out){ // a distant roll: brown noise through a low filter that closes as it fades, sometimes with a second roll
+  if(!rumbleBuf){const n=actx.sampleRate*9;rumbleBuf=actx.createBuffer(2,n,actx.sampleRate);for(let ch=0;ch<2;ch++){const d=rumbleBuf.getChannelData(ch);let y=0;for(let i=0;i<n;i++){y=(y+.02*(Math.random()*2-1))/1.02;d[i]=y*.6;}}}
+  const t=actx.currentTime,rolls=Math.random()<.4?2:1;
+  for(let k=0;k<rolls;k++){const t0=t+k*(1.2+Math.random()*1.5),len=5+Math.random()*3,s=actx.createBufferSource(),f=actx.createBiquadFilter(),g=actx.createGain();
+    s.buffer=rumbleBuf;s.playbackRate.value=.7+Math.random()*.5;f.type='lowpass';f.frequency.setValueAtTime(380+Math.random()*300,t0);f.frequency.exponentialRampToValueAtTime(90,t0+len);
+    const peak=(k?.6:1)*(.5+Math.random()*.5);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(peak,t0+.4+Math.random()*.8);g.gain.exponentialRampToValueAtTime(.0001,t0+len);
+    s.connect(f).connect(g).connect(out);s.start(t0);s.stop(t0+len+.1);}}
+function natPlay(on){initAudio();if(!actx)return;actx.resume&&actx.resume();nat.on=on;const bus=natBus();
+  if(on){Object.keys(mem.nature.mix).forEach(natStart);bus.gain.cancelScheduledValues(actx.currentTime);bus.gain.setTargetAtTime(natLevel(),actx.currentTime,.8);}
+  else{bus.gain.setTargetAtTime(0,actx.currentTime,.5);setTimeout(()=>{if(!nat.on)Object.keys(nat.tracks).forEach(natStop);},2500);natSleep(0);}
+  syncSoundBtn();paintSounds();}
+function natToggle(id){const m=mem.nature.mix;if(id in m){delete m[id];natStop(id);if(!Object.keys(m).length&&nat.on)natPlay(false);}
+  else{m[id]=.6;if(nat.on)natStart(id);else natPlay(true);}save();paintSounds();}
+function natMix(mix){Object.keys(nat.tracks).forEach(id=>{if(!(id in mix))natStop(id);});mem.nature.mix=Object.assign({},mix);save();
+  if(nat.on){Object.keys(mix).forEach(id=>{nat.tracks[id]?nat.tracks[id].g.gain.setTargetAtTime(mix[id],actx.currentTime,.8):natStart(id);});paintSounds();}else natPlay(true);}
+function natSleep(min){clearTimeout(nat.sleepTimer);nat.sleep=min;const gen=++nat.sleepGen; // fade out over the last half minute
+  if(min)nat.sleepTimer=setTimeout(()=>{nat.bus.gain.setTargetAtTime(0,actx.currentTime,8);nat.sleepTimer=setTimeout(()=>{if(gen===nat.sleepGen&&nat.on)natPlay(false);},25000);},min*60000);}
+function syncSoundBtn(){const on=soundOn||nat.on,b=$('#sound');b.textContent=on?'Sound on':'Sound off';b.setAttribute('aria-pressed',on);}
+let soundsSheet=null;
+function soundsHTML(){const m=mem.nature.mix,n=Object.keys(m).length,pct=v=>Math.round(v*100);
+  return `<button class="x" data-a="close" aria-label="Close">×</button><span class="eyebrow">Sounds</span><h2>Calm sounds</h2>
+  <p>Play nature around you while you read or listen. Pick one or more, and set each one's volume.</p>
+  <div class="nat-play"><button class="btn" data-a="play" aria-pressed="${nat.on}" ${n?'':'disabled'}>${nat.on?'❚❚ Pause':'▶ Play'}</button>
+    <label class="nat-vol"><span>Volume</span><input type="range" data-v="all" min="0" max="1" step="0.01" value="${mem.nature.vol}" aria-label="Volume of all nature sounds" aria-valuetext="${pct(mem.nature.vol)}%"></label></div>
+  <ul class="nat-grid">${NATURE.map(([id,name,icon])=>{const on=id in m;return `<li class="${on?'on':''}"><button data-n="${id}" aria-pressed="${on}"><span aria-hidden="true">${icon}</span>${name}</button>
+    ${on?`<input type="range" data-v="${id}" min="0.05" max="1" step="0.01" value="${m[id]}" aria-label="${name} volume" aria-valuetext="${pct(m[id])}%">`:''}</li>`;}).join('')}</ul>
+  <span class="eyebrow">Mixes</span><div class="nat-mixes">${NAT_MIXES.map(([name],k)=>`<button class="chip" data-mix="${k}">${name}</button>`).join('')}</div>
+  <span class="eyebrow">Stop after</span><div class="nat-mixes" role="group" aria-label="Sleep timer">${[0,15,30,60].map(v=>`<button class="chip" data-sleep="${v}" aria-pressed="${nat.sleep===v}">${v?v+' min':'Never'}</button>`).join('')}</div>
+  <label class="nat-scape"><input type="checkbox" data-a="scape" ${soundOn?'checked':''}> <span><b>Soundscape music</b> A slow pad and distant bells that follow the part of the Bible you are in</span></label>
+  <details class="nat-credit"><summary>Recording credits</summary><p>Sea waves by Luftrum and rain by alex36917 (CC BY, Freesound). Birdsong by kvgarlic, stream by gluckose and wind by felix.blume (CC0, Freesound).
+  Night crickets by Lisa Redfern and campfire by ezwa (public domain, SoundBible). Clips edited by Porrumentzio for Blanket. The waterfall and thunder are made for Selah.</p></details>`;}
+function paintSounds(){if(!soundsSheet||sheetEl!==soundsSheet.bg)return;const f=document.activeElement,k=f&&(f.dataset.n||f.dataset.a||f.dataset.mix||f.dataset.sleep);
+  soundsSheet.s.innerHTML=soundsHTML();if(k!=null){const el=soundsSheet.s.querySelector(`[data-n="${k}"],[data-a="${k}"],[data-mix="${k}"],[data-sleep="${k}"]`);el&&el.focus({preventScroll:true});}}
+function openSounds(){closeSheet();const bg=document.createElement('div');bg.className='sheetbg';bg.setAttribute('role','dialog');bg.setAttribute('aria-modal','true');bg.setAttribute('aria-label','Calm sounds');
+  const s=document.createElement('div');s.className='sheet nat';bg.appendChild(s);document.body.appendChild(bg);sheetEl=bg;sheetEl._esc=closeSheet;trapFocus(bg);soundsSheet={bg,s};
+  s.innerHTML=soundsHTML();s.querySelector('[data-a="play"]:not([disabled]),[data-n]').focus({preventScroll:true});
+  bg.addEventListener('click',e=>{if(e.target===bg)return closeSheet();const t=e.target.closest('button');if(!t)return;
+    if(t.dataset.a==='close')return closeSheet();if(t.dataset.a==='play')return natPlay(!nat.on);
+    if(t.dataset.n)return natToggle(t.dataset.n);if(t.dataset.mix)return natMix(NAT_MIXES[+t.dataset.mix][1]);
+    if(t.dataset.sleep!=null){if(!nat.on&&+t.dataset.sleep)natPlay(true);natSleep(+t.dataset.sleep);paintSounds();}});
+  bg.addEventListener('change',e=>{if(e.target.dataset.a==='scape')toggleScape();});
+  bg.addEventListener('input',e=>{const r=e.target,v=r.dataset.v;if(!v)return;const x=+r.value;r.setAttribute('aria-valuetext',Math.round(x*100)+'%');
+    if(v==='all'){mem.nature.vol=x;natDuck();}else{mem.nature.mix[v]=x;const tr=nat.tracks[v];tr&&tr.g.gain.setTargetAtTime(x,actx.currentTime,.1);}save();});}
+$('#sound').onclick=openSounds;
 
 
 // ---------- Screen reader announcements and focus ----------
@@ -728,8 +817,8 @@ function speakDevice(b,c,k,gen){
   u.onend=()=>advance(b,c,k,gen);
   u.onerror=e=>{if(gen===reader.gen&&e.error!=='interrupted'&&e.error!=='canceled'){stopReader();toast('Read aloud stopped: this device could not play the voice.');}};
   synth.speak(u);}
-function startReader(k){if(scape)scape.out.gain.setTargetAtTime(.018,actx.currentTime,.6);reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}reader.on=true;reader.k=k||0;syncListen();setTimeout(speakCurrent,60);}
-function stopReader(){if(!reader.on)return;reader.on=false;if(scape)scape.out.gain.setTargetAtTime(.05,actx.currentTime,1.5);reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}syncListen();curView()?.querySelectorAll('.vs.speaking').forEach(e=>e.classList.remove('speaking'));}
+function startReader(k){if(scape)scape.out.gain.setTargetAtTime(.018,actx.currentTime,.6);reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}reader.on=true;natDuck();reader.k=k||0;syncListen();setTimeout(speakCurrent,60);}
+function stopReader(){if(!reader.on)return;reader.on=false;natDuck();if(scape)scape.out.gain.setTargetAtTime(.05,actx.currentTime,1.5);reader.gen++;synth&&synth.cancel();if(reader.audio){reader.audio.pause();reader.audio=null;}syncListen();curView()?.querySelectorAll('.vs.speaking').forEach(e=>e.classList.remove('speaking'));}
 function syncListen(){document.querySelectorAll('.listen .play').forEach(b=>{b.textContent=reader.on?'■ Stop':'▶ Listen';b.classList.toggle('on',reader.on);b.setAttribute('aria-pressed',reader.on);});}
 let slide=1;
 function goChapter(b,c,s,origin){if(b==null)return;const cv=curView();if(state.level===2&&cv&&cv._accordion&&cv._accordion(b,c))return;slide=s;go({level:2,b,c},origin||null,0);slide=1;}
