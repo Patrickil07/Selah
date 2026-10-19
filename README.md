@@ -1,8 +1,8 @@
 # Selah
 
-A zoomable Bible for iPhone, iPad and Android. You zoom from the whole canon down to a book, a chapter, a verse and the original Hebrew or Greek word. It also has a 3D cross-reference galaxy, the Descent scroll, read-aloud narration and a daily or weekly reading plan.
+A zoomable Bible for iPhone, iPad and Android. You zoom from the whole canon down to a book, a chapter, a verse and the original Hebrew or Greek word. It also has a 3D cross-reference galaxy, the Descent scroll, read-aloud narration, a daily or weekly reading plan and calm nature sounds to read by.
 
-The app is a [Capacitor](https://capacitorjs.com) shell around the same page as the web prototype. Everything ships inside the app, so it works offline: the KJV text, cross-references, the Hebrew and Greek data, narration audio, fonts and Three.js.
+The app is a [Capacitor](https://capacitorjs.com) shell around the same page as the web prototype. Everything ships inside the app, so it works offline: the KJV text, cross-references, the Hebrew and Greek data, narration audio, nature sounds, fonts and Three.js.
 
 ## Layout
 
@@ -44,6 +44,7 @@ Every push builds an Android debug APK and an unsigned iOS simulator build on Gi
 - **Map:** Natural Earth land outlines (public domain), via world-atlas.
 - **Search by meaning:** the potion-base-8M static embedding model by MinishLab, MIT (see `web/sem/LICENSE.txt`), taken from the npm package counterparts-model-potion. `scripts/data/prep_semantic.py` builds the verse index.
 - **Spoken Hebrew and Greek words:** rendered with the same Kokoro voice from espeak-ng pronunciations (modern Israeli Hebrew, reconstructed ancient Greek) by `scripts/narration/words.py`.
+- **Nature sounds:** free recordings (CC0, public domain and CC BY) by way of Blanket, looped by `scripts/nature/build.py`. Credits in `web/nature/CREDITS.md`.
 
 ## Whole-Bible narration
 
