@@ -506,7 +506,7 @@ header{position:relative;z-index:20}
 .vnav:hover{border-color:var(--lapis);background:var(--lapis-soft)}
 .vnav:active{transform:scale(.92)}
 .vnav.prev{left:14px}.vnav.next{right:14px}
-@media (max-width:1179px),(min-width:1280px) and (max-width:1399px){.vnav{top:auto;bottom:14px;margin:0;width:38px;height:38px;font-size:1.25rem}.vnav.next{left:58px;right:auto}}
+@media (max-width:1179px),(min-width:1280px) and (max-width:1699px){.vnav{top:auto;bottom:14px;margin:0;width:38px;height:38px;font-size:1.25rem}.vnav.next{left:58px;right:auto}}
 .sess{position:absolute;top:0;right:0;bottom:0;width:272px;box-sizing:border-box;z-index:7;display:none;flex-direction:column;gap:8px;padding:18px 14px 14px;border-left:1px solid var(--line);background:var(--surface)}
 .sess-h{display:flex;align-items:center;gap:6px}
 .sess-h .eyebrow{flex:1}
@@ -523,8 +523,18 @@ header{position:relative;z-index:20}
 .sess .sr2{font-family:var(--read);font-size:.8rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sess .empty{font-size:.85rem;color:var(--muted);padding:6px 2px}
 #sessClose,#sessFab{display:none}
-@media (min-width:1280px){#zoom.hist .sess{display:flex}#zoom.hist .stage{right:272px}#zoom.hist .zoombar{right:286px}}
-@media (max-width:1279px){#zoom.hist #sessFab{display:block}.sess.open{display:flex;box-shadow:-8px 0 30px rgb(0 0 0/.3);width:min(320px,88vw)}#sessClose{display:block}}
+@media (min-width:1280px){#zoom.hist #sess{display:flex}#zoom.hist .stage{right:272px}#zoom.hist .zoombar{right:286px}#zoom.lnk #links{display:flex}#zoom.lnk .stage{left:272px}}
+@media (max-width:1279px){#zoom.hist #sessFab,#zoom.lnk #linksFab{display:block}.sess.open{display:flex;box-shadow:-8px 0 30px rgb(0 0 0/.3);width:min(320px,88vw)}#sessClose,#linksClose{display:block}.sess.lnk.open{box-shadow:8px 0 30px rgb(0 0 0/.3)}}
+.sess.lnk{left:0;right:auto;border-left:0;border-right:1px solid var(--line)}
+#linksClose,#linksFab{display:none}
+.ltabs{display:flex;gap:4px;background:var(--bg);border-radius:9px;padding:3px}
+.ltabs button{flex:1;border:0;background:transparent;color:var(--muted);border-radius:7px;padding:5px 6px;font-size:.78rem;font-weight:600;cursor:pointer}
+.ltabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0/.15)}
+.lfrom{font-size:.85rem;color:var(--muted)}.lfrom b{color:var(--ink);font-weight:600}
+.sess .vbar{height:3px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:3px}.sess .vbar i{display:block;height:100%;background:var(--c)}
+#zoom.lv2 .vnav{top:auto;bottom:14px;margin:0;width:42px;height:42px;font-size:1.35rem}
+#zoom.lv2 .vnav.prev{left:calc(50% - 50px);right:auto}#zoom.lv2 .vnav.next{left:calc(50% + 8px);right:auto}
+
 .crumb{position:relative;display:inline-flex;align-items:center}
 .crumbs .crumb .caret{padding:3px 3px;color:var(--muted);font-size:.7rem;font-weight:400}
 .crumbs .crumb:last-child>button:first-child{color:var(--ink);font-weight:500}
@@ -566,7 +576,8 @@ header{position:relative;z-index:20}
   <main>
     <section class="panel" id="zoom">
       <div class="stage" id="stage" tabindex="-1"><button class="vnav prev" id="vprev" hidden>‹</button><button class="vnav next" id="vnext" hidden>›</button><div class="loading" id="loading"><span class="eyebrow">Loading</span>Loading the full King James text and 100,000 cross-references…</div></div>
-      <div class="zoombar"><button class="btn" id="findFab" aria-label="Search by meaning" title="Search by meaning">🔍</button><button class="btn" id="sessFab" aria-label="Passages from this session" title="Passages from this session" aria-expanded="false">🕘</button><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
+      <div class="zoombar"><button class="btn" id="findFab" aria-label="Search by meaning" title="Search by meaning">🔍</button><button class="btn" id="linksFab" aria-label="Links to other passages" title="Links to other passages" aria-expanded="false">🔗</button><button class="btn" id="sessFab" aria-label="Passages from this session" title="Passages from this session" aria-expanded="false">🕘</button><button class="btn" id="zout" aria-label="Zoom out" title="Zoom out (Esc)">−</button></div>
+      <aside class="sess lnk" id="links" aria-label="Links to other passages"><div class="sess-h"><span class="eyebrow">Links</span><button id="linksClose" aria-label="Close">✕</button></div><div class="ltabs" role="group" aria-label="Links from"><button data-lm="verse" aria-pressed="true">This verse</button><button data-lm="chapter" aria-pressed="false">Whole chapter</button></div><p class="lfrom" id="lfrom"></p><ol id="linksList"></ol><p class="hint">Cross-references from OpenBible.info, strongest first.</p></aside>
       <aside class="sess" id="sess" aria-label="Passages from this reading session"><div class="sess-h"><span class="eyebrow">This session</span><button id="sessClear" title="Start a new session">Clear</button><button id="sessClose" aria-label="Close">✕</button></div><p class="hint">Every passage you open is kept here, newest first. Tap one to go back to it.</p><ol id="sessList"></ol></aside>
     </section>
     <section class="panel" id="time" hidden aria-label="Timeline and map"></section>
@@ -900,9 +911,33 @@ addEventListener('keydown',e=>{if(mode!=='zoom')return;if(e.key==='Escape'||e.ke
   if(state.level===2){const a=adjChapter(state.b,state.c,d);if(a){e.preventDefault();goChapter(a[0],a[1],d);}}
   else if(state.level===3){e.preventDefault();stepVerse(d);}});
 // Previous / next verse, carrying on across chapters and books
-function stepVerse(d){if(state.level!==3)return;const i=curIndex()+d;if(i<0||i>=N)return;haptic();slide=d;go({level:3,b:VB[i],c:VC[i],v:VV[i]},null,0);slide=1;}
+function stepVerse(d){if(state.level===2){const a=adjChapter(state.b,state.c,d);if(a)goChapter(a[0],a[1],d);return;}if(state.level!==3)return;const i=curIndex()+d;if(i<0||i>=N)return;haptic();slide=d;go({level:3,b:VB[i],c:VC[i],v:VV[i]},null,0);slide=1;}
 $('#vprev').onclick=()=>stepVerse(-1);$('#vnext').onclick=()=>stepVerse(1);
-function syncVnav(){const on=state.level===3,i=curIndex();[['#vprev',-1,'Previous verse'],['#vnext',1,'Next verse']].forEach(([id,d,lb])=>{const el=$(id),k=i+d;el.hidden=!on||k<0||k>=N;if(!el.hidden){el.title=`${lb}: ${NAMES[VB[k]]} ${VC[k]+1}:${VV[k]+1}`;el.setAttribute('aria-label',el.title);}});}
+function syncVnav(){const L=state.level,i=curIndex();$('#zoom').classList.toggle('lv2',L===2);
+  [['#vprev',-1],['#vnext',1]].forEach(([id,d])=>{const el=$(id);let lb=null;
+    if(L===3){const k=i+d;if(k>=0&&k<N)lb=`${d<0?'Previous':'Next'} verse: ${NAMES[VB[k]]} ${VC[k]+1}:${VV[k]+1}`;}
+    else if(L===2){const a=adjChapter(state.b,state.c,d);if(a)lb=`${d<0?'Previous':'Next'} chapter: ${NAMES[a[0]]} ${a[1]+1}`;}
+    el.hidden=!lb;if(lb){el.title=lb;el.setAttribute('aria-label',lb);}});}
+// Links: cross-references from the verse in focus (or the whole chapter) to other passages
+let linkFrom=-1,linkMode=mem.linkMode||'verse';
+function linksAt(i){if(i===linkFrom)return;linkFrom=i;if(linkMode==='verse')renderLinks();}
+function linksHTMLItem(to,n,max,sub){return `<li><button data-lt="${to}" style="--c:var(${gvar(VB[to])})"><span class="sr1">${NAMES[VB[to]]} ${VC[to]+1}:${VV[to]+1}<span>${sub}</span></span><span class="sr2">${esc(flat[to].slice(0,110))}</span><span class="vbar"><i style="width:${Math.max(6,n/max*100).toFixed(0)}%"></i></span></button></li>`;}
+function renderLinks(){const on=state.level===2||state.level===3;$('#zoom').classList.toggle('lnk',on);if(!on)return;
+  $('#links').querySelectorAll('[data-lm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lm===linkMode));
+  const L=$('#linksList'),F=$('#lfrom'),{b,c}=state;
+  if(linkMode==='verse'){const i=state.level===3?curIndex():(linkFrom>=chapStart[b][c]&&linkFrom<chapStart[b][c]+T[b][c].length?linkFrom:chapStart[b][c]),xs=xrefsOf(i).slice(0,40),max=xs.length?xs[0][1]:1;
+    F.innerHTML=`From <b>${NAMES[b]} ${VC[i]+1}:${VV[i]+1}</b> · ${xcount(i)} link${xcount(i)===1?'':'s'}${state.level===2?'. Scroll to change the verse.':''}`;
+    L.innerHTML=xs.length?xs.map(([to,n])=>linksHTMLItem(to,n,max,`${n} votes`)).join(''):'<li class="empty">No well-attested links from this verse. Try the whole chapter.</li>';return;}
+  // whole chapter: strongest link into each target chapter, grouped
+  const g=new Map(),s0=chapStart[b][c];for(let i=s0;i<s0+T[b][c].length;i++)for(const [to,n] of xrefsOf(i)){if(VB[to]===b&&VC[to]===c)continue;const k=VB[to]+'.'+VC[to];let e=g.get(k);if(!e){e={to,n:0,best:0,from:new Set()};g.set(k,e);}e.n+=n;e.from.add(i-s0+1);if(n>e.best){e.best=n;e.to=to;}}
+  const top=[...g.values()].sort((x,y)=>y.n-x.n).slice(0,40),max=top.length?top[0].n:1;
+  F.innerHTML=`From <b>${NAMES[b]} ${c+1}</b> · ${g.size} passage${g.size===1?'':'s'}, most linked first`;
+  L.innerHTML=top.length?top.map(e=>linksHTMLItem(e.to,e.n,max,`from v${[...e.from].slice(0,4).join(', ')}${e.from.size>4?'…':''}`)).join(''):'<li class="empty">No well-attested links from this chapter.</li>';}
+$('#links').addEventListener('click',e=>{const m=e.target.closest('[data-lm]');if(m){linkMode=m.dataset.lm;mem.linkMode=linkMode;save();renderLinks();return;}
+  const t=e.target.closest('[data-lt]');if(!t)return;const k=+t.dataset.lt;haptic();$('#links').classList.remove('open');$('#linksFab').setAttribute('aria-expanded','false');
+  if(state.level===2)go({level:2,b:VB[k],c:VC[k],flash:VV[k]},null,0);else go({level:3,b:VB[k],c:VC[k],v:VV[k]},null,0);});
+$('#linksFab').onclick=()=>{const o=$('#links').classList.toggle('open');$('#linksFab').setAttribute('aria-expanded',o);$('#sess').classList.remove('open');if(o){renderLinks();$('#links [data-lm]')?.focus();}};
+$('#linksClose').onclick=()=>{$('#links').classList.remove('open');$('#linksFab').setAttribute('aria-expanded','false');$('#linksFab').focus();};
 // Session history: every chapter and verse opened in this sitting, newest first, so a study can hop back
 const SESSION_GAP=4*36e5;
 if(!mem.sess||Date.now()-mem.sess.t>SESSION_GAP)mem.sess={t:Date.now(),items:[]};
@@ -918,10 +953,10 @@ function renderSess(){const z=$('#zoom');z.classList.toggle('hist',state.level>=
 $('#sessList').addEventListener('click',e=>{const t=e.target.closest('[data-si]');if(!t)return;const x=mem.sess.items[+t.dataset.si];if(!x)return;haptic();$('#sess').classList.remove('open');$('#sessFab').setAttribute('aria-expanded','false');
   if(x.v!=null)go({level:3,b:x.b,c:x.c,v:x.v},null,state.level>3?-1:state.level===3?0:1);else go({level:2,b:x.b,c:x.c},null,state.level>2?-1:0);});
 $('#sessClear').onclick=()=>{mem.sess={t:Date.now(),items:[]};sessAdd();renderSess();announce('Started a new reading session.');};
-$('#sessFab').onclick=()=>{const o=$('#sess').classList.toggle('open');$('#sessFab').setAttribute('aria-expanded',o);if(o){renderSess();$('#sessList button')?.focus();}};
+$('#sessFab').onclick=()=>{const o=$('#sess').classList.toggle('open');$('#links').classList.remove('open');$('#sessFab').setAttribute('aria-expanded',o);if(o){renderSess();$('#sessList button')?.focus();}};
 $('#sessClose').onclick=()=>{$('#sess').classList.remove('open');$('#sessFab').setAttribute('aria-expanded','false');$('#sessFab').focus();};
 setInterval(()=>{if(mode==='zoom'&&state.level>=1)renderSess();},60000);
-function afterNav(){syncVnav();sessAdd();renderSess();}
+function afterNav(){syncVnav();sessAdd();renderSess();linkFrom=state.level===3?curIndex():state.level===2&&state.flash!=null?chapStart[state.b][state.c]+state.flash:-1;renderLinks();}
 
 // ---------- Original languages (STEPBible tagged Hebrew OT and Greek NT, CC BY 4.0) ----------
 const origCache={};let lexicon=null,lexP=null;
@@ -1011,12 +1046,12 @@ function render(){
   if(L===2){const {b,c}=state,vs=T[b][c];
     const hot=vs.map((_,i)=>xcount(chapStart[b][c]+i));const hmax=Math.max(...hot);
     const prev=adjChapter(b,c,-1),next=adjChapter(b,c,1);
-    const SIDE=innerWidth<700?1:innerWidth<1050?2:3;
+    const SIDE=0; // neighbouring chapters now sit behind the arrows; the sides hold Links and History
     const sideList=d=>{const out=[];let cur=[b,c];for(let k=0;k<SIDE;k++){cur=adjChapter(cur[0],cur[1],d);if(!cur)break;out.push(cur);}return d<0?out.reverse():out;};
     const strip=([sb,sc],d)=>{const n=T[sb][sc].length,mx=Math.max(...T[sb].map(x=>x.length));
       return `<button class="pane strip ${mem.read[sb+'.'+sc]?'r':''}" data-p="${sb},${sc}" data-s="${d}" style="--c:var(${gvar(sb)})" title="${NAMES[sb]} ${sc+1} · ${n} verses" aria-label="Open ${NAMES[sb]} ${sc+1}"><span class="sn">${sc+1}</span><span class="sb"><i style="height:${Math.max(8,n/mx*100)}%"></i></span><span class="sl">${sb!==b?NAMES[sb]+' ':''}${sc+1}</span></button>`;};
     const v=view(`<div class="acc" id="acc">${sideList(-1).map(x=>strip(x,-1)).join('')}<section class="pane open" id="openPane">
-      <div class="vhead"><span class="eyebrow">Z2 · Chapter</span><h2>${NAMES[b]} ${c+1}</h2><p>${vs.length} verses. Neighbouring chapters sit folded at the sides like an accordion: tap one to unfold it, or swipe and use the arrow keys. Tap any verse to zoom into it.</p><div class="trrow">${trSelect()}</div></div>${planBarHTML(b,c)}
+      <div class="vhead"><span class="eyebrow">Z2 · Chapter</span><h2>${NAMES[b]} ${c+1}</h2><p>${vs.length} verses. Use the arrows below, swipe or the arrow keys to change chapter. Tap any verse to zoom into it.</p><div class="trrow">${trSelect()}</div></div>${planBarHTML(b,c)}
       <div class="listen" role="group" aria-label="Read aloud"><button class="btn play" id="playBtn" aria-pressed="${reader.on}">${reader.on?'■ Stop':'▶ Listen'}</button>
         <select id="voiceSel" aria-label="Voice">${voiceOptions()}</select>
         <select id="rateSel" aria-label="Speed">${[0.75,0.9,1,1.15,1.3,1.5].map(r=>`<option value="${r}" ${r==reader.rate?'selected':''}>${r}×</option>`).join('')}</select>
@@ -1050,10 +1085,10 @@ function render(){
     const reading=v.querySelector('#reading'),verses=[...reading.children];
     function updateFocus(){fr=0;const vr=v.getBoundingClientRect(),line=vr.top+vr.height*0.4;let best=-1,bd=1e9;
       for(let k=0;k<verses.length;k++){const r=verses[k].getBoundingClientRect();if(r.bottom<vr.top||r.top>vr.bottom)continue;const d=line<r.top?r.top-line:line>r.bottom?line-r.bottom:0;if(d<bd){bd=d;best=k;}}
-      if(v.scrollTop>40&&verses.length){const lr=verses[verses.length-1].getBoundingClientRect();if(lr.bottom<=vr.bottom&&lr.bottom>vr.top)planMark(b,c);}if(best!==focused){if(focused>=0)verses[focused].classList.remove('focus');focused=best;if(best>=0){verses[best].classList.add('focus');reading.classList.add('focusing');if(soundOn&&actx)tick(360+best*7);posTone(chapStart[b][c]+best,2);}}}
+      if(v.scrollTop>40&&verses.length){const lr=verses[verses.length-1].getBoundingClientRect();if(lr.bottom<=vr.bottom&&lr.bottom>vr.top)planMark(b,c);}if(best!==focused){if(focused>=0)verses[focused].classList.remove('focus');focused=best;if(best>=0){verses[best].classList.add('focus');linksAt(chapStart[b][c]+best);reading.classList.add('focusing');if(soundOn&&actx)tick(360+best*7);posTone(chapStart[b][c]+best,2);}}}
     v.addEventListener('scroll',()=>{if(!fr&&!reader.on)fr=requestAnimationFrame(updateFocus);},{passive:true});
     v._focusVerse=(k,speaking)=>{verses.forEach(e=>e.classList.remove('speaking'));if(focused>=0)verses[focused].classList.remove('focus');focused=k;const el=verses[k];if(!el)return;
-      el.classList.add('focus');if(speaking)el.classList.add('speaking');reading.classList.add('focusing');
+      el.classList.add('focus');linksAt(chapStart[b][c]+k);if(speaking)el.classList.add('speaking');reading.classList.add('focusing');
       const vr=v.getBoundingClientRect(),r=el.getBoundingClientRect();v.scrollTo({top:v.scrollTop+r.top-vr.top-vr.height*0.38+r.height/2*0,behavior:reduce?'auto':'smooth'});};
     // Swipe (touch, pen or mouse drag) and horizontal trackpad scroll move between chapters
     const wrap=v.querySelector('#acc');let sx=null,sy=0,dx=0,horiz=false,swiped=false;
