@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selah Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* One sunny picture-book world: sky, sand path, grass, warm sun. Single theme by choice. */
+  --sky:#CFE9F8; --paper:#FFFBF2; --ink:#2B3550; --soft:#5C6788;
+  --sun:#FFC94A; --coral:#FF7A6B; --grass:#7CC47F; --sand:#F3DDAE;
+  --display:'Fredoka', 'Trebuchet MS', system-ui, sans-serif;
+  --body:'Andika', 'Segoe UI', system-ui, sans-serif;
+  --read:28px;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--sky);color:var(--ink);font-family:var(--body);-webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,[tabindex]:focus-visible{outline:4px solid var(--ink);outline-offset:3px;border-radius:14px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.on{display:flex}
+.icon{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Home: story path ---------- */
+#home header{display:flex;align-items:center;gap:12px;padding:14px max(16px,env(safe-area-inset-left)) 10px;background:var(--sky);position:relative;z-index:2}
+.logo{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+.logo b{color:var(--coral)}
+.logo svg{width:38px;height:38px}
+.spacer{flex:1}
+.chip{display:flex;align-items:center;gap:8px;background:var(--paper);border-radius:999px;padding:8px 16px 8px 10px;font-family:var(--display);font-weight:600;font-size:18px;box-shadow:0 3px 0 rgba(43,53,80,.12)}
+.chip .icon{width:24px;height:24px}
+.chip.grown{color:var(--soft);font-size:15px;padding:8px 14px}
+#pathWrap{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+#path{display:block;margin:0 auto;width:100%;max-width:560px;overflow:visible}
+.stop{cursor:pointer}
+.stop .ring{transition:transform .2s}
+.stop:hover .ring,.stop:focus-visible .ring{transform:scale(1.06)}
+.stop text{font-family:var(--display);font-weight:600}
+.next-flag{animation:bounce 1.2s ease-in-out infinite}
+.part{font-family:var(--display);font-weight:700;letter-spacing:1px}
+
+/* ---------- Reader ---------- */
+#reader{background:var(--paper)}
+.bar{display:flex;align-items:center;gap:10px;padding:10px max(14px,env(safe-area-inset-left))}
+.round{width:52px;height:52px;border-radius:50%;background:var(--sky);display:grid;place-items:center;flex:none}
+.bar h1{font-family:var(--display);font-size:22px;margin:0;line-height:1.1;text-wrap:balance}
+.bar small{display:block;font-family:var(--body);font-size:14px;color:var(--soft);font-weight:400}
+.dots{display:flex;gap:6px;margin-left:auto}
+.dots i{width:12px;height:12px;border-radius:50%;background:#E2DCCB}
+.dots i.on{background:var(--coral)}
+.dots i.done{background:var(--sun)}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 16px 10px;min-height:0;overflow-y:auto}
+.pic{width:100%;max-width:880px;aspect-ratio:400/260;max-height:52vh;border-radius:24px;overflow:hidden;box-shadow:0 6px 0 rgba(43,53,80,.12);background:#fff;flex:none}
+.pic svg{display:block;width:100%;height:100%}
+.words{max-width:820px;width:100%;font-size:var(--read);line-height:1.45;text-align:center;text-wrap:pretty;padding:4px 8px;min-height:3em}
+.words .w{border-radius:8px;padding:0 2px;transition:background .12s}
+.words .w.hl{background:var(--sun)}
+.hint{font-size:15px;color:var(--soft);text-align:center;margin:-6px 0 0}
+.controls{display:flex;align-items:center;justify-content:center;gap:18px;padding:10px 16px max(16px,env(safe-area-inset-bottom))}
+.big{width:76px;height:76px;border-radius:50%;background:var(--grass);color:#fff;display:grid;place-items:center;box-shadow:0 5px 0 #5E9C61;transition:transform .1s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #5E9C61}
+.big .icon{width:38px;height:38px;stroke-width:3.2}
+.big[disabled]{opacity:.35;cursor:default}
+.readbtn{height:76px;padding:0 26px;border-radius:40px;background:var(--coral);color:#fff;display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:22px;box-shadow:0 5px 0 #D85C4F}
+.readbtn .icon{width:34px;height:34px}
+.readbtn.playing{background:var(--ink);box-shadow:0 5px 0 #161C2E}
+
+/* tappable picture parts */
+.tap{cursor:pointer;transform-box:fill-box;transform-origin:50% 100%}
+.tap.boing{animation:boing .6s ease}
+.hinting .tap{animation:hintpulse 2.4s ease-in-out 2}
+.pop{position:fixed;pointer-events:none;font-family:var(--display);font-weight:700;font-size:22px;background:#fff;border-radius:16px;padding:6px 14px;box-shadow:0 4px 0 rgba(43,53,80,.15);transform:translate(-50%,-110%);animation:popup 1.8s ease forwards;z-index:30;max-width:70vw;text-align:center}
+
+/* verse, quiz, reward cards */
+.card{width:100%;max-width:680px;background:#fff;border-radius:28px;padding:26px 24px;box-shadow:0 6px 0 rgba(43,53,80,.1);text-align:center;display:flex;flex-direction:column;gap:16px;align-items:center}
+.eyebrow{font-family:var(--display);font-weight:600;font-size:16px;color:var(--coral);letter-spacing:1.5px;text-transform:uppercase}
+.verse{font-size:calc(var(--read) + 2px);line-height:1.45;text-wrap:balance;margin:0}
+.ref{font-family:var(--display);font-weight:600;color:var(--soft);font-size:18px}
+.src{font-size:13px;color:var(--soft)}
+.qtext{font-family:var(--display);font-weight:600;font-size:28px;line-height:1.25;text-wrap:balance;margin:0}
+.opts{display:grid;gap:12px;width:100%}
+.opt{background:var(--sky);border-radius:22px;padding:18px 16px;font-family:var(--display);font-weight:600;font-size:22px;box-shadow:0 4px 0 #A9CFE6;transition:transform .1s}
+.opt:active{transform:translateY(2px)}
+.opt.right{background:var(--grass);color:#fff;box-shadow:0 4px 0 #5E9C61}
+.opt.wrong{animation:shake .4s}
+.pill{font-family:var(--display);font-weight:600;font-size:20px;padding:14px 26px;border-radius:999px;background:var(--grass);color:#fff;box-shadow:0 4px 0 #5E9C61}
+.pill.alt{background:var(--sky);color:var(--ink);box-shadow:0 4px 0 #A9CFE6}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.qstars{display:flex;gap:8px}
+.qstars svg{width:34px;height:34px}
+.sticker{width:min(260px,62vw);aspect-ratio:1;border-radius:50%;border:10px solid #fff;box-shadow:0 8px 0 rgba(43,53,80,.15);overflow:hidden;animation:stickerIn .8s cubic-bezier(.2,1.6,.4,1)}
+.sticker svg{width:100%;height:100%;display:block}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+
+/* ---------- Sticker book ---------- */
+#book{background:#FFF1D6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px;padding:10px 20px 30px;max-width:900px;margin:0 auto;width:100%}
+.slot{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-family:var(--display);font-weight:600;font-size:16px}
+.slot .disc{width:120px;height:120px;border-radius:50%;overflow:hidden;border:6px solid #fff;box-shadow:0 5px 0 rgba(43,53,80,.12)}
+.slot .disc svg{width:100%;height:100%;display:block}
+.slot.empty .disc{border:4px dashed #D9C39A;background:transparent;box-shadow:none;display:grid;place-items:center;font-size:44px;color:#D9C39A}
+.slot.empty{color:#A8936B}
+.slot:nth-child(3n+1) .disc{transform:rotate(-4deg)} .slot:nth-child(3n+2) .disc{transform:rotate(3deg)}
+
+/* ---------- Grown-ups ---------- */
+#grown{background:#F4F6FA;font-size:17px}
+.gwrap{flex:1;overflow-y:auto;padding:4px 20px 40px}
+.gcol{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.gcard{background:#fff;border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.gcard h2{font-family:var(--display);font-size:20px;margin:0}
+.gcard p{margin:0;line-height:1.5;color:var(--soft)}
+.set{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.seg{display:flex;background:#EEF1F6;border-radius:12px;padding:4px}
+.seg button{padding:8px 14px;border-radius:9px;font-weight:700;font-size:15px}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+select{font:inherit;font-size:15px;padding:8px 10px;border-radius:10px;border:1px solid #D5DAE3;max-width:100%}
+details{border-top:1px solid #EEF1F6;padding-top:10px}
+summary{font-weight:700;cursor:pointer}
+details ul{margin:8px 0 0;padding-left:20px;line-height:1.5}
+.danger{color:#B03A2E;font-weight:700;align-self:flex-start;padding:8px 0}
+#lock{position:fixed;inset:0;background:rgba(43,53,80,.55);display:none;place-items:center;z-index:50;padding:20px}
+#lock.on{display:grid}
+#lock .card{max-width:420px}
+.hold{position:relative;width:120px;height:120px;border-radius:50%;background:var(--sky);display:grid;place-items:center;font-family:var(--display);font-weight:700;touch-action:none;user-select:none;-webkit-user-select:none}
+.hold svg.ring{position:absolute;inset:0;transform:rotate(-90deg)}
+
+/* ---------- motion ---------- */
+@keyframes boing{0%{transform:scale(1)}30%{transform:scale(1.18,.86)}55%{transform:scale(.92,1.1)}80%{transform:scale(1.04,.97)}100%{transform:scale(1)}}
+@keyframes hintpulse{0%,100%{filter:none}50%{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 2px #FFC94A)}}
+@keyframes popup{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-120%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-160%)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes stickerIn{0%{transform:scale(.2) rotate(-30deg)}100%{transform:scale(1) rotate(-4deg)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.spin{animation:spin 30s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tw{animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.35}}
+.drift{animation:drift 9s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translateX(18px)}}
+.sway{animation:sway 4s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes sway{from{transform:rotate(-2deg)}to{transform:rotate(2deg)}}
+.wave{animation:wave 4s ease-in-out infinite alternate}
+.wave2{animation:wave2 5s ease-in-out infinite alternate}
+.wave-rough{animation:waveR 1.6s ease-in-out infinite alternate}
+@keyframes wave{to{transform:translateX(-20px)}}
+@keyframes wave2{from{transform:translate(0,22px)}to{transform:translate(16px,22px)}}
+@keyframes waveR{to{transform:translate(-20px,-6px)}}
+.bob{animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.rock{animation:rock 1.4s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes rock{from{transform:rotate(-9deg) translateY(-4px)}to{transform:rotate(9deg) translateY(4px)}}
+.rain{animation:rain .5s linear infinite}
+@keyframes rain{from{transform:translate(0,-20px)}to{transform:translate(-6px,0)}}
+.flash{animation:flash 3.2s steps(1) infinite}
+@keyframes flash{0%,8%,14%{opacity:1}4%,11%,20%,100%{opacity:0}}
+.float{animation:float 2.6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-7px)}}
+.flap{animation:flap .4s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes flap{to{transform:scaleY(.5)}}
+.flap-slow{animation:flapS 1.6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 80%}
+@keyframes flapS{to{transform:scaleY(.9)}}
+.hop{animation:hop .5s ease-in-out infinite alternate}
+@keyframes hop{to{transform:translateY(-4px)}}
+.mane{animation:mane 1.8s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+@keyframes mane{to{transform:scale(1.06)}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}
+}
+@media (max-width:520px){
+  :root{--read:23px}
+  .logo{font-size:24px} .chip.grown span{display:none}
+  .big{width:64px;height:64px} .readbtn{height:64px;font-size:19px;padding:0 20px}
+  .bar h1{font-size:19px} .dots i{width:9px;height:9px}
+  .qtext{font-size:23px} .opt{font-size:19px}
+}
+@media (min-width:1000px) and (min-aspect-ratio:4/3){
+  .pic{max-height:58vh}
+}
+</style>
+</head>
+<body>
+<!--DEFS-->
+<section id="home" class="screen on" aria-label="Story path">
+  <header>
+    <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20,12 Q12,7 4,9 L4,31 Q12,29 20,33Z" fill="#FFC94A" stroke="#2B3550" stroke-width="2.2" stroke-linejoin="round"/><path d="M20,12 Q28,7 36,9 L36,31 Q28,29 20,33Z" fill="#FF7A6B" stroke="#2B3550" stroke-width="2.2" stroke-linejoin="round"/></svg>Selah <b>Kids</b></div>
+    <div class="spacer"></div>
+    <button class="chip" id="toBook" aria-label="Open my sticker book"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z" fill="#FFC94A" stroke="#D9A441"/></svg><span id="count">0 / 12</span></button>
+    <button class="chip grown" id="toGrown"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Grown-ups</span></button>
+  </header>
+  <div id="pathWrap"><svg id="path" role="list" aria-label="Bible stories"></svg></div>
+</section>
+
+<section id="reader" class="screen" aria-label="Story">
+  <div class="bar">
+    <button class="round" id="home1" aria-label="Back to the story path"><svg class="icon" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
+    <h1 id="rtitle">Story<small id="rref"></small></h1>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+  </div>
+  <div class="stage" id="stage"></div>
+  <div class="controls" id="controls">
+    <button class="big" id="prev" aria-label="Previous page"><svg class="icon" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="readbtn" id="readBtn"><svg class="icon" viewBox="0 0 24 24" id="readIcon"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><span id="readLabel">Read to me</span></button>
+    <button class="big" id="next" aria-label="Next page"><svg class="icon" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+</section>
+
+<section id="book" class="screen" aria-label="My sticker book">
+  <div class="bar">
+    <button class="round" id="home2" aria-label="Back to the story path"><svg class="icon" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
+    <h1>My Sticker Book<small id="bookSub"></small></h1>
+  </div>
+  <div style="flex:1;overflow-y:auto"><div class="grid" id="grid"></div></div>
+</section>
+
+<section id="grown" class="screen" aria-label="Grown-ups corner">
+  <div class="bar">
+    <button class="round" id="home3" aria-label="Back to the story path"><svg class="icon" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
+    <h1>Grown-ups corner<small>Settings, talk-about-it questions and sources</small></h1>
+  </div>
+  <div class="gwrap"><div class="gcol">
+    <div class="gcard">
+      <h2>Reading</h2>
+      <div class="set"><span>Reading speed</span><div class="seg" id="segRate"><button data-v="0.8">Slow</button><button data-v="0.92">Normal</button><button data-v="1.05">Quick</button></div></div>
+      <div class="set"><span>Text size</span><div class="seg" id="segSize"><button data-v="24">Big</button><button data-v="28">Bigger</button><button data-v="34">Biggest</button></div></div>
+      <div class="set"><span>Turn pages by itself while reading</span><div class="seg" id="segAuto"><button data-v="1">On</button><button data-v="0">Off</button></div></div>
+      <div class="set"><label for="voice">Voice</label><select id="voice"></select></div>
+      <p>Read-aloud uses this device’s voices for now. The store app would use the same studio voice as Selah, recorded ahead of time so it sounds natural and works offline.</p>
+    </div>
+    <div class="gcard">
+      <h2>Talk about it together</h2>
+      <p>Two questions for each story, to ask at bedtime or in the car.</p>
+      <div id="talk"></div>
+    </div>
+    <div class="gcard">
+      <h2>Where the words come from</h2>
+      <p>The stories are new, simple retellings written for ages 4 to 9 and checked against the Bible passage shown on each one. The memory verses are quoted word for word from the World English Bible, which is in the public domain. The World English Bible uses Yahweh, God’s name in Hebrew, where many Bibles print “the LORD”.</p>
+      <p>Pictures are drawn in the app. Nothing is downloaded, there are no ads, no accounts, and progress stays on this device.</p>
+    </div>
+    <div class="gcard">
+      <h2>Progress</h2>
+      <p id="progText"></p>
+      <button class="danger" id="reset">Start over and clear all stickers</button>
+    </div>
+  </div></div>
+</section>
+
+<div id="lock" role="dialog" aria-modal="true" aria-labelledby="lockT">
+  <div class="card">
+    <div class="eyebrow" id="lockT">For grown-ups</div>
+    <p class="qtext" style="font-size:22px">Press and hold the circle for 2 seconds</p>
+    <div class="hold" id="holdBtn" tabindex="0" role="button" aria-label="Press and hold to open the grown-ups corner"><svg class="ring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" fill="none" stroke="#fff" stroke-width="8"/><circle id="holdArc" cx="60" cy="60" r="54" fill="none" stroke="#FF7A6B" stroke-width="8" stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="339.3"/></svg>Hold</div>
+    <button class="pill alt" id="lockCancel">Not now</button>
+  </div>
+</div>
+<canvas id="confetti"></canvas>
+
+<script>
+/*STORIES*/
+/*ART*/
+/*APP*/
+</script>
+</body>
+</html>
